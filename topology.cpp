@@ -115,6 +115,7 @@ void Topology::MPICopy(System &system, double cutoffDistance)
 
             for(int i=0; i<numberToRecieve; i++) {
                 Atom ghostAtom;
+                ghostAtom.setIsGhost(true);
                 ghostAtom.position[0] = m_mpiReceiveBuffer[3*i+0];
                 ghostAtom.position[1] = m_mpiReceiveBuffer[3*i+1];
                 ghostAtom.position[2] = m_mpiReceiveBuffer[3*i+2];

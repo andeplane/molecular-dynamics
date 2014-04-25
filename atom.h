@@ -7,6 +7,7 @@ private:
     int m_id;
     int m_type;
     bool m_moved;
+    bool m_isGhost;
 public:
     Atom();
     void resetForce();
@@ -23,6 +24,8 @@ public:
     void setMoved(bool moved);
     int id() const;
     void setId(int id);
+    bool isGhost() const;
+    void setIsGhost(bool isGhost);
 };
 
 #endif // ATOM_H

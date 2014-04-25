@@ -11,10 +11,21 @@ void Atom::setId(int id)
     m_id = id;
 }
 // Default atom is Hydrogen - atom type 1
+
+bool Atom::isGhost() const
+{
+    return m_isGhost;
+}
+
+void Atom::setIsGhost(bool isGhost)
+{
+    m_isGhost = isGhost;
+}
 Atom::Atom() :
     m_type(1),
     m_moved(false),
-    m_id(-1)
+    m_id(-1),
+    m_isGhost(false)
 {
     memset(position,0,3*sizeof(double));
     memset(velocity,0,3*sizeof(double));

@@ -1,15 +1,17 @@
 #ifndef POTENTIAL_H
 #define POTENTIAL_H
 #include <vector>
-
-class Atom;
 using std::vector;
+
+class System;
+
+enum class PotentialType { LennardJones };
 
 class Potential
 {
 public:
     Potential();
-    virtual void calculateForces(vector<Atom> &atoms) = 0;
+    virtual void calculateForces(System &system) = 0;
 };
 
 #endif // POTENTIAL_H

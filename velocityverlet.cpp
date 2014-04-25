@@ -4,6 +4,9 @@
 #include <potential.h>
 #include <atom.h>
 
+#include <iostream>
+using namespace std;
+
 VelocityVerlet::VelocityVerlet()
 {
 
@@ -25,7 +28,8 @@ void VelocityVerlet::move(System &system, double timestep)
     }
 }
 
-void VelocityVerlet::integrate(System &system, double timestep) {
+void VelocityVerlet::integrate(System &system, double timestep)
+{
     halfKick(system, timestep);
     move(system, timestep);
     system.topology().MPIMove(system);
@@ -33,7 +37,7 @@ void VelocityVerlet::integrate(System &system, double timestep) {
     system.resetForces();
 
     for(Potential *potential: system.potentials()) {
-        potential->calculateForces(system.atoms());
+        potential->calculateForces(system);
     }
 
     halfKick(system, timestep);

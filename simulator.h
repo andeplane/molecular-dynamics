@@ -16,8 +16,7 @@ private:
 
 public:
     Simulator(int nodeIndex, int numNodesVector[], double systemLength[], double cutoffDistance, double timestep = 0.02);
-    System system() const;
-    void setSystem(const System &system);
+    System &system();
     Integrator *integrator() const;
     void setIntegrator(Integrator *integrator);
     StatisticsSampler sampler() const;

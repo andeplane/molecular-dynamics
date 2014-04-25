@@ -1,10 +1,10 @@
 #include "system.h"
 #include <atom.h>
-#include <potential.h>
 #include <systemcell.h>
 #include <topology.h>
 #include <cmath>
 #include <systemcell.h>
+#include <lennardjonespotential.h>
 
 void System::initialize(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance)
 {
@@ -14,12 +14,20 @@ void System::initialize(int nodeIndex, int numNodesVector[3], double systemLengt
 
     for(int a=0; a<3; a++) {
         int numCells = ceil(systemLength[a] / cutoffDistance);
-        SystemCell::numberOfCells[a] = numCells;
-        SystemCell::cellLength[a] = systemLength[a] / SystemCell::numberOfCells[a];
+        SystemCell::numberOfCellsWithoutGhostCells[a] = numCells;
+        SystemCell::numberOfCellsWithGhostCells[a] = numCells+2; // Add two extra ghost cells
+        SystemCell::cellLength[a] = systemLength[a] / SystemCell::numberOfCellsWithoutGhostCells[a];
     }
 
-    int numberOfCells = SystemCell::numberOfCells[0]*SystemCell::numberOfCells[1]*SystemCell::numberOfCells[2];
+    int numberOfCells = SystemCell::numberOfCellsWithGhostCells[0]*SystemCell::numberOfCellsWithGhostCells[1]*SystemCell::numberOfCellsWithGhostCells[2];
     m_cells.resize(numberOfCells);
+}
+
+void System::addPotential(PotentialType type) {
+    if(type == PotentialType::LennardJones) {
+        LennardJonesPotential *lennardJones = new LennardJonesPotential();
+        potentials().push_back(lennardJones);
+    }
 }
 
 void System::updateCells() {
@@ -53,7 +61,7 @@ void System::setFirstGhostAtomIndex(int firstGhostAtomIndex)
     m_firstGhostAtomIndex = firstGhostAtomIndex;
 }
 
-vector<Potential*> System::potentials() const
+vector<Potential*> &System::potentials()
 {
     return m_potentials;
 }

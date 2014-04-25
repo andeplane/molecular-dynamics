@@ -1,9 +1,13 @@
 #include "simulator.h"
 #include <integrator.h>
+#include <velocityverlet.h>
 
-Simulator::Simulator(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance, double timestep)
+Simulator::Simulator(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance, double timestep) :
+    m_integrator(NULL)
 {
     m_system.initialize(nodeIndex, numNodesVector, systemLength, cutoffDistance);
+    VelocityVerlet *velocityVerlet = new VelocityVerlet();
+    setIntegrator(velocityVerlet);
 }
 
 double Simulator::timestep() const
@@ -36,14 +40,9 @@ void Simulator::setTimesteps(int timesteps)
     m_timesteps = timesteps;
 }
 
-System Simulator::system() const
+System &Simulator::system()
 {
     return m_system;
-}
-
-void Simulator::setSystem(const System &system)
-{
-    m_system = system;
 }
 
 Integrator *Simulator::integrator() const

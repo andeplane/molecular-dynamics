@@ -3,11 +3,11 @@
 #include <vector>
 using std::vector;
 
+#include <potential.h>
 #include <topology.h>
 #include <systemcell.h>
 #include <atom.h>
 
-class Potential;
 class Topology;
 
 class System
@@ -23,7 +23,7 @@ public:
     void initialize(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance);
     void resetForces();
 
-    vector<Potential*> potentials() const;
+    vector<Potential *> &potentials();
     vector<Atom> &atoms();
     void setAtoms(const vector<Atom> &atoms);
     Topology topology() const;
@@ -35,6 +35,7 @@ public:
     double cutoffDistance() const;
     void setCutoffDistance(double cutoffDistance);
     void updateCells();
+    void addPotential(PotentialType type);
 };
 
 #endif // SYSTEM_H

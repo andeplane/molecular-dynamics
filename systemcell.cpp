@@ -2,7 +2,8 @@
 
 #include <atom.h>
 
-int SystemCell::numberOfCells[3];
+int SystemCell::numberOfCellsWithGhostCells[3];
+int SystemCell::numberOfCellsWithoutGhostCells[3];
 double SystemCell::cellLength[3];
 
 SystemCell::SystemCell()

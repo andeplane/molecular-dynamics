@@ -16,7 +16,7 @@ public:
     void setSigma(double sigma);
     double epsilon() const;
     void setEpsilon(double epsilon);
-    virtual void calculateForces();
+    virtual void calculateForces(System &system);
 };
 
 #endif // LENNARDJONESPOTENTIAL_H
