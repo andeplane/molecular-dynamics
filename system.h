@@ -3,27 +3,28 @@
 #include <vector>
 using std::vector;
 
-class SystemCell;
-class Atom;
+#include <topology.h>
+#include <systemcell.h>
+#include <atom.h>
+
 class Potential;
 class Topology;
 
 class System
 {
 private:
-    vector<Potential> m_potentials;
+    vector<Potential*> m_potentials;
     Topology m_topology;
     vector<Atom> m_atoms;
     vector<SystemCell> m_cells;
     int m_firstGhostAtomIndex;
     double m_cutoffDistance;
 public:
-    System();
+    void initialize(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance);
     void resetForces();
 
-    Potential potentials() const;
-    void setPotential(const Potential &potential);
-    vector<Atom> &atoms() const;
+    vector<Potential*> potentials() const;
+    vector<Atom> &atoms();
     void setAtoms(const vector<Atom> &atoms);
     Topology topology() const;
     void setTopology(const Topology &topology);
@@ -33,6 +34,7 @@ public:
     void setFirstGhostAtomIndex(int firstGhostAtomIndex);
     double cutoffDistance() const;
     void setCutoffDistance(double cutoffDistance);
+    void updateCells();
 };
 
 #endif // SYSTEM_H

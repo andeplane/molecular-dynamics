@@ -10,10 +10,11 @@ void Atom::setId(int id)
 {
     m_id = id;
 }
-Atom::Atom(int type) :
-    m_type(type),
+// Default atom is Hydrogen - atom type 1
+Atom::Atom() :
+    m_type(1),
     m_moved(false),
-    m_index(-1)
+    m_id(-1)
 {
     memset(position,0,3*sizeof(double));
     memset(velocity,0,3*sizeof(double));
@@ -55,6 +56,6 @@ void Atom::setMoved(bool moved)
     m_moved = moved;
 }
 
-Atom::resetForce() {
+void Atom::resetForce() {
     memset(force,0,3*sizeof(double));
 }

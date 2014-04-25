@@ -4,10 +4,10 @@ FileManager::FileManager()
 {
 }
 
-FileManager::loadState(string stateFolder, System &system) {
+void FileManager::loadState(string stateFolder, System &system) {
 
 }
 
-FileManager::saveState(string stateFolder, System &system) {
+void FileManager::saveState(string stateFolder, System &system) {
 
 }

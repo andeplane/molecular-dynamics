@@ -1,25 +1,25 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
-class System;
-class Integrator;
-class StatisticsSampler;
+#include <system.h>
+#include <integrator.h>
+#include <statisticssampler.h>
 
 class Simulator
 {
 private:
     System m_system;
-    Integrator m_integrator;
+    Integrator *m_integrator;
     StatisticsSampler m_sampler;
     double m_timestep;
     double m_time;
     int m_timesteps;
 
 public:
-    Simulator(double timestep = 0.02);
+    Simulator(int nodeIndex, int numNodesVector[], double systemLength[], double cutoffDistance, double timestep = 0.02);
     System system() const;
     void setSystem(const System &system);
-    Integrator integrator() const;
-    void setIntegrator(const Integrator &integrator);
+    Integrator *integrator() const;
+    void setIntegrator(Integrator *integrator);
     StatisticsSampler sampler() const;
     void setSampler(const StatisticsSampler &sampler);
     double timestep() const;

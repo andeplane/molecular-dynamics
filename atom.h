@@ -16,6 +16,7 @@ public:
     void kick(double &timestep, double oneOverMass);
 
     double position[3];
+    double initial_position[3];
     double velocity[3];
     double force[3];
     bool moved() const;

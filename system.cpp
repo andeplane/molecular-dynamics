@@ -6,20 +6,19 @@
 #include <cmath>
 #include <systemcell.h>
 
-System::System(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance) :
-    m_cutoffDistance(cutoffDistance),
-    m_firstGhostAtomIndex(0)
+void System::initialize(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance)
 {
+    m_cutoffDistance = cutoffDistance;
+    m_firstGhostAtomIndex = 0;
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
-    double cellLength[3];
 
     for(int a=0; a<3; a++) {
-        int numCells = ceil(systemLength[a] / cutoffDistance());
+        int numCells = ceil(systemLength[a] / cutoffDistance);
         SystemCell::numberOfCells[a] = numCells;
-        SystemCell::cellLength[a] = systemLength[a] / m_numberOfCells;
+        SystemCell::cellLength[a] = systemLength[a] / SystemCell::numberOfCells[a];
     }
 
-    int numberOfCells = m_numberOfCells[0]*m_numberOfCells[1]*m_numberOfCells[2];
+    int numberOfCells = SystemCell::numberOfCells[0]*SystemCell::numberOfCells[1]*SystemCell::numberOfCells[2];
     m_cells.resize(numberOfCells);
 }
 
@@ -30,7 +29,7 @@ void System::updateCells() {
 
     for(Atom &atom : m_atoms) {
         SystemCell &cell = m_cells.at(SystemCell::cellIndexForAtom(atom));
-        cell.addAtom(atom);
+        cell.addAtom(&atom);
     }
 }
 
@@ -54,7 +53,7 @@ void System::setFirstGhostAtomIndex(int firstGhostAtomIndex)
     m_firstGhostAtomIndex = firstGhostAtomIndex;
 }
 
-vector<Potential> System::potentials() const
+vector<Potential*> System::potentials() const
 {
     return m_potentials;
 }
@@ -65,7 +64,7 @@ void System::resetForces() {
     }
 }
 
-vector<Atom> &System::atoms() const
+vector<Atom> &System::atoms()
 {
     return m_atoms;
 }

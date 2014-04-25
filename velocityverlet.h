@@ -10,7 +10,7 @@ private:
 
 public:
     VelocityVerlet();
-
+    virtual void integrate(System &system, double timestep);
 };
 
 #endif // VELOCITYVERLET_H

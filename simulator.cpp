@@ -1,9 +1,9 @@
 #include "simulator.h"
 #include <integrator.h>
 
-Simulator::Simulator(double timestep)
+Simulator::Simulator(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance, double timestep)
 {
-
+    m_system.initialize(nodeIndex, numNodesVector, systemLength, cutoffDistance);
 }
 
 double Simulator::timestep() const
@@ -46,12 +46,12 @@ void Simulator::setSystem(const System &system)
     m_system = system;
 }
 
-Integrator Simulator::integrator() const
+Integrator *Simulator::integrator() const
 {
     return m_integrator;
 }
 
-void Simulator::setIntegrator(const Integrator &integrator)
+void Simulator::setIntegrator(Integrator *integrator)
 {
     m_integrator = integrator;
 }
@@ -67,7 +67,7 @@ void Simulator::setSampler(const StatisticsSampler &sampler)
 }
 
 void Simulator::step() {
-    m_integrator.integrate(m_system, m_timestep);
+    m_integrator->integrate(m_system, m_timestep);
     m_timesteps++;          // Increase timestep counter by one
     m_time+= m_timestep;    // Increase time by dt
 }

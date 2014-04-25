@@ -1,9 +1,9 @@
 #include "lennardjonespotential.h"
 
 LennardJonesPotential::LennardJonesPotential() :
-    sigma(1),
-    cutoffRadius(3.0),
-    epsilon(1)
+    m_sigma(1),
+    m_cutoffRadius(3.0),
+    m_epsilon(1)
 {
 
 }

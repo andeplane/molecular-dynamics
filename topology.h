@@ -4,6 +4,7 @@
 using std::vector;
 
 class System;
+class Atom;
 
 class Topology
 {
@@ -15,7 +16,7 @@ private:
     int m_neighborNodesIndices[6];        // MPI index of the 6 face neighbors
     int m_parity[3];                      // Parity of each dimension (used to communicate in correct order over MPI)
     double m_nodeLength[3];               // Physical size of this processor
-    double m_shiftVector[6];              // Contains the displacement in the physical space from this processor to each of the 6 face neighbors
+    double m_shiftVector[6][3];              // Contains the displacement in the physical space from this processor to each of the 6 face neighbors
     double m_systemLength[3];             // System length in md units
     vector<vector<int> > m_moveQueue;     // Queue for atom indices to be moved to other processor
     double *m_mpiSendBuffer;              // Temp array to save MPI data
