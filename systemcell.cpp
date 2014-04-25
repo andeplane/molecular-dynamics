@@ -2,6 +2,9 @@
 
 #include <atom.h>
 
+int SystemCell::numberOfCells[3];
+double SystemCell::cellLength[3];
+
 SystemCell::SystemCell()
 {
 

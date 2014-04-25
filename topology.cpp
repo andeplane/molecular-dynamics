@@ -209,6 +209,7 @@ void Topology::MPIMove(System &system) {
             Atom &lastAtom = system.atoms().back();
             swap(atom,lastAtom);
             system.atoms().pop_back();
+            atomIndex--;
         }
     }
 }
