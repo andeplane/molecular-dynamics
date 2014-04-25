@@ -130,6 +130,7 @@ void Topology::MPICopy(System &system, double cutoffDistance)
 
 void Topology::MPIMove(System &system) {
     int numNewAtoms = 0;
+    if(system.firstGhostAtomIndex() == -1) system.setFirstGhostAtomIndex(system.atoms().size()); // First run needs to set the index of the first ghost atom here
     system.atoms().erase(system.atoms().begin()+system.firstGhostAtomIndex(),system.atoms().end()); // Delete all ghost atoms
 
     for(vector<int> &queue : m_moveQueue) {

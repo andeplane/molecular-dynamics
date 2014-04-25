@@ -9,7 +9,7 @@
 void System::initialize(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance)
 {
     m_cutoffDistance = cutoffDistance;
-    m_firstGhostAtomIndex = 0;
+    m_firstGhostAtomIndex = -1;
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
 
     for(int a=0; a<3; a++) {

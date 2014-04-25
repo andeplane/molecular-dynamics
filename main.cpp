@@ -11,7 +11,7 @@ int main()
     int numUnitCells[3];
     double systemLength[3];
     numNodesVector[0] = 1; numNodesVector[1] = 1; numNodesVector[2] = 1;
-    numUnitCells[0] = 1; numUnitCells[1] = 1; numUnitCells[2] = 1;
+    numUnitCells[0] = 4; numUnitCells[1] = 4; numUnitCells[2] = 4;
 
     systemLength[0] = numUnitCells[0]*fccB;
     systemLength[1] = numUnitCells[1]*fccB;
@@ -22,6 +22,7 @@ int main()
 
     Generator generator;
     generator.generateFCC(simulator.system(), fccB, numUnitCells);
+
     for(int i=0; i<10; i++) {
         simulator.step();
     }
