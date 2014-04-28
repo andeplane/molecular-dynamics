@@ -1,16 +1,30 @@
 #ifndef FILEMANAGER_H
 #define FILEMANAGER_H
 #include <string>
-using std::string;
+#include <fstream>
+#include <vector>
 
-class System;
+using std::string;
+using std::vector;
+using std::ofstream;
+
+class System; class Atom; class Topology;
 
 class FileManager
 {
+private:
+    ofstream *m_movieFile;
+    vector<double> m_dataArray;
+protected:
+    bool isMovieFileOpen() const;
 public:
     FileManager();
-    void loadState(string stateFolder, System &system);
-    void saveState(string stateFolder, System &system);
+    void loadState(string stateFolder, vector<Atom> &atoms);
+    void saveState(string stateFolder, vector<Atom> &atoms);
+    ofstream *getMovieFile() const;
+    void setMovieFile(FILE *value);
+
+    void saveMovieFrame(vector<Atom> &atoms, Topology &topology);
 };
 
 #endif // FILEMANAGER_H

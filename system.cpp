@@ -36,7 +36,9 @@ void System::updateCells() {
     }
 
     for(Atom &atom : m_atoms) {
-        SystemCell &cell = m_cells.at(SystemCell::cellIndexForAtom(atom));
+        int cellIndex = SystemCell::cellIndexForAtom(atom);
+        int count = m_cells.size();
+        SystemCell &cell = m_cells.at(cellIndex);
         cell.addAtom(&atom);
     }
 }

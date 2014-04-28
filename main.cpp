@@ -11,14 +11,14 @@ int main()
     int numUnitCells[3];
     double systemLength[3];
     numNodesVector[0] = 1; numNodesVector[1] = 1; numNodesVector[2] = 1;
-    numUnitCells[0] = 4; numUnitCells[1] = 4; numUnitCells[2] = 4;
+    numUnitCells[0] = 1; numUnitCells[1] = 1; numUnitCells[2] = 1;
 
     systemLength[0] = numUnitCells[0]*fccB;
     systemLength[1] = numUnitCells[1]*fccB;
     systemLength[2] = numUnitCells[2]*fccB;
 
     Simulator simulator(0,numNodesVector, systemLength, 2.5);
-    simulator.system().addPotential(PotentialType::LennardJones);
+    // simulator.system().addPotential(PotentialType::LennardJones);
 
     Generator generator;
     generator.generateFCC(simulator.system(), fccB, numUnitCells);

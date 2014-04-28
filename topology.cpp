@@ -3,7 +3,7 @@
 #include <system.h>
 #include <atom.h>
 #include <algorithm>
-using std::swap;
+using std::iter_swap;
 
 void Topology::initialize(int nodeIndex, int numNodesVector[3], double systemLength[3])
 {
@@ -15,6 +15,9 @@ void Topology::initialize(int nodeIndex, int numNodesVector[3], double systemLen
     m_mpiReceiveBuffer = new double[1000000];
     m_mpiSendBuffer = new double[1000000];
     m_nodeIndex = nodeIndex;
+    m_nodeLength.resize(3);
+    m_systemLength.resize(3);
+    m_nodeIndices.resize(3);
 
     for(int a=0; a<3; a++) {
         m_numNodesVector[a] = numNodesVector[a];
@@ -65,9 +68,35 @@ void Topology::initialize(int nodeIndex, int numNodesVector[3], double systemLen
     m_moveQueue.resize(6);
 }
 
+
+int Topology::numNodes() const
+{
+    return m_numNodes;
+}
+
+int Topology::nodeIndex() const
+{
+    return m_nodeIndex;
+}
+
+vector<double> Topology::systemLength() const
+{
+    return m_systemLength;
+}
+
+vector<double> Topology::nodeLength() const
+{
+    return m_nodeLength;
+}
+
+vector<int> Topology::nodeIndices() const
+{
+    return m_nodeIndices;
+}
+
 bool Topology::atomShouldBeCopied(Atom &atom, int &dimension, int &higher, double &cutoffDistance) {
-  if (higher == 0) return atom.position[dimension] < cutoffDistance;
-  else return atom.position[dimension] > m_nodeLength[dimension]-cutoffDistance;
+    if (higher == 0) return atom.position[dimension] < cutoffDistance;
+    else return atom.position[dimension] > m_nodeLength[dimension]-cutoffDistance;
 }
 
 bool Topology::atomDidChangeNode(Atom &atom, int &dimension, int &higher) {
@@ -208,8 +237,7 @@ void Topology::MPIMove(System &system) {
     for(int atomIndex=0; atomIndex<system.atoms().size(); atomIndex++) {
         Atom &atom = system.atoms().at(atomIndex);
         if(atom.moved()) {
-            Atom &lastAtom = system.atoms().back();
-            swap(atom,lastAtom);
+            iter_swap(system.atoms().begin()+atomIndex, system.atoms().end()-1);
             system.atoms().pop_back();
             atomIndex--;
         }
