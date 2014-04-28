@@ -1,7 +1,7 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 #include <system.h>
-#include <integrator.h>
+#include <integrators/integrator.h>
 #include <statisticssampler.h>
 
 class Simulator

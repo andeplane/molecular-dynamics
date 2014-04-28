@@ -1,8 +1,8 @@
 #include "velocityverlet.h"
-#include <system.h>
-#include <topology.h>
-#include <potential.h>
-#include <atom.h>
+#include "system.h"
+#include "topology.h"
+#include "potentials/potential.h"
+#include "atom.h"
 
 #include <iostream>
 using namespace std;

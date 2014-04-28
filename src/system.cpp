@@ -1,10 +1,10 @@
 #include "system.h"
-#include <atom.h>
-#include <systemcell.h>
-#include <topology.h>
-#include <cmath>
-#include <systemcell.h>
-#include <lennardjonespotential.h>
+#include "atom.h"
+#include "systemcell.h"
+#include "topology.h"
+#include "cmath"
+#include "systemcell.h"
+#include "potentials/lennardjonespotential.h"
 
 void System::initialize(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance)
 {

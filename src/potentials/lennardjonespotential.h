@@ -1,6 +1,6 @@
 #ifndef LENNARDJONESPOTENTIAL_H
 #define LENNARDJONESPOTENTIAL_H
-#include <potential.h>
+#include "potentials/potential.h"
 
 class LennardJonesPotential : public Potential
 {

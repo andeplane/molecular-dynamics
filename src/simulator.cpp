@@ -1,6 +1,6 @@
 #include "simulator.h"
-#include <integrator.h>
-#include <velocityverlet.h>
+#include "integrators/integrator.h"
+#include "integrators/velocityverlet.h"
 
 Simulator::Simulator(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance, double timestep) :
     m_integrator(NULL)
