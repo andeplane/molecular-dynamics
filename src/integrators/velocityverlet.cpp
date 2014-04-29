@@ -27,12 +27,12 @@ void VelocityVerlet::move(System &system, double timestep)
     system.atomManager().moveAtoms(timestep);
 }
 
-void VelocityVerlet::integrate(System &system, double timestep)
+void VelocityVerlet::integrate(System &system, const double &timestep)
 {
     halfKick(system, timestep);
     move(system, timestep);
     system.topology().MPIMove(system);
-    system.topology().MPICopy(system,system.cutoffDistance());
+    // system.topology().MPICopy(system,system.atomManager().cutoffDistance());
     system.resetForces();
 
     for(Potential *potential: system.potentials()) {

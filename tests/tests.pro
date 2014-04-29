@@ -7,7 +7,8 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     forces.cpp \
-    system.cpp
+    system.cpp \
+    generator.cpp
 
 INCLUDEPATH += /repos/UnitTest++/src
 INCLUDEPATH += $$PWD/../src

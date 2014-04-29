@@ -3,7 +3,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
-
+DEFINES += DEBUGMODE
 TARGET = molecular-dynamics
 
 HEADERS += \

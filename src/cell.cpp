@@ -1,7 +1,18 @@
 #include <cell.h>
 #include <atom.h>
 
-Cell::Cell()
+
+int Cell::cellIndex() const
+{
+    return m_cellIndex;
+}
+
+void Cell::setCellIndex(int cellIndex)
+{
+    m_cellIndex = cellIndex;
+}
+Cell::Cell() :
+    m_cellIndex(-1)
 {
 
 }

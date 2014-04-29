@@ -45,17 +45,19 @@ private:
     void updateCellStructure();
 public:
     AtomManager(int initialAtomCount = 1000);
+    ~AtomManager();
 
     Atom *addAtom();
     void removeAtom(Atom *atom);
     int atomCapacity();
     void removeAllAtoms();
     vector<Atom *> &atoms();
-    void setCutoffDistance(const double &cutoffDistance);
-    void setSystemLength(const vector<double> &systemLength);
+    void setCutoffDistance(double cutoffDistance);
+    double cutoffDistance();
+    void setSystemLength(vector<double> &systemLength);
     void updateCellList();
     void moveAtoms(const double &timestep);
-    CellData cellData();
+    CellData &cellData();
 };
 
 #endif // ATOMLIST_H

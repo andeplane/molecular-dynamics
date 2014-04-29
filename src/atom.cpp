@@ -5,18 +5,17 @@ Atom::Atom() :
     m_type(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)),
     m_moved(false),
     m_id(-1),
-    m_isGhost(false)
+    m_ghost(false)
 {
-
+    memset(position,0,3*sizeof(double));
+    memset(velocity,0,3*sizeof(double));
+    memset(force,0,3*sizeof(double));
 }
 
 Atom::Atom(AtomType *type) :
     m_type(type)
 {
     Atom::Atom(); // Call default constructor
-    memset(position,0,3*sizeof(double));
-    memset(velocity,0,3*sizeof(double));
-    memset(force,0,3*sizeof(double));
 }
 
 int Atom::id() const
@@ -29,14 +28,14 @@ void Atom::setId(int id)
     m_id = id;
 }
 
-bool Atom::isGhost() const
+bool Atom::ghost() const
 {
-    return m_isGhost;
+    return m_ghost;
 }
 
-void Atom::setIsGhost(bool isGhost)
+void Atom::setGhost(bool ghost)
 {
-    m_isGhost = isGhost;
+    m_ghost = ghost;
 }
 
 AtomType *Atom::type() const
@@ -56,7 +55,7 @@ void Atom::move(const double &timestep)
     position[2] += velocity[2]*timestep;
 }
 
-void Atom::kick(double &timestep, double oneOverMass)
+void Atom::kick(const double &timestep, const double oneOverMass)
 {
     velocity[0] += force[0]*timestep*oneOverMass;
     velocity[1] += force[1]*timestep*oneOverMass;
@@ -79,5 +78,5 @@ void Atom::resetForce() {
 }
 
 std::ostream& operator<<(std::ostream &stream, const Atom &atom) {
-    return stream << "Atom of type " << atom.type()->name() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
+    return stream << "Atom of type " << atom.type()->name() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
 }

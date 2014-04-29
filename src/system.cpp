@@ -13,20 +13,24 @@ AtomManager &System::atomManager()
 }
 
 System::System() :
-    m_indexOfNextFreeAtom(0),
-    m_firstGhostAtomIndex(-1),
-    m_cutoffDistance(1),
+    m_indexOfFirstGhostAtom(-1),
     m_isInitialized(false)
 {
 
 }
 
-void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double cutoffDistance)
+System::~System()
+{
+    m_potentials.clear();
+
+}
+
+void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength)
 {
     m_isInitialized = true;
-    m_cutoffDistance = cutoffDistance;
-    m_firstGhostAtomIndex = -1;
+    m_indexOfFirstGhostAtom = -1;
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
+    m_atomManager.setSystemLength(systemLength);
 }
 
 Atom *System::addAtom()
@@ -49,6 +53,17 @@ int System::numberOfAtoms()
     return m_atomManager.atoms().size();
 }
 
+int System::numberOfGhostAtoms()
+{
+    return m_indexOfFirstGhostAtom-numberOfAtoms();
+}
+
+void System::setSystemLength(vector<double> &systemLength)
+{
+    m_topology.setSystemLength(systemLength);
+    m_atomManager.setSystemLength(systemLength);
+}
+
 void System::addPotential(PotentialType type) {
     checkIfInitialized();
     if(type == PotentialType::LennardJones) {
@@ -61,24 +76,14 @@ void System::checkIfInitialized() {
     if(!m_isInitialized) std::cerr << "Error, System object not initialized." << std::endl;
 }
 
-double System::cutoffDistance() const
-{
-    return m_cutoffDistance;
-}
-
-void System::setCutoffDistance(double cutoffDistance)
-{
-    m_cutoffDistance = cutoffDistance;
-}
-
 int System::firstGhostAtomIndex() const
 {
-    return m_firstGhostAtomIndex;
+    return m_indexOfFirstGhostAtom;
 }
 
 void System::setFirstGhostAtomIndex(int firstGhostAtomIndex)
 {
-    m_firstGhostAtomIndex = firstGhostAtomIndex;
+    m_indexOfFirstGhostAtom = firstGhostAtomIndex;
 }
 
 vector<Potential*> &System::potentials()
@@ -101,9 +106,4 @@ vector<Atom*> &System::atoms()
 Topology System::topology() const
 {
     return m_topology;
-}
-
-void System::setTopology(const Topology &topology)
-{
-    m_topology = topology;
 }

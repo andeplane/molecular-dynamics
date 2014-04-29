@@ -17,13 +17,12 @@ private:
     Topology m_topology;
     AtomManager m_atomManager;
 
-    int m_firstGhostAtomIndex;
-    int m_indexOfNextFreeAtom;
-    double m_cutoffDistance;
+    int m_indexOfFirstGhostAtom;
     bool m_isInitialized;
 public:
     System();
-    void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double cutoffDistance);
+    ~System();
+    void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
     void resetForces();
 
     vector<Potential *> &potentials();
@@ -32,15 +31,15 @@ public:
     void removeAtom(Atom *atom);
 
     Topology topology() const;
-    void setTopology(const Topology &topology);
     int firstGhostAtomIndex() const;
     void setFirstGhostAtomIndex(int firstGhostAtomIndex);
-    double cutoffDistance() const;
-    void setCutoffDistance(double cutoffDistance);
     void addPotential(PotentialType type);
     AtomManager &atomManager();
     void removeAllAtoms();
     int numberOfAtoms();
+    int numberOfGhostAtoms();
+    void setSystemLength(vector<double> &systemLength);
+
 protected:
     void checkIfInitialized();
 };

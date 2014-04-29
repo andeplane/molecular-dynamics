@@ -8,8 +8,7 @@ class System; class AtomType;
 class Generator
 {
 public:
-    Generator();
-    void generateFCC(System &system, double latticeConstant, vector<int> numberOfUnitCells, AtomType *atomType);
+    static void generateFCC(System &system, double latticeConstant, vector<int> numberOfUnitCells, AtomType *atomType);
 };
 
 #endif // GENERATOR_H

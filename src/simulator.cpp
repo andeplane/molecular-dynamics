@@ -2,10 +2,10 @@
 #include "integrators/integrator.h"
 #include "integrators/velocityverlet.h"
 
-Simulator::Simulator(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double cutoffDistance, double timestep) :
+Simulator::Simulator(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep) :
     m_integrator(NULL)
 {
-    m_system.initialize(nodeIndex, numNodesVector, systemLength, cutoffDistance);
+    m_system.initialize(nodeIndex, numNodesVector, systemLength);
     VelocityVerlet *velocityVerlet = new VelocityVerlet();
     setIntegrator(velocityVerlet);
 }

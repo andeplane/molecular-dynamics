@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-using std::cerr; using std::endl;
+using std::cerr; using std::endl; using std::cout;
 
 AtomManager::AtomManager(int initialAtomCount) :
     m_nextFreeIndex(0),
@@ -11,9 +11,15 @@ AtomManager::AtomManager(int initialAtomCount) :
     m_cellDataDirty(true)
 {
     m_allAtoms.resize(initialAtomCount);
-    m_cellData.numberOfCellsWithGhostCells[0] = 0; m_cellData.numberOfCellsWithGhostCells[1] = 0; m_cellData.numberOfCellsWithGhostCells[2] = 0;
-    m_cellData.numberOfCellsWithoutGhostCells[0] = 0; m_cellData.numberOfCellsWithoutGhostCells[1] = 0; m_cellData.numberOfCellsWithoutGhostCells[2] = 0;
     m_cellData.cutoffDistance = INFINITY;
+    m_cellData.initialized = false;
+}
+
+AtomManager::~AtomManager()
+{
+    m_allAtoms.clear();
+    m_atoms.clear();
+    m_indexMap.clear();
 }
 
 vector<Atom *> &AtomManager::atoms()
@@ -50,7 +56,7 @@ void AtomManager::increaseNumberOfAtoms()
 }
 
 
-CellData AtomManager::cellData()
+CellData &AtomManager::cellData()
 {
     if(m_cellDataDirty) updateCellList();
     return m_cellData;
@@ -72,6 +78,8 @@ Atom *AtomManager::addAtom()
     int indexInAllAtoms = m_nextFreeIndex;
 
     Atom *nextAtom = &m_allAtoms.at(indexInAllAtoms);
+    nextAtom->setMoved(false);
+    nextAtom->setGhost(false);
 
     m_indexMap.insert(pair<Atom*,pair<int,int>>(nextAtom, pair<int,int>(indexInAllAtoms, indexInAtoms)));
     m_atoms.push_back(nextAtom);
@@ -113,37 +121,70 @@ void AtomManager::removeAllAtoms()
     m_nextFreeIndex = 0;
 }
 
-void AtomManager::setCutoffDistance(const double &cutoffDistance) {
+void AtomManager::setCutoffDistance(double cutoffDistance) {
     if(m_cellData.cutoffDistance != cutoffDistance) {
         m_cellStructureDirty = true;
         m_cellData.cutoffDistance = cutoffDistance;
     }
 }
 
-void AtomManager::setSystemLength(const vector<double> &systemLength) {
+double AtomManager::cutoffDistance()
+{
+    return m_cellData.cutoffDistance;
+}
+
+void AtomManager::setSystemLength(vector<double> &systemLength) {
     if(systemLength.at(0) != m_cellData.systemLength[0] || systemLength.at(1) != m_cellData.systemLength[1] || systemLength.at(2) != m_cellData.systemLength[2]) {
         m_cellStructureDirty = true;
         m_cellData.systemLength[0] = systemLength.at(0);
         m_cellData.systemLength[1] = systemLength.at(1);
         m_cellData.systemLength[2] = systemLength.at(2);
     }
+
+    m_cellData.initialized = true;
 }
 
 void AtomManager::updateCellStructure() {
-    int numCellsX = ceil( m_cellData.systemLength[0] / m_cellData.cutoffDistance);
-    int numCellsY = ceil( m_cellData.systemLength[1] / m_cellData.cutoffDistance);
-    int numCellsZ = ceil( m_cellData.systemLength[2] / m_cellData.cutoffDistance);
-    int numCellsTotal = numCellsX*numCellsY*numCellsZ;
+    if(!m_cellData.initialized) {
+        std::cerr << "atomManager.cellData not initialized. We don't know the systemLength." << std::endl;
+        return;
+    }
+
+    if(isinf(m_cellData.cutoffDistance)) {
+        m_cellData.numberOfCellsWithoutGhostCells[0] = 1;
+        m_cellData.numberOfCellsWithoutGhostCells[1] = 1;
+        m_cellData.numberOfCellsWithoutGhostCells[2] = 1;
+    } else {
+        m_cellData.numberOfCellsWithoutGhostCells[0] = ceil( m_cellData.systemLength[0] / m_cellData.cutoffDistance);
+        m_cellData.numberOfCellsWithoutGhostCells[1] = ceil( m_cellData.systemLength[1] / m_cellData.cutoffDistance);
+        m_cellData.numberOfCellsWithoutGhostCells[2] = ceil( m_cellData.systemLength[2] / m_cellData.cutoffDistance);
+    }
+
+    m_cellData.numberOfCellsWithGhostCells[0] = m_cellData.numberOfCellsWithoutGhostCells[0]+2;
+    m_cellData.numberOfCellsWithGhostCells[1] = m_cellData.numberOfCellsWithoutGhostCells[1]+2;
+    m_cellData.numberOfCellsWithGhostCells[2] = m_cellData.numberOfCellsWithoutGhostCells[2]+2;
+
+    int numCellsTotal = m_cellData.numberOfCellsWithGhostCells[0]*m_cellData.numberOfCellsWithGhostCells[1]*m_cellData.numberOfCellsWithGhostCells[2];
 
     if(m_cellData.cells.size() < numCellsTotal) {
         m_cellData.cells.resize(numCellsTotal);
     }
+
+    for(int cellIndex=0; cellIndex<m_cellData.cells.size(); cellIndex++) {
+        Cell &cell = m_cellData.cells.at(cellIndex);
+        cell.setCellIndex(cellIndex);
+    }
+
+    m_cellData.cellLength[0] = m_cellData.systemLength[0] / m_cellData.numberOfCellsWithoutGhostCells[0];
+    m_cellData.cellLength[1] = m_cellData.systemLength[1] / m_cellData.numberOfCellsWithoutGhostCells[1];
+    m_cellData.cellLength[2] = m_cellData.systemLength[2] / m_cellData.numberOfCellsWithoutGhostCells[2];
 
     m_cellStructureDirty = false;
     m_cellDataDirty = true;
 }
 
 void AtomManager::updateCellList() {
+    m_cellDataDirty = false;
     if(m_cellStructureDirty) updateCellStructure();
 
     for(Cell &cell : m_cellData.cells) {
@@ -152,11 +193,9 @@ void AtomManager::updateCellList() {
 
     for(Atom *atom : m_atoms) {
         int cellIndex = Cell::cellIndexForAtom(atom, m_cellData);
-
         Cell &cell = m_cellData.cells.at(cellIndex);
         cell.addAtom(atom);
     }
-    m_cellDataDirty = false;
 }
 
 void AtomManager::moveAtoms(const double &timestep) {

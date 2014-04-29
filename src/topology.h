@@ -23,18 +23,21 @@ private:
     double *m_mpiReceiveBuffer;              // Temp array to save MPI data
     bool m_isInitialized;
 
-    bool atomShouldBeCopied(Atom *atom, int &dimension, int &higher, double &cutoffDistance);
-    bool atomDidChangeNode(Atom *atom, int &dimension, int &higher);
+    bool atomShouldBeCopied(Atom *atom, int &dimension, bool higher, double &cutoffDistance);
+    bool atomDidChangeNode(Atom *atom, int &dimension, bool higher);
 public:
     Topology();
+    ~Topology();
     void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
     void MPIMove(System &system);         // Will move atoms between processors
     void MPICopy(System &system, double cutoffDistance);         // Will copy ghost atoms between processors
     int numNodes() const;
     int nodeIndex() const;
     vector<double> systemLength() const;
+    void setSystemLength(vector<double> systemLength);
     vector<double> nodeLength() const;
     vector<int> nodeIndices() const;
+    double maxSystemLength() const;
 };
 
 #endif // TOPOLOGY_H

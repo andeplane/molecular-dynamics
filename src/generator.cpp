@@ -3,13 +3,14 @@
 #include <system.h>
 #include <atomtype.h>
 
-Generator::Generator()
-{
-
-}
-
 void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, AtomType *atomType)
 {
+    vector<double> systemLength(3,0);
+    systemLength[0] = numberOfUnitCells[0]*unitCellLength;
+    systemLength[1] = numberOfUnitCells[1]*unitCellLength;
+    systemLength[2] = numberOfUnitCells[2]*unitCellLength;
+    system.setSystemLength(systemLength);
+
     double xCell[4] = {0, 0.5, 0.5, 0};
     double yCell[4] = {0, 0.5, 0, 0.5};
     double zCell[4] = {0, 0, 0.5, 0.5};
