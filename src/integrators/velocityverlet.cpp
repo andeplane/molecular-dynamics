@@ -1,9 +1,8 @@
-#include "velocityverlet.h"
-#include "system.h"
-#include "topology.h"
-#include "potentials/potential.h"
-#include "atom.h"
-
+#include <integrators/velocityverlet.h>
+#include <system.h>
+#include <topology.h>
+#include <potentials/potential.h>
+#include <atom.h>
 #include <iostream>
 using namespace std;
 
@@ -16,15 +15,15 @@ void VelocityVerlet::halfKick(System &system, double timestep)
 {
     double dtHalf = timestep * 0.5;
     double oneOverMass = 1.0/39.948;
-    for(Atom &atom : system.atoms()) {
-        atom.kick(dtHalf, oneOverMass);
+    for(Atom *atom : system.atoms()) {
+        atom->kick(dtHalf, atom->type()->massInverse());
     }
 }
 
 void VelocityVerlet::move(System &system, double timestep)
 {
-    for(Atom &atom : system.atoms()) {
-        atom.move(timestep);
+    for(Atom *atom : system.atoms()) {
+        atom->move(timestep);
     }
 }
 

@@ -1,23 +1,12 @@
-#include "lennardjonespotential.h"
+#include <potentials/lennardjonespotential.h>
 #include <system.h>
 #include <systemcell.h>
 
 LennardJonesPotential::LennardJonesPotential() :
     m_sigma(1),
-    m_cutoffRadius(3.0),
     m_epsilon(1)
 {
 
-}
-
-double LennardJonesPotential::cutoffRadius() const
-{
-    return m_cutoffRadius;
-}
-
-void LennardJonesPotential::setCutoffRadius(double cutoffRadius)
-{
-    m_cutoffRadius = cutoffRadius;
 }
 
 double LennardJonesPotential::sigma() const
@@ -39,14 +28,14 @@ void LennardJonesPotential::setEpsilon(double epsilon)
 {
     m_epsilon = epsilon;
 }
-
+#include <iostream>
+using namespace std;
 void LennardJonesPotential::calculateForces(System &system)
 {
     system.updateCells();
     double dr[3];
     double cutoffDistanceSquared = system.cutoffDistance()*system.cutoffDistance();
-    double massInverse24 = 24.0/39.948;
-
+    cout << "will do stuff" << endl;
     for(int cellX=1; cellX<=SystemCell::numberOfCellsWithoutGhostCells[0]; cellX++) {
         for(int cellY=1; cellY<=SystemCell::numberOfCellsWithoutGhostCells[1]; cellY++) {
             for(int cellZ=1; cellZ<=SystemCell::numberOfCellsWithoutGhostCells[2]; cellZ++) {
@@ -68,7 +57,8 @@ void LennardJonesPotential::calculateForces(System &system)
                                     if (dr2<cutoffDistanceSquared) {
                                         double dr2Inverse = 1.0/dr2;
                                         double dr6Inverse = dr2Inverse*dr2Inverse*dr2Inverse;
-                                        double force = (2*dr6Inverse-1)*dr6Inverse*dr2Inverse*massInverse24;
+                                        double force = (2*dr6Inverse-1)*dr6Inverse*dr2Inverse*24;
+                                        cout << force << endl;
 
                                         atom1->force[0] += force*dr[0];
                                         atom1->force[1] += force*dr[1];

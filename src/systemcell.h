@@ -2,8 +2,8 @@
 #define SYSTEMCELL_H
 #include <vector>
 #include <atom.h>
-
-using std::vector;
+#include <iostream>
+using std::vector; using std::cout; using std::endl;
 
 
 class SystemCell
@@ -20,10 +20,16 @@ public:
         return i*numberOfCellsWithGhostCells[1]*numberOfCellsWithGhostCells[2]+j*numberOfCellsWithGhostCells[2]+k;
     }
 
+    static int cellIndexForAtom(Atom *atom) {
+        return SystemCell::cellIndexForAtom(*atom);
+    }
+
     static int cellIndexForAtom(Atom &atom) {
         int i = atom.position[0] / cellLength[0] + 1;
         int j = atom.position[1] / cellLength[1] + 1;
         int k = atom.position[2] / cellLength[2] + 1;
+        cout << &atom << endl;
+        cout << " has cell index: " << i << " " << j << " " << k << endl;
 
         return cellIndexFromIJK(i,j,k);
     }

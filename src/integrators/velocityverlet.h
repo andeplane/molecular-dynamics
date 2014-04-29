@@ -1,6 +1,6 @@
 #ifndef VELOCITYVERLET_H
 #define VELOCITYVERLET_H
-#include "integrators/integrator.h"
+#include <integrators/integrator.h>
 
 class VelocityVerlet : public Integrator
 {

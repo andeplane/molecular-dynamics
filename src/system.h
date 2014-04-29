@@ -7,6 +7,7 @@ using std::vector;
 #include <topology.h>
 #include <systemcell.h>
 #include <atom.h>
+#include <atomlist.h>
 
 class Topology;
 
@@ -15,27 +16,36 @@ class System
 private:
     vector<Potential*> m_potentials;
     Topology m_topology;
-    vector<Atom> m_atoms;
+    AtomList m_atomList;
     vector<SystemCell> m_cells;
     int m_firstGhostAtomIndex;
+    int m_indexOfNextFreeAtom;
     double m_cutoffDistance;
+    bool m_isInitialized;
 public:
-    void initialize(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance);
+    System();
+    void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double cutoffDistance);
     void resetForces();
 
     vector<Potential *> &potentials();
-    vector<Atom> &atoms();
-    void setAtoms(const vector<Atom> &atoms);
+    vector<Atom*> &atoms();
+    Atom *addAtom();
+    void removeAtom(Atom *atom);
+
     Topology topology() const;
     void setTopology(const Topology &topology);
     vector<SystemCell> cells() const;
-    void setCells(const vector<SystemCell> &cells);
     int firstGhostAtomIndex() const;
     void setFirstGhostAtomIndex(int firstGhostAtomIndex);
     double cutoffDistance() const;
     void setCutoffDistance(double cutoffDistance);
     void updateCells();
     void addPotential(PotentialType type);
+    AtomList atomList() const;
+    void removeAllAtoms();
+    int numberOfAtoms();
+protected:
+    void checkIfInitialized();
 };
 
 #endif // SYSTEM_H

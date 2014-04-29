@@ -21,11 +21,13 @@ private:
     vector<vector<int> > m_moveQueue;     // Queue for atom indices to be moved to other processor
     double *m_mpiSendBuffer;              // Temp array to save MPI data
     double *m_mpiReceiveBuffer;              // Temp array to save MPI data
+    bool m_isInitialized;
 
-    bool atomShouldBeCopied(Atom &atom, int &dimension, int &higher, double &cutoffDistance);
-    bool atomDidChangeNode(Atom &atom, int &dimension, int &higher);
+    bool atomShouldBeCopied(Atom *atom, int &dimension, int &higher, double &cutoffDistance);
+    bool atomDidChangeNode(Atom *atom, int &dimension, int &higher);
 public:
-    void initialize(int nodeIndex, int numNodesVector[3], double systemLength[3]);
+    Topology();
+    void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
     void MPIMove(System &system);         // Will move atoms between processors
     void MPICopy(System &system, double cutoffDistance);         // Will copy ghost atoms between processors
     int numNodes() const;

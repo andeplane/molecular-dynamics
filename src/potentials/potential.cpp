@@ -1,4 +1,4 @@
-#include "potential.h"
+#include <potentials/potential.h>
 
 Potential::Potential()
 {

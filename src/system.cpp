@@ -5,9 +5,27 @@
 #include "cmath"
 #include "systemcell.h"
 #include "potentials/lennardjonespotential.h"
+#include <iostream>
+using namespace std;
 
-void System::initialize(int nodeIndex, int numNodesVector[3], double systemLength[3], double cutoffDistance)
+
+AtomList System::atomList() const
 {
+    return m_atomList;
+}
+
+System::System() :
+    m_indexOfNextFreeAtom(0),
+    m_firstGhostAtomIndex(-1),
+    m_cutoffDistance(1),
+    m_isInitialized(false)
+{
+
+}
+
+void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double cutoffDistance)
+{
+    m_isInitialized = true;
     m_cutoffDistance = cutoffDistance;
     m_firstGhostAtomIndex = -1;
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
@@ -23,23 +41,50 @@ void System::initialize(int nodeIndex, int numNodesVector[3], double systemLengt
     m_cells.resize(numberOfCells);
 }
 
+Atom *System::addAtom()
+{
+    return m_atomList.addAtom();
+}
+
+void System::removeAtom(Atom *atom)
+{
+    m_atomList.removeAtom(atom);
+}
+
+void System::removeAllAtoms()
+{
+    m_atomList.removeAllAtoms();
+}
+
+int System::numberOfAtoms()
+{
+    return m_atomList.atoms().size();
+}
+
 void System::addPotential(PotentialType type) {
+    checkIfInitialized();
     if(type == PotentialType::LennardJones) {
         LennardJonesPotential *lennardJones = new LennardJonesPotential();
         potentials().push_back(lennardJones);
     }
 }
 
+void System::checkIfInitialized() {
+    if(!m_isInitialized) std::cerr << "Error, System object not initialized." << std::endl;
+}
+
 void System::updateCells() {
+    checkIfInitialized();
+
     for(SystemCell &cell : m_cells) {
         cell.reset();
     }
 
-    for(Atom &atom : m_atoms) {
+    for(Atom *atom : m_atomList.atoms()) {
         int cellIndex = SystemCell::cellIndexForAtom(atom);
         int count = m_cells.size();
         SystemCell &cell = m_cells.at(cellIndex);
-        cell.addAtom(&atom);
+        cell.addAtom(atom);
     }
 }
 
@@ -69,19 +114,15 @@ vector<Potential*> &System::potentials()
 }
 
 void System::resetForces() {
-    for(Atom atom : m_atoms) {
-        atom.resetForce();
+    checkIfInitialized();
+    for(Atom *atom : m_atomList.atoms()) {
+        atom->resetForce();
     }
 }
 
-vector<Atom> &System::atoms()
+vector<Atom*> &System::atoms()
 {
-    return m_atoms;
-}
-
-void System::setAtoms(const vector<Atom> &atoms)
-{
-    m_atoms = atoms;
+    return m_atomList.atoms();
 }
 
 Topology System::topology() const
@@ -97,9 +138,4 @@ void System::setTopology(const Topology &topology)
 vector<SystemCell> System::cells() const
 {
     return m_cells;
-}
-
-void System::setCells(const vector<SystemCell> &cells)
-{
-    m_cells = cells;
 }

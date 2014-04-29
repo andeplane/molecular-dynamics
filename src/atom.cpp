@@ -1,6 +1,24 @@
 #include "atom.h"
 #include <string>
 
+Atom::Atom() :
+    m_type(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)),
+    m_moved(false),
+    m_id(-1),
+    m_isGhost(false)
+{
+
+}
+
+Atom::Atom(AtomType *type) :
+    m_type(type)
+{
+    Atom::Atom(); // Call default constructor
+    memset(position,0,3*sizeof(double));
+    memset(velocity,0,3*sizeof(double));
+    memset(force,0,3*sizeof(double));
+}
+
 int Atom::id() const
 {
     return m_id;
@@ -10,7 +28,6 @@ void Atom::setId(int id)
 {
     m_id = id;
 }
-// Default atom is Hydrogen - atom type 1
 
 bool Atom::isGhost() const
 {
@@ -21,23 +38,13 @@ void Atom::setIsGhost(bool isGhost)
 {
     m_isGhost = isGhost;
 }
-Atom::Atom() :
-    m_type(1),
-    m_moved(false),
-    m_id(-1),
-    m_isGhost(false)
-{
-    memset(position,0,3*sizeof(double));
-    memset(velocity,0,3*sizeof(double));
-    memset(force,0,3*sizeof(double));
-}
 
-int Atom::type() const
+AtomType *Atom::type() const
 {
     return m_type;
 }
 
-void Atom::setType(int type)
+void Atom::setType(AtomType *type)
 {
     m_type = type;
 }
@@ -69,4 +76,8 @@ void Atom::setMoved(bool moved)
 
 void Atom::resetForce() {
     memset(force,0,3*sizeof(double));
+}
+
+std::ostream& operator<<(std::ostream &stream, const Atom &atom) {
+    return stream << "Atom of type " << atom.type()->name() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
 }

@@ -1,18 +1,25 @@
 #ifndef ATOM_H
 #define ATOM_H
+#include <string>
+#include <iostream>
+#include <atomtype.h>
+
+using std::string;
+
+class AtomType;
 
 class Atom
 {
 private:
+    friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);
+    AtomType *m_type;
     int m_id;
-    int m_type;
     bool m_moved;
     bool m_isGhost;
 public:
     Atom();
+    Atom(AtomType *atomType);
     void resetForce();
-    int type() const;
-    void setType(int type);
     void move(double &timestep);
     void kick(double &timestep, double oneOverMass);
 
@@ -26,6 +33,8 @@ public:
     void setId(int id);
     bool isGhost() const;
     void setIsGhost(bool isGhost);
+    AtomType *type() const;
+    void setType(AtomType *type);
 };
 
 #endif // ATOM_H

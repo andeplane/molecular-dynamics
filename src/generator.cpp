@@ -1,13 +1,14 @@
 #include "generator.h"
 #include <atom.h>
 #include <system.h>
+#include <atomtype.h>
 
 Generator::Generator()
 {
 
 }
 
-void Generator::generateFCC(System &system, double unitCellLength, int numberOfUnitCells[], int atomType)
+void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, AtomType *atomType)
 {
     double xCell[4] = {0, 0.5, 0.5, 0};
     double yCell[4] = {0, 0.5, 0, 0.5};
@@ -18,13 +19,12 @@ void Generator::generateFCC(System &system, double unitCellLength, int numberOfU
             for(int z = 0; z < numberOfUnitCells[2]; z++) {
                 for(int k = 0; k < 4; k++) {
                     // Set positions and type
-                    Atom atom;
-                    atom.position[0] = (x+xCell[k]) * unitCellLength;
-                    atom.position[1] = (y+yCell[k]) * unitCellLength;
-                    atom.position[2] = (z+zCell[k]) * unitCellLength;
-                    atom.setType(atomType);
-                    atom.setId(atomID++);
-                    system.atoms().push_back(atom);
+                    Atom *atom = system.addAtom();
+                    atom->setType(atomType);
+                    atom->position[0] = (x+xCell[k]) * unitCellLength;
+                    atom->position[1] = (y+yCell[k]) * unitCellLength;
+                    atom->position[2] = (z+zCell[k]) * unitCellLength;
+                    atom->setId(atomID++);
                 }
             }
         }

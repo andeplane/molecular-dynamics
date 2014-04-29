@@ -15,7 +15,7 @@ private:
     int m_timesteps;
 
 public:
-    Simulator(int nodeIndex, int numNodesVector[], double systemLength[], double cutoffDistance, double timestep = 0.02);
+    Simulator(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double cutoffDistance, double timestep = 0.02);
     System &system();
     Integrator *integrator() const;
     void setIntegrator(Integrator *integrator);
