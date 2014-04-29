@@ -4,6 +4,8 @@
 #include <potentials/potential.h>
 #include <atom.h>
 #include <iostream>
+#include <atommanager.h>
+
 using namespace std;
 
 VelocityVerlet::VelocityVerlet()
@@ -22,9 +24,7 @@ void VelocityVerlet::halfKick(System &system, double timestep)
 
 void VelocityVerlet::move(System &system, double timestep)
 {
-    for(Atom *atom : system.atoms()) {
-        atom->move(timestep);
-    }
+    system.atomManager().moveAtoms(timestep);
 }
 
 void VelocityVerlet::integrate(System &system, double timestep)
@@ -36,7 +36,7 @@ void VelocityVerlet::integrate(System &system, double timestep)
     system.resetForces();
 
     for(Potential *potential: system.potentials()) {
-        potential->calculateForces(system);
+        potential->calculateForces(system.atomManager());
     }
 
     halfKick(system, timestep);

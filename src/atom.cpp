@@ -49,7 +49,7 @@ void Atom::setType(AtomType *type)
     m_type = type;
 }
 
-void Atom::move(double &timestep)
+void Atom::move(const double &timestep)
 {
     position[0] += velocity[0]*timestep;
     position[1] += velocity[1]*timestep;

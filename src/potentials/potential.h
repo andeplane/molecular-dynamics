@@ -1,9 +1,6 @@
 #ifndef POTENTIAL_H
 #define POTENTIAL_H
-#include <vector>
-using std::vector;
-
-class System;
+class AtomManager;
 
 enum class PotentialType { LennardJones };
 
@@ -11,7 +8,7 @@ class Potential
 {
 public:
     Potential();
-    virtual void calculateForces(System &system) = 0;
+    virtual void calculateForces(AtomManager &atomList) = 0;
 };
 
 #endif // POTENTIAL_H

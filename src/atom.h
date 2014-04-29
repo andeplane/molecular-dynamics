@@ -20,7 +20,7 @@ public:
     Atom();
     Atom(AtomType *atomType);
     void resetForce();
-    void move(double &timestep);
+    void move(const double &timestep);
     void kick(double &timestep, double oneOverMass);
 
     double position[3];

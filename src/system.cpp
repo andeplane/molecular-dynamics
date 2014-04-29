@@ -1,17 +1,15 @@
 #include "system.h"
 #include "atom.h"
-#include "systemcell.h"
 #include "topology.h"
 #include "cmath"
-#include "systemcell.h"
 #include "potentials/lennardjonespotential.h"
 #include <iostream>
 using namespace std;
 
 
-AtomList System::atomList() const
+AtomManager &System::atomManager()
 {
-    return m_atomList;
+    return m_atomManager;
 }
 
 System::System() :
@@ -29,36 +27,26 @@ void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double
     m_cutoffDistance = cutoffDistance;
     m_firstGhostAtomIndex = -1;
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
-
-    for(int a=0; a<3; a++) {
-        int numCells = ceil(systemLength[a] / cutoffDistance);
-        SystemCell::numberOfCellsWithoutGhostCells[a] = numCells;
-        SystemCell::numberOfCellsWithGhostCells[a] = numCells+2; // Add two extra ghost cells
-        SystemCell::cellLength[a] = systemLength[a] / SystemCell::numberOfCellsWithoutGhostCells[a];
-    }
-
-    int numberOfCells = SystemCell::numberOfCellsWithGhostCells[0]*SystemCell::numberOfCellsWithGhostCells[1]*SystemCell::numberOfCellsWithGhostCells[2];
-    m_cells.resize(numberOfCells);
 }
 
 Atom *System::addAtom()
 {
-    return m_atomList.addAtom();
+    return m_atomManager.addAtom();
 }
 
 void System::removeAtom(Atom *atom)
 {
-    m_atomList.removeAtom(atom);
+    m_atomManager.removeAtom(atom);
 }
 
 void System::removeAllAtoms()
 {
-    m_atomList.removeAllAtoms();
+    m_atomManager.removeAllAtoms();
 }
 
 int System::numberOfAtoms()
 {
-    return m_atomList.atoms().size();
+    return m_atomManager.atoms().size();
 }
 
 void System::addPotential(PotentialType type) {
@@ -71,21 +59,6 @@ void System::addPotential(PotentialType type) {
 
 void System::checkIfInitialized() {
     if(!m_isInitialized) std::cerr << "Error, System object not initialized." << std::endl;
-}
-
-void System::updateCells() {
-    checkIfInitialized();
-
-    for(SystemCell &cell : m_cells) {
-        cell.reset();
-    }
-
-    for(Atom *atom : m_atomList.atoms()) {
-        int cellIndex = SystemCell::cellIndexForAtom(atom);
-        int count = m_cells.size();
-        SystemCell &cell = m_cells.at(cellIndex);
-        cell.addAtom(atom);
-    }
 }
 
 double System::cutoffDistance() const
@@ -115,14 +88,14 @@ vector<Potential*> &System::potentials()
 
 void System::resetForces() {
     checkIfInitialized();
-    for(Atom *atom : m_atomList.atoms()) {
+    for(Atom *atom : m_atomManager.atoms()) {
         atom->resetForce();
     }
 }
 
 vector<Atom*> &System::atoms()
 {
-    return m_atomList.atoms();
+    return m_atomManager.atoms();
 }
 
 Topology System::topology() const
@@ -133,9 +106,4 @@ Topology System::topology() const
 void System::setTopology(const Topology &topology)
 {
     m_topology = topology;
-}
-
-vector<SystemCell> System::cells() const
-{
-    return m_cells;
 }

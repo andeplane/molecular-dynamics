@@ -14,7 +14,6 @@ HEADERS += \
     statisticalproperty.h \
     statisticssampler.h \
     system.h \
-    systemcell.h \
     topology.h \
     unitconverter.h \
     integrators/integrator.h \
@@ -22,18 +21,18 @@ HEADERS += \
     potentials/lennardjonespotential.h \
     potentials/potential.h \
     atomtype.h \
-    atomlist.h
+    atomiterators/atomiterator.h \
+    atommanager.h \
+    cell.h
 
 SOURCES += \
     atom.cpp \
     filemanager.cpp \
     generator.cpp \
-    main.cpp \
     simulator.cpp \
     statisticalproperty.cpp \
     statisticssampler.cpp \
     system.cpp \
-    systemcell.cpp \
     topology.cpp \
     unitconverter.cpp \
     integrators/integrator.cpp \
@@ -41,4 +40,6 @@ SOURCES += \
     potentials/lennardjonespotential.cpp \
     potentials/potential.cpp \
     atomtype.cpp \
-    atomlist.cpp
+    atomiterators/atomiterator.cpp \
+    atommanager.cpp \
+    cell.cpp

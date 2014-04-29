@@ -5,9 +5,8 @@ using std::vector;
 
 #include <potentials/potential.h>
 #include <topology.h>
-#include <systemcell.h>
 #include <atom.h>
-#include <atomlist.h>
+#include <atommanager.h>
 
 class Topology;
 
@@ -16,8 +15,8 @@ class System
 private:
     vector<Potential*> m_potentials;
     Topology m_topology;
-    AtomList m_atomList;
-    vector<SystemCell> m_cells;
+    AtomManager m_atomManager;
+
     int m_firstGhostAtomIndex;
     int m_indexOfNextFreeAtom;
     double m_cutoffDistance;
@@ -34,14 +33,12 @@ public:
 
     Topology topology() const;
     void setTopology(const Topology &topology);
-    vector<SystemCell> cells() const;
     int firstGhostAtomIndex() const;
     void setFirstGhostAtomIndex(int firstGhostAtomIndex);
     double cutoffDistance() const;
     void setCutoffDistance(double cutoffDistance);
-    void updateCells();
     void addPotential(PotentialType type);
-    AtomList atomList() const;
+    AtomManager &atomManager();
     void removeAllAtoms();
     int numberOfAtoms();
 protected:

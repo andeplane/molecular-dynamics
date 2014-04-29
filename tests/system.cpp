@@ -16,7 +16,7 @@ SUITE(System) {
         double cutOffDistance = 0.25;
         system.initialize(nodeIndex, numNodesVector, systemLength, cutOffDistance);
 
-        CHECK_EQUAL(system.atomList().atomCapacity(),1000);
+        CHECK_EQUAL(system.atomManager().atomCapacity(),1000);
 
         Atom *nullPointer = 0;
         Atom *atom = system.addAtom();
@@ -38,7 +38,7 @@ SUITE(System) {
             system.addAtom();
         }
 
-        CHECK_EQUAL(2002, system.atomList().atomCapacity());
+        CHECK_EQUAL(2002, system.atomManager().atomCapacity());
         CHECK_EQUAL(1002, system.numberOfAtoms());
 
         system.removeAllAtoms();
@@ -49,6 +49,6 @@ SUITE(System) {
         }
 
         CHECK_EQUAL(1000, system.numberOfAtoms());
-        CHECK_EQUAL(2002, system.atomList().atomCapacity());
+        CHECK_EQUAL(2002, system.atomManager().atomCapacity());
     }
 }
