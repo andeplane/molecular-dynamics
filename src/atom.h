@@ -4,6 +4,7 @@
 #include <iostream>
 #include <atomtype.h>
 #include <functional>
+#include <random>
 
 using std::string; using std::function;
 
@@ -31,6 +32,7 @@ public:
     void resetForce();
     void move(const double &timestep);
     void kick(const double &timestep, const double oneOverMass);
+    void resetMaxwellianVelocity(double temperature);
 
     AtomType *type() const;
     void setType(AtomType *type);
@@ -41,13 +43,13 @@ public:
     bool ghost() const;
     void setGhost(bool ghost);
     void setOnRemoved(const function<void ()> &value);
+    void setOnMoved(const function<void ()> &onMoved);
     inline void setPosition(const double x, const double y, const double z) {
         position[0] = x;
         position[1] = y;
         position[2] = z;
         m_onMoved();
     }
-    void setOnMoved(const function<void ()> &onMoved);
 };
 
 #endif // ATOM_H

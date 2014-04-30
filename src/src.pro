@@ -24,7 +24,8 @@ HEADERS += \
     atommanager.h \
     cell.h \
     atomlist.h \
-    includes.h
+    includes.h \
+    random.h
 
 SOURCES += \
     atom.cpp \
@@ -44,4 +45,5 @@ SOURCES += \
     atomiterators/atomiterator.cpp \
     atommanager.cpp \
     cell.cpp \
-    atomlist.cpp
+    atomlist.cpp \
+    random.cpp

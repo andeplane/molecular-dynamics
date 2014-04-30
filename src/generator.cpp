@@ -3,7 +3,7 @@
 #include <system.h>
 #include <atomtype.h>
 
-void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, AtomType *atomType)
+void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, AtomType *atomType, double temperature)
 {
     system.removeAllAtoms();
 
@@ -23,6 +23,7 @@ void Generator::generateFCC(System &system, double unitCellLength, vector<int> n
                 for(int k = 0; k < 4; k++) {
                     // Set positions and type
                     Atom &atom = system.addAtom();
+                    atom.resetMaxwellianVelocity(temperature);
                     atom.setType(atomType);
                     atom.position[0] = (x+xCell[k]) * unitCellLength;
                     atom.position[1] = (y+yCell[k]) * unitCellLength;

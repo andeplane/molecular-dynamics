@@ -1,5 +1,6 @@
-#include "atom.h"
+#include <atom.h>
 #include <string>
+#include <random.h>
 
 void Atom::setOnRemoved(const function<void ()> &value)
 {
@@ -10,13 +11,22 @@ void Atom::setOnMoved(const function<void ()> &onMoved)
 {
     m_onMoved = onMoved;
 }
+
+void Atom::resetMaxwellianVelocity(double temperature)
+{
+    double standardDeviation = sqrt(temperature*m_type->massInverse());
+    velocity[0] = Random::nextGauss(0, standardDeviation);
+    velocity[1] = Random::nextGauss(0, standardDeviation);
+    velocity[2] = Random::nextGauss(0, standardDeviation);
+}
+
 Atom::Atom() :
     m_type(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)),
-    m_removed(false),
     m_id(-1),
+    m_removed(false),
     m_ghost(false),
-    m_onMoved(0),
-    m_onRemoved(0)
+    m_onRemoved(0),
+    m_onMoved(0)
 {
     memset(position,0,3*sizeof(double));
     memset(velocity,0,3*sizeof(double));
@@ -93,5 +103,7 @@ void Atom::resetForce() {
 }
 
 std::ostream& operator<<(std::ostream &stream, const Atom &atom) {
-    return stream << "Atom of type " << atom.type()->name() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
+    if(!atom.m_ghost) return stream << "Atom of type '" << atom.type()->name() << "' r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
+    else return stream << "Ghost atom of type '" << atom.type()->name() << "' r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
+
 }

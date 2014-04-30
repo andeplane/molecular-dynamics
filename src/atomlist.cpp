@@ -79,3 +79,11 @@ void AtomList::setOnAtomMoved(const function<void ()> &onAtomMoved)
     m_onAtomMoved = onAtomMoved;
 }
 
+std::ostream& operator<<(std::ostream &stream, AtomList &atomList) {
+    stream << "Atom list has " << atomList.numberOfAtoms() << " atoms." << endl;
+    atomList.iterate([&](Atom &atom, const int &atomIndex) {
+        stream << atomIndex << ": " << atom << endl;
+    });
+
+    return stream;
+}

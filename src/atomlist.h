@@ -9,6 +9,7 @@ using std::function;
 class AtomList
 {
 private:
+    friend std::ostream& operator<<(std::ostream&stream, AtomList&atomList);
     vector<Atom> m_atoms;
     bool m_atomsDirty;
     void cleanupList();
