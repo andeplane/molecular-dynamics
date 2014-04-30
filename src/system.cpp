@@ -12,12 +12,6 @@ AtomManager &System::atomManager()
     return m_atomManager;
 }
 
-
-int System::numberOfGhostAtoms() const
-{
-    return m_numberOfGhostAtoms;
-}
-
 System::System() :
     m_numberOfGhostAtoms(0),
     m_isInitialized(false)
@@ -66,10 +60,12 @@ void System::removeAllAtoms()
 
 void System::removeGhostAtoms()
 {
-    while(numberOfGhostAtoms()) {
-        removeAtom(atoms().back());
-        m_numberOfGhostAtoms--;
-    }
+    m_atomManager.removeGhostAtoms();
+}
+
+int System::numberOfGhostAtoms()
+{
+    return m_atomManager.ghostAtoms().size();
 }
 
 int System::numberOfAtoms()

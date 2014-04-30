@@ -22,11 +22,6 @@ AtomManager::~AtomManager()
     m_indexMap.clear();
 }
 
-vector<Atom *> &AtomManager::atoms()
-{
-    return m_atoms;
-}
-
 int AtomManager::indexInAllAtoms(Atom *atom)
 {
     pair<int,int> &indexPair = m_indexMap.find(atom)->second;
@@ -68,8 +63,17 @@ int AtomManager::indexInAtoms(Atom *atom)
     return indexPair.second;
 }
 
-Atom *AtomManager::addAtom()
+vector<Atom *> &AtomManager::atoms()
 {
+    return m_atoms;
+}
+
+vector<Atom *> &AtomManager::ghostAtoms()
+{
+    return m_ghostAtoms;
+}
+
+Atom *AtomManager::getNextAtom() {
     if(m_nextFreeIndex>=m_allAtoms.size()) {
         increaseNumberOfAtoms();
     }
@@ -82,10 +86,22 @@ Atom *AtomManager::addAtom()
     nextAtom->setGhost(false);
 
     m_indexMap.insert(pair<Atom*,pair<int,int>>(nextAtom, pair<int,int>(indexInAllAtoms, indexInAtoms)));
-    m_atoms.push_back(nextAtom);
     m_nextFreeIndex++;
+}
 
-    return nextAtom;
+Atom *AtomManager::addAtom()
+{
+    Atom *atom  = getNextAtom();
+    m_atoms.push_back(atom);
+    return atom ;
+}
+
+Atom *AtomManager::addGhostAtom()
+{
+    Atom *atom = getNextAtom();
+    atom ->setGhost(true);
+    m_ghostAtoms.push_back(atom);
+    return atom ;
 }
 
 void AtomManager::removeAtom(Atom *atom)
@@ -108,6 +124,11 @@ void AtomManager::removeAtom(Atom *atom)
 
     Atom *lastUsedAtomAllAtoms = &m_allAtoms.at(lastUsedAtomIndexAllAtoms);
     m_indexMap.erase(m_indexMap.find(lastUsedAtomAllAtoms)); // Remove the pointer of the atom that is not used anymore
+}
+
+void AtomManager::removeGhostAtoms()
+{
+
 }
 
 int AtomManager::atomCapacity()

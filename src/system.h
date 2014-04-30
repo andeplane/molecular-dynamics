@@ -28,19 +28,17 @@ public:
     vector<Potential *> &potentials();
     vector<Atom*> &atoms();
     Atom *addAtom();
+    Atom *addGhostAtom();
     void removeAtom(Atom *atom);
 
     Topology &topology();
+    AtomManager &atomManager();
     void setFirstGhostAtomIndex(int firstGhostAtomIndex);
     void addPotential(PotentialType type);
-    AtomManager &atomManager();
     void removeAllAtoms();
     int numberOfAtoms();
-    int numberOfGhostAtoms() const;
-    void removeGhostAtoms();
+    int numberOfGhostAtoms();
     void setSystemLength(vector<double> &systemLength);
-
-    Atom *addGhostAtom();
 protected:
     void checkIfInitialized();
 };
