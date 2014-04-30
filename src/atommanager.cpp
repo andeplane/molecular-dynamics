@@ -84,6 +84,7 @@ Atom *AtomManager::addAtom()
     m_indexMap.insert(pair<Atom*,pair<int,int>>(nextAtom, pair<int,int>(indexInAllAtoms, indexInAtoms)));
     m_atoms.push_back(nextAtom);
     m_nextFreeIndex++;
+
     return nextAtom;
 }
 

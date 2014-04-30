@@ -144,15 +144,13 @@ bool Topology::atomDidChangeNode(Atom *atom, int &dimension, bool higher) {
 void Topology::MPICopy(System &system, double cutoffDistance)
 {
     cutoffDistance = std::min(cutoffDistance, maxSystemLength());
-    int numNewGhostAtoms = 0;
-    system.setFirstGhostAtomIndex(system.atoms().size()); // First ghost atom will be the next
 
     for(vector<int> &queue : m_moveQueue) {
         queue.clear();
     }
 
     for(int dimension=0;dimension<3;dimension++) {
-        for(int atomIndex=0; atomIndex<system.atoms().size(); atomIndex++) {
+        for(int atomIndex=0; atomIndex<system.numberOfAtoms(); atomIndex++) {
             Atom *atom = system.atoms().at(atomIndex);
 
             for(int higher=0; higher<=1; higher++) {
@@ -182,27 +180,18 @@ void Topology::MPICopy(System &system, double cutoffDistance)
             memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),3*numberToRecieve*sizeof(double));
 
             for(int i=0; i<numberToRecieve; i++) {
-                int atomicNumber = m_mpiReceiveBuffer[4*i+3];
-                Atom *ghostAtom = system.addAtom();
-                ghostAtom->setType(AtomType::atomTypeFromAtomicNumber(atomicNumber));
-                ghostAtom->setGhost(true);
+                Atom *ghostAtom = system.addGhostAtom();
                 ghostAtom->position[0] = m_mpiReceiveBuffer[4*i+0];
                 ghostAtom->position[1] = m_mpiReceiveBuffer[4*i+1];
                 ghostAtom->position[2] = m_mpiReceiveBuffer[4*i+2];
+                int atomicNumber = m_mpiReceiveBuffer[4*i+3];
+                ghostAtom->setType(AtomType::atomTypeFromAtomicNumber(atomicNumber));
             }
-
-            numNewGhostAtoms += numberToRecieve;
         }
     }
 }
 
 void Topology::MPIMove(System &system) {
-    if(system.firstGhostAtomIndex() == -1) system.setFirstGhostAtomIndex(system.atoms().size()); // First run needs to set the index of the first ghost atom here
-    if(system.numberOfGhostAtoms()>0) {
-        // Delete all ghost atoms
-        system.atoms().erase(system.atoms().begin()+system.firstGhostAtomIndex(),system.atoms().end());
-    }
-
     for(vector<int> &queue : m_moveQueue) {
         queue.clear();
     }
@@ -212,7 +201,7 @@ void Topology::MPIMove(System &system) {
             Atom *atom = system.atoms().at(atomIndex);
             int nodeLower = 2*dimension;
             int nodeHigher = 2*dimension+1;
-            /* Register a to-be-copied atom in move_queue[kul|kuh][] */
+
             if (!atom->moved()) { /* Don't scan moved-out atoms */
                 if(atomDidChangeNode(atom,dimension,false)) {
                     m_moveQueue.at(nodeLower).push_back(atomIndex);

@@ -12,8 +12,14 @@ AtomManager &System::atomManager()
     return m_atomManager;
 }
 
+
+int System::numberOfGhostAtoms() const
+{
+    return m_numberOfGhostAtoms;
+}
+
 System::System() :
-    m_indexOfFirstGhostAtom(-1),
+    m_numberOfGhostAtoms(0),
     m_isInitialized(false)
 {
 
@@ -28,14 +34,23 @@ System::~System()
 void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength)
 {
     m_isInitialized = true;
-    m_indexOfFirstGhostAtom = -1;
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
     m_atomManager.setSystemLength(systemLength);
+    m_atomManager.removeAllAtoms();
+    m_numberOfGhostAtoms = 0;
 }
 
 Atom *System::addAtom()
 {
     return m_atomManager.addAtom();
+}
+
+Atom *System::addGhostAtom()
+{
+    Atom *atom = addAtom();
+    atom->setGhost(true);
+    m_numberOfGhostAtoms++;
+    return atom;
 }
 
 void System::removeAtom(Atom *atom)
@@ -46,16 +61,20 @@ void System::removeAtom(Atom *atom)
 void System::removeAllAtoms()
 {
     m_atomManager.removeAllAtoms();
+    m_numberOfGhostAtoms = 0;
+}
+
+void System::removeGhostAtoms()
+{
+    while(numberOfGhostAtoms()) {
+        removeAtom(atoms().back());
+        m_numberOfGhostAtoms--;
+    }
 }
 
 int System::numberOfAtoms()
 {
     return m_atomManager.atoms().size();
-}
-
-int System::numberOfGhostAtoms()
-{
-    return m_indexOfFirstGhostAtom-numberOfAtoms();
 }
 
 void System::setSystemLength(vector<double> &systemLength)
@@ -74,16 +93,6 @@ void System::addPotential(PotentialType type) {
 
 void System::checkIfInitialized() {
     if(!m_isInitialized) std::cerr << "Error, System object not initialized." << std::endl;
-}
-
-int System::firstGhostAtomIndex() const
-{
-    return m_indexOfFirstGhostAtom;
-}
-
-void System::setFirstGhostAtomIndex(int firstGhostAtomIndex)
-{
-    m_indexOfFirstGhostAtom = firstGhostAtomIndex;
 }
 
 vector<Potential*> &System::potentials()

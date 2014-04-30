@@ -38,12 +38,13 @@ private:
     bool m_cellStructureDirty;
     bool m_cellDataDirty;
 
-    int m_nextFreeIndex;
+
     int indexInAtoms(Atom *atom);
     int indexInAllAtoms(Atom *atom);
     void increaseNumberOfAtoms();
     void updateCellStructure();
 public:
+    int m_nextFreeIndex;
     AtomManager(int initialAtomCount = 1000);
     ~AtomManager();
 
