@@ -8,7 +8,9 @@
 #include <cmath>
 
 Topology::Topology() :
-    m_isInitialized(false)
+    m_isInitialized(false),
+    m_mpiReceiveBuffer(0),
+    m_mpiSendBuffer(0)
 {
 
 }
@@ -22,6 +24,8 @@ Topology::~Topology()
          vec.clear();
     }
     m_moveQueue.clear();
+    m_mpiSendBuffer.clear();
+    m_mpiReceiveBuffer.clear();
 }
 
 void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength)
@@ -31,8 +35,8 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
     nn, & a shift-vector table, sv, for internode message passing.  Also
     prepares the node parity table, myparity.
     ----------------------------------------------------------------------*/
-    m_mpiReceiveBuffer = new double[1000000];
-    m_mpiSendBuffer = new double[1000000];
+    m_mpiReceiveBuffer.resize(1e6,0);
+    m_mpiSendBuffer.resize(1e6,0);
     m_nodeIndex = nodeIndex;
     m_nodeLength.resize(3);
     m_systemLength.resize(3);
@@ -175,7 +179,7 @@ void Topology::MPICopy(System &system, double cutoffDistance)
                 i++;
             }
 
-            memcpy(m_mpiReceiveBuffer,m_mpiSendBuffer,3*numberToRecieve*sizeof(double));
+            memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),3*numberToRecieve*sizeof(double));
 
             for(int i=0; i<numberToRecieve; i++) {
                 int atomicNumber = m_mpiReceiveBuffer[4*i+3];
@@ -245,7 +249,7 @@ void Topology::MPIMove(System &system) {
                 i++;
             }
 
-            memcpy(m_mpiReceiveBuffer,m_mpiSendBuffer,11*numberToReceive*sizeof(double));
+            memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),11*numberToReceive*sizeof(double));
 
             /* Message storing */
             for (i=0; i<numberToReceive; i++) {

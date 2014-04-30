@@ -18,9 +18,9 @@ private:
     vector<int> m_nodeIndices;                 // Three dimensional processor coordinate
     vector<double> m_nodeLength;               // Physical size of this processor
     vector<double> m_systemLength;             // System length in md units
-    vector<vector<int> > m_moveQueue;     // Queue for atom indices to be moved to other processor
-    double *m_mpiSendBuffer;              // Temp array to save MPI data
-    double *m_mpiReceiveBuffer;              // Temp array to save MPI data
+    vector<vector<int> > m_moveQueue;     // Queue for atom indices to be moved to other processorr
+    vector<double> m_mpiSendBuffer;
+    vector<double> m_mpiReceiveBuffer;
     bool m_isInitialized;
 
     bool atomShouldBeCopied(Atom *atom, int &dimension, bool higher, double &cutoffDistance);

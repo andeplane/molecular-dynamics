@@ -84,8 +84,6 @@ SUITE(System) {
         vector<double> systemLength(3,1);
         system.initialize(nodeIndex, numNodesVector, systemLength);
 
-        vector<int> numberOfUnitCells(3,1);
-        double fccLatticeConstant = 1.0;
         Atom *atom = system.addAtom();
         atom->setType(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
         atom->velocity[0] = -1;
@@ -94,7 +92,7 @@ SUITE(System) {
         vector<double> expectedPosition(3,0);
 
         VelocityVerlet integrator;
-        for(int i=0; i<1000; i++) {
+        for(int i=0; i<10000; i++) {
             expectedPosition[0] = fmod(atom->position[0] + atom->velocity[0]*timestep + systemLength[0],systemLength[0]);
             expectedPosition[1] = fmod(atom->position[1] + atom->velocity[1]*timestep + systemLength[1],systemLength[1]);
             expectedPosition[2] = fmod(atom->position[2] + atom->velocity[2]*timestep + systemLength[2],systemLength[2]);

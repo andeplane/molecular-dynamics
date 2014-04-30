@@ -103,7 +103,7 @@ vector<Atom*> &System::atoms()
     return m_atomManager.atoms();
 }
 
-Topology System::topology() const
+Topology &System::topology()
 {
     return m_topology;
 }

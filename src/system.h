@@ -30,7 +30,7 @@ public:
     Atom *addAtom();
     void removeAtom(Atom *atom);
 
-    Topology topology() const;
+    Topology &topology();
     int firstGhostAtomIndex() const;
     void setFirstGhostAtomIndex(int firstGhostAtomIndex);
     void addPotential(PotentialType type);
