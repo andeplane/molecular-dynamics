@@ -74,6 +74,7 @@ void Atom::move(const double &timestep)
     position[0] += velocity[0]*timestep;
     position[1] += velocity[1]*timestep;
     position[2] += velocity[2]*timestep;
+
     m_onMoved();
 }
 

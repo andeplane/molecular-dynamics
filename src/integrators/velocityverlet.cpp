@@ -24,7 +24,7 @@ void VelocityVerlet::halfKick(System &system, double timestep)
 void VelocityVerlet::move(System &system, double timestep)
 {
     system.atomManager().atoms().iterate([&](Atom &atom, const int &atomIndex) {
-        // atom.move(timestep);
+        atom.move(timestep);
     });
 }
 
