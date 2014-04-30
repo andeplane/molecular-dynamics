@@ -33,21 +33,21 @@ public:
         return index;
     }
 
-    static int cellIndexForAtom(Atom *atom, CellData &cellData) {
-        int i = atom->position[0] / cellData.cellLength[0] + 1;
-        int j = atom->position[1] / cellData.cellLength[1] + 1;
-        int k = atom->position[2] / cellData.cellLength[2] + 1;
+    static int cellIndexForAtom(Atom &atom, CellData &cellData) {
+        int i = atom.position[0] / cellData.cellLength[0] + 1;
+        int j = atom.position[1] / cellData.cellLength[1] + 1;
+        int k = atom.position[2] / cellData.cellLength[2] + 1;
         return Cell::cellIndexFromIJK(i,j,k,cellData);
     }
 
-    static Cell *cellContainingAtom(Atom *atom, CellData &cellData) {
+    static Cell *cellContainingAtom(Atom &atom, CellData &cellData) {
         for(Cell &cell : cellData.cells) {
-            if(std::find(cell.atoms().begin(),cell.atoms().end(), atom) != cell.atoms().end()) {
+            if(std::find(cell.atoms().begin(),cell.atoms().end(), &atom) != cell.atoms().end()) {
                 return &cell;
             }
         }
 
-        cout << "There are currently no cells containing " << *atom << endl;
+        cout << "There are currently no cells containing " << atom << endl;
         return 0;
     }
 

@@ -79,6 +79,17 @@ void AtomManager::setSystemLength(vector<double> &systemLength) {
     m_cellData.initialized = true;
 }
 
+
+AtomList &AtomManager::atoms()
+{
+    return m_atoms;
+}
+
+AtomList &AtomManager::ghostAtoms()
+{
+    return m_ghostAtoms;
+}
+
 void AtomManager::updateCellStructure() {
     if(!m_cellData.initialized) {
         std::cerr << "atomManager.cellData not initialized. We don't know the systemLength." << std::endl;
@@ -126,6 +137,13 @@ void AtomManager::updateCellList() {
         cell.reset();
     }
 
+    CellData &cellData = m_cellData;
+
+    m_atoms.iterate([&](Atom &atom, const int &atomIndex) {
+        int cellIndex = Cell::cellIndexForAtom(atom, cellData);
+        Cell &cell = cellData.cells.at(cellIndex);
+        cell.addAtom(&atom);
+    });
 //    for(Atom *atom : m_atoms) {
 //        int cellIndex = Cell::cellIndexForAtom(atom, m_cellData);
 //        Cell &cell = m_cellData.cells.at(cellIndex);

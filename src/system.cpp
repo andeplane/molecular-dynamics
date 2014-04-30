@@ -1,11 +1,10 @@
-#include "system.h"
-#include "atom.h"
-#include "topology.h"
-#include "cmath"
-#include "potentials/lennardjonespotential.h"
+#include <system.h>
+#include <atom.h>
+#include <topology.h>
+#include <cmath>
+#include <potentials/lennardjonespotential.h>
 #include <iostream>
 using namespace std;
-
 
 AtomManager &System::atomManager()
 {
@@ -34,11 +33,13 @@ void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double
 
 Atom &System::addAtom()
 {
+    checkIfInitialized();
     return m_atomManager.addAtom();
 }
 
 Atom &System::addGhostAtom()
 {
+    checkIfInitialized();
     return m_atomManager.addGhostAtom();
 }
 
@@ -73,13 +74,6 @@ void System::checkIfInitialized() {
 vector<Potential*> &System::potentials()
 {
     return m_potentials;
-}
-
-void System::resetForces() {
-    checkIfInitialized();
-//    for(Atom *atom : m_atomManager.atoms()) {
-//        atom->resetForce();
-//    }
 }
 
 Topology &System::topology()

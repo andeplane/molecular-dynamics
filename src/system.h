@@ -8,8 +8,6 @@ using std::vector;
 #include <atom.h>
 #include <atommanager.h>
 
-class Topology;
-
 class System
 {
 private:
@@ -21,19 +19,17 @@ public:
     System();
     ~System();
     void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
-    void resetForces();
 
     vector<Potential *> &potentials();
-    vector<Atom*> &atoms();
     Atom &addAtom();
     Atom &addGhostAtom();
+    void setSystemLength(vector<double> &systemLength);
 
     Topology &topology();
     AtomManager &atomManager();
     void addPotential(PotentialType type);
     int numberOfAtoms();
     int numberOfGhostAtoms();
-    void setSystemLength(vector<double> &systemLength);
 protected:
     void checkIfInitialized();
 };

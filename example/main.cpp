@@ -9,7 +9,11 @@ int main()
     vector<double> systemLength(3,1);
     simulator.initialize(0, vector<int>(3,1), systemLength);
     Generator::generateFCC(simulator.system(), 1, vector<int>(3,1), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
-    cout << "Number of atoms: " << simulator.system().numberOfAtoms() << endl;
+
+    simulator.system().atomManager().atoms().iterate([](Atom &atom, const int &atomIndex) {
+        cout << "Atom with index " << atomIndex << ": " << atom << endl;
+    });
+
     return 0;
 }
 

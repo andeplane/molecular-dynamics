@@ -25,6 +25,8 @@ public:
     ~AtomManager();
     Atom &addAtom();
     Atom &addGhostAtom();
+    AtomList &atoms();
+    AtomList &ghostAtoms();
     void removeAllAtoms();
     void removeGhostAtoms();
     void updateCellList();
