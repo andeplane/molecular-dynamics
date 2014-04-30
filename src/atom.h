@@ -16,6 +16,7 @@ private:
     friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);
     AtomType *m_type;
     int m_id;
+    static int numberOfCreatedAtoms;
     bool m_removed;
     bool m_ghost;
     function<void()> m_onRemoved;

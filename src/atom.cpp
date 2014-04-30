@@ -2,6 +2,8 @@
 #include <string>
 #include <random.h>
 
+int Atom::numberOfCreatedAtoms = 0;
+
 void Atom::setOnRemoved(const function<void ()> &value)
 {
     m_onRemoved = value;
@@ -22,7 +24,7 @@ void Atom::resetMaxwellianVelocity(double temperature)
 
 Atom::Atom() :
     m_type(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)),
-    m_id(-1),
+    m_id(Atom::numberOfCreatedAtoms++),
     m_removed(false),
     m_ghost(false),
     m_onRemoved(0),

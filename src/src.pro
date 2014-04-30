@@ -28,7 +28,8 @@ HEADERS += \
     random.h \
     integrators/integrators.h \
     atomiterators/atomiterators.h \
-    potentials/potentials.h
+    potentials/potentials.h \
+    atomiterators/atomiteratordefault.h
 
 SOURCES += \
     atom.cpp \
@@ -49,4 +50,5 @@ SOURCES += \
     atommanager.cpp \
     cell.cpp \
     atomlist.cpp \
-    random.cpp
+    random.cpp \
+    atomiterators/atomiteratordefault.cpp
