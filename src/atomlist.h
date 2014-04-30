@@ -12,6 +12,7 @@ private:
     vector<Atom> m_atoms;
     bool m_atomsDirty;
     void cleanupList();
+    function<void()> m_onAtomMoved;
 public:
     AtomList(int initialAtomCount = 1000);
     ~AtomList();
@@ -20,6 +21,7 @@ public:
     void removeAllAtoms();
     void iterate(function<void(Atom &, const int &)> action);
     const vector<Atom> &atoms();
+    void setOnAtomMoved(const function<void ()> &onAtomMoved);
 };
 
 #endif // ATOMLIST_H

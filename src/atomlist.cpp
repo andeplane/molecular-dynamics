@@ -4,7 +4,8 @@
 using namespace std;
 
 AtomList::AtomList(int initialAtomCount) :
-    m_atomsDirty(false)
+    m_atomsDirty(false),
+    m_onAtomMoved(0)
 {
     m_atoms.reserve(initialAtomCount);
 }
@@ -24,10 +25,12 @@ Atom &AtomList::addAtom(AtomType *atomType)
     m_atoms.resize(m_atoms.size()+1); // Default constructor will be called
     Atom &atom = m_atoms.back();
     atom.setType(atomType);
-    atom.setOnMoved([&]() {
+    atom.setOnRemoved([&]() {
         // This list should know if an atom has been moved
         m_atomsDirty = true;
     });
+    atom.setOnMoved(m_onAtomMoved); // Set default function that will be called on move function on atoms
+
     return atom;
 }
 
@@ -60,7 +63,7 @@ void AtomList::cleanupList() {
 
     for(int atomIndex=0; atomIndex<numberOfAtoms; atomIndex++) {
         Atom &atom = m_atoms.at(atomIndex);
-        if(atom.moved()) {
+        if(atom.removed()) {
             std::swap(atom,*lastElementIterator);   // Swap this moved element and the back element
             lastElementIterator--;                  // Now, choose the previous element as back element
             numberOfAtoms--;                        // For the for loop range check
@@ -70,3 +73,9 @@ void AtomList::cleanupList() {
 
     m_atoms.resize(numberOfAtoms);
 }
+
+void AtomList::setOnAtomMoved(const function<void ()> &onAtomMoved)
+{
+    m_onAtomMoved = onAtomMoved;
+}
+

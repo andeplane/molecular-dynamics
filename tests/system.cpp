@@ -24,7 +24,7 @@ SUITE(System) {
 
         system.atomManager().atoms().iterate([&](Atom &atom, const int &atomIndex) {
             if(atomIndex % 2) {
-                atom.setMoved(true);
+                atom.setRemoved(true);
             }
         });
 
@@ -59,19 +59,38 @@ SUITE(System) {
     }
 
     TEST(Cells) {
-//        System system;
-//        int nodeIndex = 0;
-//        vector<int> numNodesVector(3,1);
-//        vector<double> systemLength(3,1);
-//        system.initialize(nodeIndex, numNodesVector, systemLength);
+        System system;
+        int nodeIndex = 0;
+        vector<int> numNodesVector(3,1);
+        vector<double> systemLength(3,1);
+        system.initialize(nodeIndex, numNodesVector, systemLength);
 
-//        Atom *atom = system.addAtom();
-//        CellData &cellData = system.atomManager().cellData();
-//        system.atomManager().setCutoffDistance(0.25);
-//        cellData = system.atomManager().cellData();
-//        Cell *cell = Cell::cellContainingAtom(atom,cellData);
-//        int cellIndex = Cell::cellIndexFromIJK(1,1,1,cellData);
-//        CHECK_EQUAL(cellIndex,cell->cellIndex());
+        Atom &atom = system.addAtom();
+        CellData &cellData = system.atomManager().cellData();
+        system.atomManager().setCutoffDistance(0.25);
+        cellData = system.atomManager().cellData();
+
+        Cell *cell = Cell::cellContainingAtom(atom,cellData);
+        int cellIndex = Cell::cellIndexFromIJK(1,1,1,cellData);
+        CHECK_EQUAL(cellIndex,cell->cellIndex());
+
+        atom.setPosition(-0.1, -0.1, -0.1);
+        cellData = system.atomManager().cellData(); // Update cell list
+        cell = Cell::cellContainingAtom(atom,cellData);
+        cellIndex = Cell::cellIndexFromIJK(0,0,0,cellData);
+        CHECK_EQUAL(cellIndex,cell->cellIndex());
+
+        atom.setPosition(0.25, 0.25, 0);
+        cellData = system.atomManager().cellData(); // Update cell list
+        cell = Cell::cellContainingAtom(atom,cellData);
+        cellIndex = Cell::cellIndexFromIJK(2,2,1,cellData);
+        CHECK_EQUAL(cellIndex,cell->cellIndex());
+
+        atom.setPosition(0.25, 0.25, -0.2);
+        cellData = system.atomManager().cellData(); // Update cell list
+        cell = Cell::cellContainingAtom(atom,cellData);
+        cellIndex = Cell::cellIndexFromIJK(2,2,0,cellData);
+        CHECK_EQUAL(cellIndex,cell->cellIndex());
     }
 
     TEST(IntegratorVelocityVerlet) {

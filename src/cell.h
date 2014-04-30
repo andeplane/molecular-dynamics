@@ -37,6 +37,7 @@ public:
         int i = atom.position[0] / cellData.cellLength[0] + 1;
         int j = atom.position[1] / cellData.cellLength[1] + 1;
         int k = atom.position[2] / cellData.cellLength[2] + 1;
+
         return Cell::cellIndexFromIJK(i,j,k,cellData);
     }
 

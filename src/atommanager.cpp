@@ -7,11 +7,15 @@ using std::cerr; using std::endl; using std::cout;
 
 AtomManager::AtomManager() :
     m_cellStructureDirty(true),
-    m_cellDataDirty(true),
-    m_atomsDirty(false)
+    m_cellDataDirty(true)
 {
     m_cellData.cutoffDistance = INFINITY;
     m_cellData.initialized = false;
+
+    // Default behaviour when atoms move
+    m_atoms.setOnAtomMoved([&]() {
+        m_cellDataDirty = true;
+    });
 }
 
 AtomManager::~AtomManager()
@@ -144,9 +148,11 @@ void AtomManager::updateCellList() {
         Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
     });
-//    for(Atom *atom : m_atoms) {
-//        int cellIndex = Cell::cellIndexForAtom(atom, m_cellData);
-//        Cell &cell = m_cellData.cells.at(cellIndex);
-//        cell.addAtom(atom);
-//    }
+
+    m_ghostAtoms.iterate([&](Atom &atom, const int &atomIndex) {
+        int cellIndex = Cell::cellIndexForAtom(atom, cellData);
+        Cell &cell = cellData.cells.at(cellIndex);
+        cell.addAtom(&atom);
+    });
+
 }

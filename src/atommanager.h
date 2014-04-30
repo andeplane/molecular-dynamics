@@ -17,7 +17,6 @@ private:
     CellData m_cellData;
     bool m_cellStructureDirty;
     bool m_cellDataDirty;
-    bool m_atomsDirty;
 
     void updateCellStructure();
 public:

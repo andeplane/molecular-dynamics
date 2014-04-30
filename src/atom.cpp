@@ -1,16 +1,22 @@
 #include "atom.h"
 #include <string>
 
-void Atom::setOnMoved(const function<void ()> &value)
+void Atom::setOnRemoved(const function<void ()> &value)
 {
-    m_onMoved = value;
+    m_onRemoved = value;
+}
+
+void Atom::setOnMoved(const function<void ()> &onMoved)
+{
+    m_onMoved = onMoved;
 }
 Atom::Atom() :
     m_type(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)),
-    m_moved(false),
+    m_removed(false),
     m_id(-1),
     m_ghost(false),
-    m_onMoved(0)
+    m_onMoved(0),
+    m_onRemoved(0)
 {
     memset(position,0,3*sizeof(double));
     memset(velocity,0,3*sizeof(double));
@@ -58,6 +64,7 @@ void Atom::move(const double &timestep)
     position[0] += velocity[0]*timestep;
     position[1] += velocity[1]*timestep;
     position[2] += velocity[2]*timestep;
+    m_onMoved();
 }
 
 void Atom::kick(const double &timestep, const double oneOverMass)
@@ -68,16 +75,16 @@ void Atom::kick(const double &timestep, const double oneOverMass)
 }
 
 
-bool Atom::moved() const
+bool Atom::removed() const
 {
-    return m_moved;
+    return m_removed;
 }
 
-void Atom::setMoved(bool moved)
+void Atom::setRemoved(bool removed)
 {
-    if(m_moved != moved) {
-        m_onMoved();
-        m_moved = moved;
+    if(m_removed != removed) {
+        m_onRemoved();
+        m_removed = removed;
     }
 }
 

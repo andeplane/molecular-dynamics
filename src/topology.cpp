@@ -201,7 +201,7 @@ void Topology::MPIMove(System &system) {
             int nodeLower = 2*dimension;
             int nodeHigher = 2*dimension+1;
 
-            if (!atom.moved()) { /* Don't scan moved-out atoms */
+            if (!atom.removed()) { /* Don't scan moved-out atoms */
                 if(atomDidChangeNode(atom,dimension,false)) {
                     m_moveQueue.at(nodeLower).push_back(&atom);
                 } else if (atomDidChangeNode(atom, dimension, true)) {
@@ -230,7 +230,7 @@ void Topology::MPIMove(System &system) {
                 m_mpiSendBuffer[11*i+ 6 + 2] = atom->initial_position[2];
                 m_mpiSendBuffer[11*i + 9]    = (double)atom->id();
                 m_mpiSendBuffer[11*i + 10]   = (double)atom->type()->atomicNumber();
-                atom->setMoved(true);
+                atom->setRemoved(true);
                 i++;
             }
 
