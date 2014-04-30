@@ -35,8 +35,8 @@ public:
     void setCutoffDistance(double cutoffDistance);
     double cutoffDistance();
     void setSystemLength(vector<double> &systemLength);
-    int numberOfAtoms() const;
-    int numberOfGhostAtoms() const;
+    int numberOfAtoms();
+    int numberOfGhostAtoms();
 };
 
 #endif // ATOMMANAGER_H

@@ -1,5 +1,7 @@
 #include <atomlist.h>
 #include <utility>
+#include <iostream>
+using namespace std;
 
 AtomList::AtomList(int initialAtomCount) :
     m_atomsDirty(false)
@@ -12,9 +14,9 @@ AtomList::~AtomList()
     m_atoms.clear();
 }
 
-int AtomList::numberOfAtoms() const
+int AtomList::numberOfAtoms()
 {
-    return m_atoms.size();
+    return atoms().size();
 }
 
 Atom &AtomList::addAtom(AtomType *atomType)
@@ -23,6 +25,7 @@ Atom &AtomList::addAtom(AtomType *atomType)
     Atom &atom = m_atoms.back();
     atom.setType(atomType);
     atom.setOnMoved([&]() {
+        // This list should know if an atom has been moved
         m_atomsDirty = true;
     });
     return atom;
@@ -41,8 +44,7 @@ void AtomList::iterate(function<void (Atom &atom, const int &atomIndex)> action)
     }
 }
 
-
-vector<Atom> &AtomList::atoms()
+const vector<Atom> &AtomList::atoms()
 {
     if(m_atomsDirty) cleanupList();
     return m_atoms;
@@ -52,14 +54,19 @@ void AtomList::cleanupList() {
     m_atomsDirty = false;
     if(m_atoms.size() == 0) return;
     int numberOfAtoms = m_atoms.size();
-    for(int i=0; i<numberOfAtoms; i++) {
-        Atom &atom = m_atoms.at(i);
+
+    // Point on the back element so we can switch a moved atom with this one
+    vector<Atom>::iterator lastElementIterator = --m_atoms.end();
+
+    for(int atomIndex=0; atomIndex<numberOfAtoms; atomIndex++) {
+        Atom &atom = m_atoms.at(atomIndex);
         if(atom.moved()) {
-            std::swap(atom,m_atoms.back());
-            numberOfAtoms--;
-            i--;
+            std::swap(atom,*lastElementIterator);   // Swap this moved element and the back element
+            lastElementIterator--;                  // Now, choose the previous element as back element
+            numberOfAtoms--;                        // For the for loop range check
+            atomIndex--;                            // Re-check this index, a new atom has taken its place
         }
     }
 
-    m_atoms.erase(m_atoms.begin()+numberOfAtoms,m_atoms.end());
+    m_atoms.resize(numberOfAtoms);
 }

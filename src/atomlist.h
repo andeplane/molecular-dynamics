@@ -15,11 +15,11 @@ private:
 public:
     AtomList(int initialAtomCount = 1000);
     ~AtomList();
-    int numberOfAtoms() const;
+    int numberOfAtoms();
     Atom &addAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
     void removeAllAtoms();
     void iterate(function<void(Atom &, const int &)> action);
-    vector<Atom> &atoms();
+    const vector<Atom> &atoms();
 };
 
 #endif // ATOMLIST_H

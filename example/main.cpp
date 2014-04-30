@@ -14,6 +14,8 @@ int main()
         cout << "Atom with index " << atomIndex << ": " << atom << endl;
     });
 
+    cout << "Num before moved: " << simulator.system().atomManager().numberOfAtoms() << endl;
+
     return 0;
 }
 

@@ -23,6 +23,8 @@ public:
     vector<Potential *> &potentials();
     Atom &addAtom();
     Atom &addGhostAtom();
+    void removeAllAtoms();
+    void removeGhostAtoms();
     void setSystemLength(vector<double> &systemLength);
 
     Topology &topology();

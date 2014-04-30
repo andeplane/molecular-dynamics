@@ -5,14 +5,7 @@ using std::vector;
 using std::cout; using std::endl;
 
 #include <UnitTest++.h>
-#include <cell.h>
-#include <atom.h>
-#include <atomtype.h>
-#include <system.h>
-#include <generator.h>
-#include <simulator.h>
-#include <integrators/velocityverlet.h>
-
+#include <includes.h>
 
 SUITE(System) {
     TEST(AddRemoveAtoms) {
@@ -25,42 +18,44 @@ SUITE(System) {
 
         CHECK_EQUAL(0, system.atomManager().numberOfAtoms());
         CHECK_EQUAL(0, system.atomManager().numberOfGhostAtoms());
-        for(Atom &atom : system.atomManager().atoms().atoms()) {
-            atom.setMoved(true);
-        }
+        Generator::generateFCC(system,1.0, vector<int>(3,1),AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+        CHECK_EQUAL(4, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(0, system.atomManager().numberOfGhostAtoms());
 
-//        Atom *nullPointer = 0;
-//        Atom *atom = system.addAtom();
-//        CHECK_EQUAL(1, system.numberOfAtoms());
-//        system.addAtom();
-//        CHECK_EQUAL(2, system.numberOfAtoms());
-//        system.removeAtom(atom);
-//        CHECK_EQUAL(1, system.numberOfAtoms());
-//        system.removeAtom(atom);
-//        CHECK_EQUAL(0, system.numberOfAtoms());
-//        system.addAtom();
-//        CHECK_EQUAL(1, system.numberOfAtoms());
-//        system.addAtom();
-//        CHECK_EQUAL(2, system.numberOfAtoms());
-//        system.removeAtom(nullPointer);
-//        CHECK_EQUAL(2, system.numberOfAtoms());
+        system.atomManager().atoms().iterate([&](Atom &atom, const int &atomIndex) {
+            if(atomIndex % 2) {
+                atom.setMoved(true);
+            }
+        });
 
-//        for(int i=0; i<1000; i++) {
-//            system.addAtom();
-//        }
+        CHECK_EQUAL(2, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(0, system.atomManager().numberOfGhostAtoms());
 
-//        CHECK_EQUAL(2002, system.atomManager().atomCapacity());
-//        CHECK_EQUAL(1002, system.numberOfAtoms());
+        system.atomManager().addAtom();
+        CHECK_EQUAL(3, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(0, system.atomManager().numberOfGhostAtoms());
 
-//        system.removeAllAtoms();
-//        CHECK_EQUAL(0, system.numberOfAtoms());
+        system.atomManager().addGhostAtom();
+        CHECK_EQUAL(3, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(1, system.atomManager().numberOfGhostAtoms());
 
-//        for(int i=0; i<1000; i++) {
-//            system.addAtom();
-//        }
+        system.atomManager().removeGhostAtoms();
+        CHECK_EQUAL(3, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(0, system.atomManager().numberOfGhostAtoms());
 
-//        CHECK_EQUAL(1000, system.numberOfAtoms());
-//        CHECK_EQUAL(2002, system.atomManager().atomCapacity());
+        system.atomManager().addGhostAtom();
+        CHECK_EQUAL(3, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(1, system.atomManager().numberOfGhostAtoms());
+
+        system.atomManager().removeAllAtoms();
+        CHECK_EQUAL(0, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(0, system.atomManager().numberOfGhostAtoms());
+
+        Generator::generateFCC(system, 1,vector<int>(3,10), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+        CHECK_EQUAL(4000, system.atomManager().numberOfAtoms());
+
+        Generator::generateFCC(system, 1,vector<int>(3,30), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+        CHECK_EQUAL(108000, system.atomManager().numberOfAtoms());
     }
 
     TEST(Cells) {

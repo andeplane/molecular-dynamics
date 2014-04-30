@@ -5,6 +5,8 @@
 
 void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, AtomType *atomType)
 {
+    system.removeAllAtoms();
+
     vector<double> systemLength(3,0);
     systemLength[0] = numberOfUnitCells[0]*unitCellLength;
     systemLength[1] = numberOfUnitCells[1]*unitCellLength;

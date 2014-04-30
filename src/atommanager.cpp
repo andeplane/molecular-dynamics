@@ -25,12 +25,12 @@ CellData &AtomManager::cellData()
     return m_cellData;
 }
 
-int AtomManager::numberOfAtoms() const
+int AtomManager::numberOfAtoms()
 {
     return m_atoms.numberOfAtoms();
 }
 
-int AtomManager::numberOfGhostAtoms() const
+int AtomManager::numberOfGhostAtoms()
 {
     return m_ghostAtoms.numberOfAtoms();
 }

@@ -43,6 +43,14 @@ Atom &System::addGhostAtom()
     return m_atomManager.addGhostAtom();
 }
 
+void System::removeAllAtoms() {
+    m_atomManager.removeAllAtoms();
+}
+
+void System::removeGhostAtoms() {
+    m_atomManager.removeGhostAtoms();
+}
+
 int System::numberOfGhostAtoms()
 {
     return m_atomManager.numberOfGhostAtoms();

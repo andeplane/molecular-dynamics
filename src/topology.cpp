@@ -213,7 +213,6 @@ void Topology::MPIMove(System &system) {
         for (int higher=0; higher<=1; higher++) {
             int localNodeID=2*dimension+higher;
             int numberToSend = m_moveQueue.at(localNodeID).size();
-
             int numberToReceive = numberToSend;
 
             /* Message buffering */
