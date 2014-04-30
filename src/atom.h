@@ -50,6 +50,12 @@ public:
         position[2] = z;
         m_onMoved();
     }
+
+    inline void setVelocity(const double x, const double y, const double z) {
+        velocity[0] = x;
+        velocity[1] = y;
+        velocity[2] = z;
+    }
 };
 
 #endif // ATOM_H

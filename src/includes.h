@@ -8,4 +8,8 @@
 #include <generator.h>
 #include <atomlist.h>
 #include <atommanager.h>
+#include <potentials/potentials.h>
+#include <integrators/integrators.h>
+#include <atomiterators/atomiterators.h>
+
 #endif // INCLUDES_H

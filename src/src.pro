@@ -25,7 +25,10 @@ HEADERS += \
     cell.h \
     atomlist.h \
     includes.h \
-    random.h
+    random.h \
+    integrators/integrators.h \
+    atomiterators/atomiterators.h \
+    potentials/potentials.h
 
 SOURCES += \
     atom.cpp \

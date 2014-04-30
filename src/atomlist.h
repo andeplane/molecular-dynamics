@@ -12,7 +12,6 @@ private:
     friend std::ostream& operator<<(std::ostream&stream, AtomList&atomList);
     vector<Atom> m_atoms;
     bool m_atomsDirty;
-    void cleanupList();
     function<void()> m_onAtomMoved;
 public:
     AtomList(int initialAtomCount = 1000);
@@ -23,6 +22,7 @@ public:
     void iterate(function<void(Atom &, const int &)> action);
     const vector<Atom> &atoms();
     void setOnAtomMoved(const function<void ()> &onAtomMoved);
+    void cleanupList();
 };
 
 #endif // ATOMLIST_H

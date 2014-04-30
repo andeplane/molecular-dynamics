@@ -94,39 +94,61 @@ SUITE(System) {
     }
 
     TEST(IntegratorVelocityVerlet) {
-//        double timestep = 0.01;
+        double timestep = 0.01;
 
-//        System system;
-//        int nodeIndex = 0;
-//        vector<int> numNodesVector(3,1);
-//        vector<double> systemLength(3,1);
-//        system.initialize(nodeIndex, numNodesVector, systemLength);
+        System system;
+        int nodeIndex = 0;
+        vector<int> numNodesVector(3,1);
+        vector<double> systemLength(3,1);
+        system.initialize(nodeIndex, numNodesVector, systemLength);
 
-//        Atom *atom = system.addAtom();
-//        atom->setType(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
-//        atom->velocity[0] = -1;
-//        atom->velocity[1] = 2;
-//        atom->velocity[2] = 3;
-//        vector<double> expectedPosition(3,0);
+        Atom &atom = system.addAtom();
+        atom.setType(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+        atom.setVelocity(-1,2,3);
+        vector<double> expectedPosition(3,0);
 
-//        VelocityVerlet integrator;
-//        for(int i=0; i<1000; i++) {
-//            expectedPosition[0] = fmod(atom->position[0] + atom->velocity[0]*timestep + systemLength[0],systemLength[0]);
-//            expectedPosition[1] = fmod(atom->position[1] + atom->velocity[1]*timestep + systemLength[1],systemLength[1]);
-//            expectedPosition[2] = fmod(atom->position[2] + atom->velocity[2]*timestep + systemLength[2],systemLength[2]);
-//            integrator.integrate(system,timestep);
-//            CHECK_ARRAY_CLOSE(expectedPosition,atom->position,3,1e-7);
-//            CHECK_EQUAL(false, atom->ghost());
-//            CHECK_EQUAL(1,system.numberOfAtoms());
-//        }
+        // Test with constant velocity
+        VelocityVerlet integrator;
+        for(int i=0; i<10000; i++) {
+            expectedPosition[0] = fmod(atom.position[0] + atom.velocity[0]*timestep + systemLength[0],systemLength[0]);
+            expectedPosition[1] = fmod(atom.position[1] + atom.velocity[1]*timestep + systemLength[1],systemLength[1]);
+            expectedPosition[2] = fmod(atom.position[2] + atom.velocity[2]*timestep + systemLength[2],systemLength[2]);
+            integrator.integrate(system,timestep);
+            CHECK_ARRAY_CLOSE(expectedPosition,atom.position,3,1e-7);
+            CHECK_EQUAL(false, atom.ghost());
+            CHECK_EQUAL(1,system.numberOfAtoms());
+        }
 
-//        atom->position[0] = 1; atom->position[1] = 1; atom->position[2] = 1;
-//        atom->velocity[0] = 1; atom->velocity[1] = 1; atom->velocity[2] = 1;
-//        expectedPosition[0] = fmod(atom->position[0] + atom->velocity[0]*timestep + systemLength[0],systemLength[0]);
-//        expectedPosition[1] = fmod(atom->position[1] + atom->velocity[1]*timestep + systemLength[1],systemLength[1]);
-//        expectedPosition[2] = fmod(atom->position[2] + atom->velocity[2]*timestep + systemLength[2],systemLength[2]);
+        atom.setPosition(1,1,1);
+        atom.setVelocity(1,1,1);
+        expectedPosition[0] = fmod(atom.position[0] + atom.velocity[0]*timestep + systemLength[0],systemLength[0]);
+        expectedPosition[1] = fmod(atom.position[1] + atom.velocity[1]*timestep + systemLength[1],systemLength[1]);
+        expectedPosition[2] = fmod(atom.position[2] + atom.velocity[2]*timestep + systemLength[2],systemLength[2]);
+        integrator.integrate(system,timestep);
+        CHECK_ARRAY_CLOSE(expectedPosition,atom.position,3,1e-7);
 
-//        integrator.integrate(system,timestep);
-//        CHECK_ARRAY_CLOSE(expectedPosition,atom->position,3,1e-7);
+        // Now test with random velocity
+        atom.resetMaxwellianVelocity(1.0);
+        for(int i=0; i<10000; i++) {
+            expectedPosition[0] = fmod(atom.position[0] + atom.velocity[0]*timestep + systemLength[0],systemLength[0]);
+            expectedPosition[1] = fmod(atom.position[1] + atom.velocity[1]*timestep + systemLength[1],systemLength[1]);
+            expectedPosition[2] = fmod(atom.position[2] + atom.velocity[2]*timestep + systemLength[2],systemLength[2]);
+            integrator.integrate(system,timestep);
+            CHECK_ARRAY_CLOSE(expectedPosition,atom.position,3,1e-7);
+            CHECK_EQUAL(false, atom.ghost());
+            CHECK_EQUAL(1,system.numberOfAtoms());
+        }
+
+        // Test with random velocity each timestep
+        for(int i=0; i<10000; i++) {
+            atom.resetMaxwellianVelocity(1.0);
+            expectedPosition[0] = fmod(atom.position[0] + atom.velocity[0]*timestep + systemLength[0],systemLength[0]);
+            expectedPosition[1] = fmod(atom.position[1] + atom.velocity[1]*timestep + systemLength[1],systemLength[1]);
+            expectedPosition[2] = fmod(atom.position[2] + atom.velocity[2]*timestep + systemLength[2],systemLength[2]);
+            integrator.integrate(system,timestep);
+            CHECK_ARRAY_CLOSE(expectedPosition,atom.position,3,1e-7);
+            CHECK_EQUAL(false, atom.ghost());
+            CHECK_EQUAL(1,system.numberOfAtoms());
+        }
     }
 }

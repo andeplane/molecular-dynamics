@@ -254,4 +254,6 @@ void Topology::MPIMove(System &system) {
             }
         }
     }
+
+    system.atomManager().atoms().cleanupList(); // Remove holes (removed atoms) by moving the last atoms
 }

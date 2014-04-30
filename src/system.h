@@ -3,7 +3,7 @@
 #include <vector>
 using std::vector;
 
-#include <potentials/potential.h>
+#include <potentials/potentials.h>
 #include <topology.h>
 #include <atom.h>
 #include <atommanager.h>
