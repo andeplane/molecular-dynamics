@@ -19,7 +19,7 @@ public:
     Atom &addAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
     void removeAllAtoms();
     void iterate(function<void(Atom &, const int &)> action);
-    const vector<Atom> &atoms();
+    vector<Atom> &atoms();
 };
 
 #endif // ATOMLIST_H

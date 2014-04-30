@@ -1,11 +1,16 @@
 #include "atom.h"
 #include <string>
 
+void Atom::setOnMoved(const function<void ()> &value)
+{
+    m_onMoved = value;
+}
 Atom::Atom() :
     m_type(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)),
     m_moved(false),
     m_id(-1),
-    m_ghost(false)
+    m_ghost(false),
+    m_onMoved(0)
 {
     memset(position,0,3*sizeof(double));
     memset(velocity,0,3*sizeof(double));
@@ -70,7 +75,10 @@ bool Atom::moved() const
 
 void Atom::setMoved(bool moved)
 {
-    m_moved = moved;
+    if(m_moved != moved) {
+        m_onMoved();
+        m_moved = moved;
+    }
 }
 
 void Atom::resetForce() {

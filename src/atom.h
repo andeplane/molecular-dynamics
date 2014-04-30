@@ -3,8 +3,9 @@
 #include <string>
 #include <iostream>
 #include <atomtype.h>
+#include <functional>
 
-using std::string;
+using std::string; using std::function;
 
 class AtomType;
 
@@ -16,6 +17,7 @@ private:
     int m_id;
     bool m_moved;
     bool m_ghost;
+    function<void()> m_onMoved;
 public:
     double position[3];
     double initial_position[3];
@@ -37,6 +39,7 @@ public:
     void setId(int id);
     bool ghost() const;
     void setGhost(bool ghost);
+    void setOnMoved(const function<void ()> &value);
 };
 
 #endif // ATOM_H

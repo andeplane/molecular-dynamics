@@ -16,14 +16,18 @@ using std::cout; using std::endl;
 
 SUITE(System) {
     TEST(AddRemoveAtoms) {
-//        System system;
-//        int nodeIndex = 0;
-//        vector<int> numNodesVector(3,1);
-//        vector<double> systemLength(3,1);
-//        double cutOffDistance = 0.25;
-//        system.initialize(nodeIndex, numNodesVector, systemLength);
+        System system;
+        int nodeIndex = 0;
+        vector<int> numNodesVector(3,1);
+        vector<double> systemLength(3,1);
+        double cutOffDistance = 0.25;
+        system.initialize(nodeIndex, numNodesVector, systemLength);
 
-//        CHECK_EQUAL(system.atomManager().atomCapacity(),1000);
+        CHECK_EQUAL(0, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(0, system.atomManager().numberOfGhostAtoms());
+        for(Atom &atom : system.atomManager().atoms().atoms()) {
+            atom.setMoved(true);
+        }
 
 //        Atom *nullPointer = 0;
 //        Atom *atom = system.addAtom();

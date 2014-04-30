@@ -20,8 +20,12 @@ int AtomList::numberOfAtoms() const
 Atom &AtomList::addAtom(AtomType *atomType)
 {
     m_atoms.resize(m_atoms.size()+1); // Default constructor will be called
-    m_atoms.back().setType(atomType);
-    return m_atoms.back();
+    Atom &atom = m_atoms.back();
+    atom.setType(atomType);
+    atom.setOnMoved([&]() {
+        m_atomsDirty = true;
+    });
+    return atom;
 }
 
 void AtomList::removeAllAtoms()
@@ -38,8 +42,9 @@ void AtomList::iterate(function<void (Atom &atom, const int &atomIndex)> action)
 }
 
 
-const vector<Atom> &AtomList::atoms()
+vector<Atom> &AtomList::atoms()
 {
+    if(m_atomsDirty) cleanupList();
     return m_atoms;
 }
 
