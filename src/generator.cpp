@@ -20,12 +20,12 @@ void Generator::generateFCC(System &system, double unitCellLength, vector<int> n
             for(int z = 0; z < numberOfUnitCells[2]; z++) {
                 for(int k = 0; k < 4; k++) {
                     // Set positions and type
-                    Atom *atom = system.addAtom();
-                    atom->setType(atomType);
-                    atom->position[0] = (x+xCell[k]) * unitCellLength;
-                    atom->position[1] = (y+yCell[k]) * unitCellLength;
-                    atom->position[2] = (z+zCell[k]) * unitCellLength;
-                    atom->setId(atomID++);
+                    Atom &atom = system.addAtom();
+                    atom.setType(atomType);
+                    atom.position[0] = (x+xCell[k]) * unitCellLength;
+                    atom.position[1] = (y+yCell[k]) * unitCellLength;
+                    atom.position[2] = (z+zCell[k]) * unitCellLength;
+                    atom.setId(atomID++);
                 }
             }
         }

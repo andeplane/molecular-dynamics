@@ -5,51 +5,19 @@
 
 using std::cerr; using std::endl; using std::cout;
 
-AtomManager::AtomManager(int initialAtomCount) :
-    m_nextFreeIndex(0),
+AtomManager::AtomManager() :
     m_cellStructureDirty(true),
-    m_cellDataDirty(true)
+    m_cellDataDirty(true),
+    m_atomsDirty(false)
 {
-    m_allAtoms.resize(initialAtomCount);
     m_cellData.cutoffDistance = INFINITY;
     m_cellData.initialized = false;
 }
 
 AtomManager::~AtomManager()
 {
-    m_allAtoms.clear();
-    m_atoms.clear();
-    m_indexMap.clear();
+
 }
-
-int AtomManager::indexInAllAtoms(Atom *atom)
-{
-    pair<int,int> &indexPair = m_indexMap.find(atom)->second;
-    return indexPair.first;
-}
-
-void AtomManager::increaseNumberOfAtoms()
-{
-    int newSize = 2*(m_allAtoms.size()+1);
-
-    vector<int> indicesOfAtomsInUse;
-    indicesOfAtomsInUse.reserve(m_atoms.size());
-    for(Atom *atom : m_atoms) {
-        indicesOfAtomsInUse.push_back(indexInAllAtoms(atom));
-    }
-
-    m_allAtoms.resize(newSize);
-    m_atoms.clear();
-    m_indexMap.clear();
-
-    for(int indexInAllAtoms : indicesOfAtomsInUse) {
-        m_indexMap.insert(pair<Atom*,pair<int,int>>(&m_allAtoms.at(indexInAllAtoms), pair<int,int>(indexInAllAtoms, m_atoms.size())));
-        m_atoms.push_back(&m_allAtoms.at(indexInAllAtoms));
-    }
-
-    indicesOfAtomsInUse.clear();
-}
-
 
 CellData &AtomManager::cellData()
 {
@@ -57,90 +25,35 @@ CellData &AtomManager::cellData()
     return m_cellData;
 }
 
-int AtomManager::indexInAtoms(Atom *atom)
+int AtomManager::numberOfAtoms() const
 {
-    pair<int,int> &indexPair = m_indexMap.find(atom)->second;
-    return indexPair.second;
+    return m_atoms.numberOfAtoms();
 }
 
-vector<Atom *> &AtomManager::atoms()
+int AtomManager::numberOfGhostAtoms() const
 {
-    return m_atoms;
+    return m_ghostAtoms.numberOfAtoms();
 }
 
-vector<Atom *> &AtomManager::ghostAtoms()
+Atom &AtomManager::addAtom()
 {
-    return m_ghostAtoms;
+    return m_atoms.addAtom();
 }
 
-Atom *AtomManager::getNextAtom() {
-    if(m_nextFreeIndex>=m_allAtoms.size()) {
-        increaseNumberOfAtoms();
-    }
-
-    int indexInAtoms = m_atoms.size();
-    int indexInAllAtoms = m_nextFreeIndex;
-
-    Atom *nextAtom = &m_allAtoms.at(indexInAllAtoms);
-    nextAtom->setMoved(false);
-    nextAtom->setGhost(false);
-
-    m_indexMap.insert(pair<Atom*,pair<int,int>>(nextAtom, pair<int,int>(indexInAllAtoms, indexInAtoms)));
-    m_nextFreeIndex++;
-}
-
-Atom *AtomManager::addAtom()
+Atom &AtomManager::addGhostAtom()
 {
-    Atom *atom  = getNextAtom();
-    m_atoms.push_back(atom);
-    return atom ;
-}
-
-Atom *AtomManager::addGhostAtom()
-{
-    Atom *atom = getNextAtom();
-    atom ->setGhost(true);
-    m_ghostAtoms.push_back(atom);
-    return atom ;
-}
-
-void AtomManager::removeAtom(Atom *atom)
-{
-    if(m_indexMap.count(atom) == 0) {
-        cerr << "Tried to remove atom not in used. Check your code." << endl;
-        return;
-    }
-
-    int removedAtomIndexAtoms = indexInAtoms(atom);
-    int removedAtomIndexAllAtoms = indexInAllAtoms(atom);
-    int lastUsedAtomIndexAllAtoms = --m_nextFreeIndex;
-
-    std::swap(m_allAtoms.at(removedAtomIndexAllAtoms), m_allAtoms.at(lastUsedAtomIndexAllAtoms));
-    m_atoms.pop_back();
-
-    // allAtoms.at(removedAtomIndexAllAtoms) = allAtoms.at(lastUsedAtomIndexAllAtoms);
-    Atom *removedAtomAllAtoms = &m_allAtoms.at(removedAtomIndexAllAtoms);
-    m_indexMap.insert(pair<Atom*,pair<int,int>>(removedAtomAllAtoms, pair<int,int>(removedAtomIndexAllAtoms, removedAtomIndexAtoms)));
-
-    Atom *lastUsedAtomAllAtoms = &m_allAtoms.at(lastUsedAtomIndexAllAtoms);
-    m_indexMap.erase(m_indexMap.find(lastUsedAtomAllAtoms)); // Remove the pointer of the atom that is not used anymore
+    return m_ghostAtoms.addAtom();
 }
 
 void AtomManager::removeGhostAtoms()
 {
-
-}
-
-int AtomManager::atomCapacity()
-{
-    return m_allAtoms.size();
+    m_ghostAtoms.removeAllAtoms();
 }
 
 void AtomManager::removeAllAtoms()
 {
-    m_indexMap.clear();
-    m_atoms.clear();
-    m_nextFreeIndex = 0;
+    m_atoms.removeAllAtoms();
+    m_ghostAtoms.removeAllAtoms();
 }
 
 void AtomManager::setCutoffDistance(double cutoffDistance) {
@@ -213,17 +126,9 @@ void AtomManager::updateCellList() {
         cell.reset();
     }
 
-    for(Atom *atom : m_atoms) {
-        int cellIndex = Cell::cellIndexForAtom(atom, m_cellData);
-        Cell &cell = m_cellData.cells.at(cellIndex);
-        cell.addAtom(atom);
-    }
-}
-
-void AtomManager::moveAtoms(const double &timestep) {
-    for(Atom *atom : m_atoms) {
-        atom->move(timestep);
-    }
-
-    m_cellDataDirty = true;
+//    for(Atom *atom : m_atoms) {
+//        int cellIndex = Cell::cellIndexForAtom(atom, m_cellData);
+//        Cell &cell = m_cellData.cells.at(cellIndex);
+//        cell.addAtom(atom);
+//    }
 }

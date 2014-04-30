@@ -13,7 +13,6 @@ AtomManager &System::atomManager()
 }
 
 System::System() :
-    m_numberOfGhostAtoms(0),
     m_isInitialized(false)
 {
 
@@ -31,46 +30,26 @@ void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
     m_atomManager.setSystemLength(systemLength);
     m_atomManager.removeAllAtoms();
-    m_numberOfGhostAtoms = 0;
 }
 
-Atom *System::addAtom()
+Atom &System::addAtom()
 {
     return m_atomManager.addAtom();
 }
 
-Atom *System::addGhostAtom()
+Atom &System::addGhostAtom()
 {
-    Atom *atom = addAtom();
-    atom->setGhost(true);
-    m_numberOfGhostAtoms++;
-    return atom;
-}
-
-void System::removeAtom(Atom *atom)
-{
-    m_atomManager.removeAtom(atom);
-}
-
-void System::removeAllAtoms()
-{
-    m_atomManager.removeAllAtoms();
-    m_numberOfGhostAtoms = 0;
-}
-
-void System::removeGhostAtoms()
-{
-    m_atomManager.removeGhostAtoms();
+    return m_atomManager.addGhostAtom();
 }
 
 int System::numberOfGhostAtoms()
 {
-    return m_atomManager.ghostAtoms().size();
+    return m_atomManager.numberOfGhostAtoms();
 }
 
 int System::numberOfAtoms()
 {
-    return m_atomManager.atoms().size();
+    return m_atomManager.numberOfAtoms();
 }
 
 void System::setSystemLength(vector<double> &systemLength)
@@ -98,14 +77,9 @@ vector<Potential*> &System::potentials()
 
 void System::resetForces() {
     checkIfInitialized();
-    for(Atom *atom : m_atomManager.atoms()) {
-        atom->resetForce();
-    }
-}
-
-vector<Atom*> &System::atoms()
-{
-    return m_atomManager.atoms();
+//    for(Atom *atom : m_atomManager.atoms()) {
+//        atom->resetForce();
+//    }
 }
 
 Topology &System::topology()

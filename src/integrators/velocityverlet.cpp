@@ -15,16 +15,15 @@ VelocityVerlet::VelocityVerlet()
 
 void VelocityVerlet::halfKick(System &system, double timestep)
 {
-    double dtHalf = timestep * 0.5;
-    double oneOverMass = 1.0/39.948;
-    for(Atom *atom : system.atoms()) {
-        atom->kick(dtHalf, atom->type()->massInverse());
-    }
+//    double dtHalf = timestep * 0.5;
+//    for(Atom *atom : system.atoms()) {
+//        atom->kick(dtHalf, atom->type()->massInverse());
+//    }
 }
 
 void VelocityVerlet::move(System &system, double timestep)
 {
-    system.atomManager().moveAtoms(timestep);
+
 }
 
 void VelocityVerlet::integrate(System &system, const double &timestep)
@@ -38,8 +37,6 @@ void VelocityVerlet::integrate(System &system, const double &timestep)
     for(Potential *potential: system.potentials()) {
         potential->calculateForces(system.atomManager());
     }
-
-    system.removeGhostAtoms();
 
     halfKick(system, timestep);
 }

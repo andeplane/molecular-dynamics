@@ -3,6 +3,7 @@ CONFIG += ordered
 
 SUBDIRS += \
     src \
-    tests
+    tests \
+    example
 
 BUILD_DIR = $$OUT_PWD

@@ -1,8 +1,9 @@
 #ifndef INTEGRATOR_H
 #define INTEGRATOR_H
 
-class System;
+enum class Integrators {VelocityVerlet = 0};
 
+class System;
 class Integrator
 {
 public:

@@ -3,7 +3,6 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
-DEFINES += DEBUGMODE
 TARGET = molecular-dynamics
 
 HEADERS += \
@@ -23,7 +22,9 @@ HEADERS += \
     atomtype.h \
     atomiterators/atomiterator.h \
     atommanager.h \
-    cell.h
+    cell.h \
+    atomlist.h \
+    includes.h
 
 SOURCES += \
     atom.cpp \
@@ -42,4 +43,5 @@ SOURCES += \
     atomtype.cpp \
     atomiterators/atomiterator.cpp \
     atommanager.cpp \
-    cell.cpp
+    cell.cpp \
+    atomlist.cpp

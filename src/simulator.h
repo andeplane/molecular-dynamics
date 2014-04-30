@@ -13,12 +13,14 @@ private:
     double m_timestep;
     double m_time;
     int m_timesteps;
+    bool m_initialized;
 
 public:
-    Simulator(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep = 0.02);
+    Simulator();
     System &system();
-    Integrator *integrator() const;
-    void setIntegrator(Integrator *integrator);
+    void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep = 0.02, Integrators integrator = Integrators::VelocityVerlet);
+    Integrator *integrator();
+    void setIntegrator(Integrators integrator);
     StatisticsSampler sampler() const;
     void setSampler(const StatisticsSampler &sampler);
     double timestep() const;

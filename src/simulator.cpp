@@ -1,13 +1,19 @@
 #include "simulator.h"
 #include "integrators/integrator.h"
 #include "integrators/velocityverlet.h"
+#include <iostream>
 
-Simulator::Simulator(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep) :
-    m_integrator(NULL)
-{
+void Simulator::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep, Integrators integrator) {
     m_system.initialize(nodeIndex, numNodesVector, systemLength);
-    VelocityVerlet *velocityVerlet = new VelocityVerlet();
-    setIntegrator(velocityVerlet);
+    setIntegrator(integrator);
+    m_initialized = true;
+}
+
+Simulator::Simulator() :
+    m_integrator(NULL),
+    m_initialized(false)
+{
+
 }
 
 double Simulator::timestep() const
@@ -45,14 +51,18 @@ System &Simulator::system()
     return m_system;
 }
 
-Integrator *Simulator::integrator() const
+Integrator *Simulator::integrator()
 {
     return m_integrator;
 }
 
-void Simulator::setIntegrator(Integrator *integrator)
+void Simulator::setIntegrator(Integrators integrator)
 {
-    m_integrator = integrator;
+    if(m_integrator) delete m_integrator;
+
+    if(integrator == Integrators::VelocityVerlet) {
+        m_integrator = new VelocityVerlet();
+    }
 }
 
 StatisticsSampler Simulator::sampler() const
@@ -66,6 +76,11 @@ void Simulator::setSampler(const StatisticsSampler &sampler)
 }
 
 void Simulator::step() {
+    if(!m_initialized) {
+        std::cerr << "Simulator not initialized. Remember to call simulator.initialize(...)." << std::endl;
+        return;
+    }
+
     m_integrator->integrate(m_system, m_timestep);
     m_timesteps++;          // Increase timestep counter by one
     m_time+= m_timestep;    // Increase time by dt

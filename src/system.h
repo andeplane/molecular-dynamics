@@ -16,8 +16,6 @@ private:
     vector<Potential*> m_potentials;
     Topology m_topology;
     AtomManager m_atomManager;
-
-    int m_numberOfGhostAtoms;
     bool m_isInitialized;
 public:
     System();
@@ -27,15 +25,12 @@ public:
 
     vector<Potential *> &potentials();
     vector<Atom*> &atoms();
-    Atom *addAtom();
-    Atom *addGhostAtom();
-    void removeAtom(Atom *atom);
+    Atom &addAtom();
+    Atom &addGhostAtom();
 
     Topology &topology();
     AtomManager &atomManager();
-    void setFirstGhostAtomIndex(int firstGhostAtomIndex);
     void addPotential(PotentialType type);
-    void removeAllAtoms();
     int numberOfAtoms();
     int numberOfGhostAtoms();
     void setSystemLength(vector<double> &systemLength);
