@@ -10,7 +10,6 @@ private:
     double m_epsilon;
     double m_cutoffDistance;
     AtomIteratorDefault m_iterator;
-    void twoParticleAction(Atom *atom1, Atom *atom2);
 public:
     LennardJonesPotential();
     double sigma() const;
@@ -20,6 +19,7 @@ public:
     double cutoffDistance() const;
     void setCutoffDistance(double cutoffDistance);
     virtual void calculateForces(AtomManager &atomManager);
+    void twoParticleAction(Atom *atom1, Atom *atom2);
 };
 
 #endif // LENNARDJONESPOTENTIAL_H
