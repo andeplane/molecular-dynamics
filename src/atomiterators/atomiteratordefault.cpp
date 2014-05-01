@@ -23,8 +23,6 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                             for(Atom *atom1 : cell1.atoms()) {
                                 for(Atom *atom2: cell2.atoms()) {
                                     if(atom1->id() <= atom2->id()) continue; // Newton's 3rd law
-                                    cout << *atom1 << endl;
-                                    cout << *atom2 << endl;
                                     this->twoParticleAction()(atom1,atom2);
                                 }
                             } // Loop atoms
