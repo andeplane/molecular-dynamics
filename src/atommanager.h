@@ -28,8 +28,8 @@ private:
 public:
     AtomManager();
     ~AtomManager();
-    Atom &addAtom();
-    Atom &addGhostAtom();
+    Atom &addAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
+    Atom &addGhostAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
     AtomList &atoms();
     AtomList &ghostAtoms();
     void removeAllAtoms();

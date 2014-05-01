@@ -8,7 +8,10 @@ using std::cerr; using std::endl; using std::cout;
 
 AtomManager::~AtomManager()
 {
-
+    removeAllAtoms();
+    m_cellData.cells.clear();
+    m_mpiReceiveBuffer.clear();
+    m_mpiSendBuffer.clear();
 }
 
 AtomManager::AtomManager() :
@@ -24,6 +27,7 @@ AtomManager::AtomManager() :
     // Default behaviour when atoms move
     m_atoms.setOnAtomMoved([&]() {
         m_cellDataDirty = true;
+        m_ghostAtomsDirty = true;
     });
 }
 
@@ -43,14 +47,14 @@ int AtomManager::numberOfGhostAtoms()
     return ghostAtoms().numberOfAtoms();
 }
 
-Atom &AtomManager::addAtom()
+Atom &AtomManager::addAtom(AtomType *atomType)
 {
-    return m_atoms.addAtom();
+    return m_atoms.addAtom(atomType);
 }
 
-Atom &AtomManager::addGhostAtom()
+Atom &AtomManager::addGhostAtom(AtomType *atomType)
 {
-    Atom &atom = m_ghostAtoms.addAtom();
+    Atom &atom = m_ghostAtoms.addAtom(atomType);
     atom.setGhost(true);
     return atom;
 }
@@ -164,16 +168,13 @@ void AtomManager::updateCellList() {
     }
 
     CellData &cellData = m_cellData;
-    cout << "Updating cells" << endl;
     atoms().iterate([&](Atom &atom) {
-        // cout << atom << endl;
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
         Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
     });
 
     ghostAtoms().iterate([&](Atom &atom) {
-        // cout << atom << endl;
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
         Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
