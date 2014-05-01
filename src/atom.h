@@ -49,7 +49,7 @@ public:
         position[0] = x;
         position[1] = y;
         position[2] = z;
-        m_onMoved();
+        if(m_onMoved) m_onMoved();
     }
 
     inline void setVelocity(const double x, const double y, const double z) {

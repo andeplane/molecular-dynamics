@@ -23,22 +23,22 @@ void Atom::resetMaxwellianVelocity(double temperature)
 }
 
 Atom::Atom() :
-    m_type(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)),
+    Atom(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom))
+{
+
+}
+
+Atom::Atom(AtomType *type) :
     m_id(Atom::numberOfCreatedAtoms++),
     m_removed(false),
     m_ghost(false),
     m_onRemoved(0),
-    m_onMoved(0)
+    m_onMoved(0),
+    m_type(type)
 {
     memset(position,0,3*sizeof(double));
     memset(velocity,0,3*sizeof(double));
     memset(force,0,3*sizeof(double));
-}
-
-Atom::Atom(AtomType *type) :
-    m_type(type)
-{
-    Atom::Atom(); // Call default constructor
 }
 
 int Atom::id() const
