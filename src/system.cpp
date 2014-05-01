@@ -57,6 +57,11 @@ int System::numberOfGhostAtoms()
     return m_atomManager.numberOfGhostAtoms();
 }
 
+vector<double> System::systemLength()
+{
+    return m_topology.systemLength();
+}
+
 int System::numberOfAtoms()
 {
     return m_atomManager.numberOfAtoms();

@@ -32,6 +32,7 @@ public:
     Potential *addPotential(PotentialType type);
     int numberOfAtoms();
     int numberOfGhostAtoms();
+    vector<double> systemLength();
 protected:
     void checkIfInitialized();
 };
