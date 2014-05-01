@@ -6,24 +6,22 @@ using namespace std;
 
 int main()
 {
-    Random::setSeed(2);
+    Random::setSeed(1);
     Simulator simulator;
     vector<double> systemLength(3,1);
+
     simulator.initialize(0, vector<int>(3,1), systemLength);
-    // LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
+    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
+    double latticeConstant = 1.54478708;
+    Generator::generateFCC(simulator.system(), latticeConstant, vector<int>(3,1), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+    systemLength = simulator.system().systemLength();
 
-    // Generator::generateFCC(simulator.system(), 1, vector<int>(3,1), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
-    Atom &atom1 = simulator.system().addAtom();
-    // Atom &atom2 = simulator.system().addAtom();
-    atom1.setType(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
-    // atom2.setType(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
-
-    atom1.setPosition(0.5,0.5,0.5);
-    cout << "Things: " << simulator.system().atomManager() << endl;
-
-    cout << "Before step: " << simulator.system().atomManager() << endl;
-    // simulator.step();
-    cout << "After step: " << simulator.system().atomManager() << endl;
+    for(int i=0; i<1000; i++) {
+//        if(i%100 == 0) {
+//            cout << i << endl;
+//        }
+        simulator.step();
+    }
 
     return 0;
 }

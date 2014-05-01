@@ -18,7 +18,7 @@ private:
 public:
     Simulator();
     System &system();
-    void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep = 0.02, Integrators integrator = Integrators::VelocityVerlet);
+    void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep = 0.01, Integrators integrator = Integrators::VelocityVerlet);
     Integrator *integrator();
     void setIntegrator(Integrators integrator);
     StatisticsSampler sampler() const;
