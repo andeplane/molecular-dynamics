@@ -8,19 +8,22 @@ int main()
 {
     Random::setSeed(2);
     Simulator simulator;
-    vector<double> systemLength(3,1);
+    vector<double> systemLength(3,10);
     simulator.initialize(0, vector<int>(3,1), systemLength);
-    Generator::generateFCC(simulator.system(), 1, vector<int>(3,1), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
+
+    // Generator::generateFCC(simulator.system(), 1, vector<int>(3,1), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+    Atom &atom1 = simulator.system().addAtom();
+    Atom &atom2 = simulator.system().addAtom();
+    atom1.setType(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+    atom2.setType(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+
+    atom1.setPosition(2,0,0);
+
     cout << simulator.system().atomManager().atoms() << endl;
     simulator.step();
     cout << simulator.system().atomManager().atoms() << endl;
 
-    AtomIteratorDefault iterator;
-    iterator.setTwoParticleAction([](Atom *atom1, Atom *atom2) {
-        cout << "(" << atom1->id() << "," << atom2->id() << ")" << endl;
-    });
-
-    iterator.iterate(simulator.system().atomManager());
     return 0;
 }
 

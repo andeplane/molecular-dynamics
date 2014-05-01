@@ -16,14 +16,14 @@ VelocityVerlet::VelocityVerlet()
 void VelocityVerlet::halfKick(System &system, double timestep)
 {
     double dtHalf = timestep * 0.5;
-    system.atomManager().atoms().iterate([&](Atom &atom, const int &atomIndex) {
+    system.atomManager().atoms().iterate([&](Atom &atom) {
         atom.kick(dtHalf, atom.type()->massInverse());
     });
 }
 
 void VelocityVerlet::move(System &system, double timestep)
 {
-    system.atomManager().atoms().iterate([&](Atom &atom, const int &atomIndex) {
+    system.atomManager().atoms().iterate([&](Atom &atom) {
         atom.move(timestep);
     });
 }
@@ -33,8 +33,7 @@ void VelocityVerlet::integrate(System &system, const double &timestep)
     halfKick(system, timestep);
     move(system, timestep);
     system.topology().MPIMove(system);
-    // system.topology().MPICopy(system,system.atomManager().cutoffDistance());
-
+    system.topology().MPICopy(system,system.atomManager().cutoffDistance());
     system.atomManager().atoms().iterate([](Atom &atom, const int &atomIndex) {
         atom.resetForce();
     });

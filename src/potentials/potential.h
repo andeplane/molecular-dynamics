@@ -6,7 +6,7 @@ class Potential
 {
 public:
     Potential();
-    virtual void calculateForces(AtomManager &atomList) = 0;
+    virtual void calculateForces(AtomManager &atomManager) = 0;
 };
 
 #endif // POTENTIAL_H

@@ -167,22 +167,25 @@ void Topology::MPICopy(System &system, double cutoffDistance)
             int i = 0;
             for (Atom *atom : m_moveQueue.at(localNodeID)) {
                 /* Shift the coordinate origin */
-                m_mpiSendBuffer[4*i+0] = atom->position[0]-m_shiftVector[localNodeID][0];
-                m_mpiSendBuffer[4*i+1] = atom->position[1]-m_shiftVector[localNodeID][1];
-                m_mpiSendBuffer[4*i+2] = atom->position[2]-m_shiftVector[localNodeID][2];
-                m_mpiSendBuffer[4*i+3] = atom->type()->atomicNumber();
+                m_mpiSendBuffer[5*i+0] = atom->position[0]-m_shiftVector[localNodeID][0];
+                m_mpiSendBuffer[5*i+1] = atom->position[1]-m_shiftVector[localNodeID][1];
+                m_mpiSendBuffer[5*i+2] = atom->position[2]-m_shiftVector[localNodeID][2];
+                m_mpiSendBuffer[5*i+3] = atom->type()->atomicNumber();
+                m_mpiSendBuffer[5*i+4] = atom->id();
                 i++;
             }
 
-            memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),3*numberToRecieve*sizeof(double));
+            memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),5*numberToRecieve*sizeof(double));
 
             for(int i=0; i<numberToRecieve; i++) {
                 Atom &ghostAtom = system.addGhostAtom();
-                ghostAtom.position[0] = m_mpiReceiveBuffer[4*i+0];
-                ghostAtom.position[1] = m_mpiReceiveBuffer[4*i+1];
-                ghostAtom.position[2] = m_mpiReceiveBuffer[4*i+2];
-                int atomicNumber = m_mpiReceiveBuffer[4*i+3];
+                ghostAtom.position[0] = m_mpiReceiveBuffer[5*i+0];
+                ghostAtom.position[1] = m_mpiReceiveBuffer[5*i+1];
+                ghostAtom.position[2] = m_mpiReceiveBuffer[5*i+2];
+                int atomicNumber = m_mpiReceiveBuffer[5*i+3];
+                int atomID = m_mpiReceiveBuffer[5*i+4];
                 ghostAtom.setType(AtomType::atomTypeFromAtomicNumber(atomicNumber));
+                ghostAtom.setId(atomID);
             }
         }
     }

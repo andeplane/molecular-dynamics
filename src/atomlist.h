@@ -20,6 +20,7 @@ public:
     Atom &addAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
     void removeAllAtoms();
     void iterate(function<void(Atom &, const int &)> action);
+    void iterate(function<void(Atom &)> action);
     const vector<Atom> &atoms();
     void setOnAtomMoved(const function<void ()> &onAtomMoved);
     void cleanupList();

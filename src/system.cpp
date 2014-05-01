@@ -67,11 +67,12 @@ void System::setSystemLength(vector<double> &systemLength)
     m_atomManager.setSystemLength(systemLength);
 }
 
-void System::addPotential(PotentialType type) {
+Potential *System::addPotential(PotentialType type) {
     checkIfInitialized();
     if(type == PotentialType::LennardJones) {
         LennardJonesPotential *lennardJones = new LennardJonesPotential();
         potentials().push_back(lennardJones);
+        return lennardJones;
     }
 }
 

@@ -39,6 +39,14 @@ void AtomList::removeAllAtoms()
     m_atoms.clear();
 }
 
+void AtomList::iterate(function<void (Atom &atom)> action)
+{
+    for(int atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
+        Atom &atom = m_atoms.at(atomIndex);
+        action(atom);
+    }
+}
+
 void AtomList::iterate(function<void (Atom &atom, const int &atomIndex)> action)
 {
     for(int atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {

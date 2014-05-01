@@ -5,6 +5,11 @@
 
 using std::cerr; using std::endl; using std::cout;
 
+AtomManager::~AtomManager()
+{
+
+}
+
 AtomManager::AtomManager() :
     m_cellStructureDirty(true),
     m_cellDataDirty(true)
@@ -16,11 +21,6 @@ AtomManager::AtomManager() :
     m_atoms.setOnAtomMoved([&]() {
         m_cellDataDirty = true;
     });
-}
-
-AtomManager::~AtomManager()
-{
-
 }
 
 CellData &AtomManager::cellData()
@@ -46,7 +46,9 @@ Atom &AtomManager::addAtom()
 
 Atom &AtomManager::addGhostAtom()
 {
-    return m_ghostAtoms.addAtom();
+    Atom &atom = m_ghostAtoms.addAtom();
+    atom.setGhost(true);
+    return atom;
 }
 
 void AtomManager::removeGhostAtoms()

@@ -106,7 +106,7 @@ void Atom::resetForce() {
 }
 
 std::ostream& operator<<(std::ostream &stream, const Atom &atom) {
-    if(!atom.m_ghost) return stream << "Atom of type '" << atom.type()->name() << "' r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
-    else return stream << "Ghost atom of type '" << atom.type()->name() << "' r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
+    if(!atom.m_ghost) return stream << "Atom of type '" << atom.type()->name() << "' with id " << atom.id() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
+    else return stream << "Ghost atom of type '" << atom.type()->name() << "' with id " << atom.id() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
 
 }

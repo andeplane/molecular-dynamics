@@ -29,7 +29,7 @@ public:
 
     Topology &topology();
     AtomManager &atomManager();
-    void addPotential(PotentialType type);
+    Potential *addPotential(PotentialType type);
     int numberOfAtoms();
     int numberOfGhostAtoms();
 protected:
