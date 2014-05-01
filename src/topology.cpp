@@ -222,19 +222,26 @@ void Topology::copyGhostAtomsWithMPI(AtomManager &atomManager)
     }
 
     for(int dimension=0;dimension<3;dimension++) {
-        atomManager.atoms().iterate([&](Atom &atom) {
-            for(int higher=0; higher<=1; higher++) {
-                int localNodeID = 2*dimension + higher;
-                if(atomShouldBeCopied(atom,dimension,higher,cutoffDistance)) m_moveQueue.at(localNodeID).push_back(&atom);
-            }
-        });
 
         atomManager.ghostAtoms().iterate([&](Atom &atom) {
             for(int higher=0; higher<=1; higher++) {
                 int localNodeID = 2*dimension + higher;
-                if(atomShouldBeCopied(atom,dimension,higher,cutoffDistance)) m_moveQueue.at(localNodeID).push_back(&atom);
+                if(atomShouldBeCopied(atom,dimension,higher,cutoffDistance)) {
+                    m_moveQueue.at(localNodeID).push_back(&atom);
+                }
             }
         });
+
+        atomManager.atoms().iterate([&](Atom &atom) {
+            for(int higher=0; higher<=1; higher++) {
+                int localNodeID = 2*dimension + higher;
+                if(atomShouldBeCopied(atom,dimension,higher,cutoffDistance)) {
+                    m_moveQueue.at(localNodeID).push_back(&atom);
+                }
+            }
+        });
+
+
 
         /* Loop through higher and lower node in this dimension */
         for(int higher=0;higher<2;higher++) {
