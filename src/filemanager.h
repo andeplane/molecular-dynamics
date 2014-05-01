@@ -15,14 +15,12 @@ class FileManager
 private:
     ofstream *m_movieFile;
     vector<double> m_dataArray;
-protected:
     bool isMovieFileOpen() const;
 public:
     FileManager();
     void loadState(string stateFolder, vector<Atom> &atoms);
     void saveState(string stateFolder, vector<Atom> &atoms);
     ofstream *getMovieFile() const;
-    void setMovieFile(FILE *value);
 
     void saveMovieFrame(vector<Atom> &atoms, Topology &topology);
 };

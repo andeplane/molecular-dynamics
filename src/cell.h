@@ -37,8 +37,15 @@ public:
         int i = atom.position[0] / cellData.cellLength[0] + 1;
         int j = atom.position[1] / cellData.cellLength[1] + 1;
         int k = atom.position[2] / cellData.cellLength[2] + 1;
+        int index = Cell::cellIndexFromIJK(i,j,k,cellData);
 
-        return Cell::cellIndexFromIJK(i,j,k,cellData);
+//        if(!atom.ghost()) {
+//            cout << atom << endl;
+//            cout << "Size: " << cellData.cells.size() << endl;
+//            cout << "IJK: " << i << ", " << j << ", " << k << endl;
+//            cout << "index: " << index << endl;
+//        }
+        return index;
     }
 
     static Cell *cellContainingAtom(Atom &atom, CellData &cellData) {
