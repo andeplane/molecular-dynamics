@@ -20,7 +20,7 @@ System::System() :
 System::~System()
 {
     m_potentials.clear();
-
+    m_atomManager.removeAllAtoms();
 }
 
 void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength)
@@ -32,16 +32,16 @@ void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double
     m_atomManager.removeAllAtoms();
 }
 
-Atom &System::addAtom()
+Atom &System::addAtom(AtomType *atomType)
 {
     checkIfInitialized();
-    return m_atomManager.addAtom();
+    return m_atomManager.addAtom(atomType);
 }
 
-Atom &System::addGhostAtom()
+Atom &System::addGhostAtom(AtomType *atomType)
 {
     checkIfInitialized();
-    return m_atomManager.addGhostAtom();
+    return m_atomManager.addGhostAtom(atomType);
 }
 
 void System::removeAllAtoms() {
