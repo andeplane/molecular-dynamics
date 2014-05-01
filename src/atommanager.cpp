@@ -2,6 +2,7 @@
 #include <atom.h>
 #include <iostream>
 #include <cmath>
+#include <topology.h>
 
 using std::cerr; using std::endl; using std::cout;
 
@@ -12,7 +13,10 @@ AtomManager::~AtomManager()
 
 AtomManager::AtomManager() :
     m_cellStructureDirty(true),
-    m_cellDataDirty(true)
+    m_cellDataDirty(true),
+    m_ghostAtomsDirty(true),
+    m_topology(0),
+    m_updatingGhostAtoms(false)
 {
     m_cellData.cutoffDistance = INFINITY;
     m_cellData.initialized = false;
@@ -31,12 +35,12 @@ CellData &AtomManager::cellData()
 
 int AtomManager::numberOfAtoms()
 {
-    return m_atoms.numberOfAtoms();
+    return atoms().numberOfAtoms();
 }
 
 int AtomManager::numberOfGhostAtoms()
 {
-    return m_ghostAtoms.numberOfAtoms();
+    return ghostAtoms().numberOfAtoms();
 }
 
 Atom &AtomManager::addAtom()
@@ -54,16 +58,19 @@ Atom &AtomManager::addGhostAtom()
 void AtomManager::removeGhostAtoms()
 {
     m_ghostAtoms.removeAllAtoms();
+    m_ghostAtomsDirty = true;
 }
 
 void AtomManager::removeAllAtoms()
 {
     m_atoms.removeAllAtoms();
     m_ghostAtoms.removeAllAtoms();
+    m_ghostAtomsDirty = true;
 }
 
 void AtomManager::setCutoffDistance(double cutoffDistance) {
     if(m_cellData.cutoffDistance != cutoffDistance) {
+        m_ghostAtomsDirty = true;
         m_cellStructureDirty = true;
         m_cellData.cutoffDistance = cutoffDistance;
     }
@@ -76,6 +83,7 @@ double AtomManager::cutoffDistance()
 
 void AtomManager::setSystemLength(vector<double> &systemLength) {
     if(systemLength.at(0) != m_cellData.systemLength[0] || systemLength.at(1) != m_cellData.systemLength[1] || systemLength.at(2) != m_cellData.systemLength[2]) {
+        m_ghostAtomsDirty = true;
         m_cellStructureDirty = true;
         m_cellData.systemLength[0] = systemLength.at(0);
         m_cellData.systemLength[1] = systemLength.at(1);
@@ -91,11 +99,23 @@ AtomList &AtomManager::atoms()
     return m_atoms;
 }
 
+void AtomManager::updateGhostAtoms() {
+    m_updatingGhostAtoms = true;
+    m_topology->copyGhostAtomsWithMPI(*this);
+    m_updatingGhostAtoms = false;
+    m_ghostAtomsDirty = false;
+}
+
 AtomList &AtomManager::ghostAtoms()
 {
+    if(m_ghostAtomsDirty && !m_updatingGhostAtoms) updateGhostAtoms();
     return m_ghostAtoms;
 }
 
+void AtomManager::setTopology(Topology *topology)
+{
+    m_topology = topology;
+}
 void AtomManager::updateCellStructure() {
     if(!m_cellData.initialized) {
         std::cerr << "atomManager.cellData not initialized. We don't know the systemLength." << std::endl;
@@ -116,13 +136,13 @@ void AtomManager::updateCellStructure() {
     m_cellData.numberOfCellsWithGhostCells[1] = m_cellData.numberOfCellsWithoutGhostCells[1]+2;
     m_cellData.numberOfCellsWithGhostCells[2] = m_cellData.numberOfCellsWithoutGhostCells[2]+2;
 
-    int numCellsTotal = m_cellData.numberOfCellsWithGhostCells[0]*m_cellData.numberOfCellsWithGhostCells[1]*m_cellData.numberOfCellsWithGhostCells[2];
+    unsigned long numCellsTotal = m_cellData.numberOfCellsWithGhostCells[0]*m_cellData.numberOfCellsWithGhostCells[1]*m_cellData.numberOfCellsWithGhostCells[2];
 
     if(m_cellData.cells.size() < numCellsTotal) {
         m_cellData.cells.resize(numCellsTotal);
     }
 
-    for(int cellIndex=0; cellIndex<m_cellData.cells.size(); cellIndex++) {
+    for(unsigned long cellIndex=0; cellIndex<m_cellData.cells.size(); cellIndex++) {
         Cell &cell = m_cellData.cells.at(cellIndex);
         cell.setCellIndex(cellIndex);
     }
@@ -136,25 +156,31 @@ void AtomManager::updateCellStructure() {
 }
 
 void AtomManager::updateCellList() {
-    m_cellDataDirty = false;
     if(m_cellStructureDirty) updateCellStructure();
+    m_cellDataDirty = false;
 
     for(Cell &cell : m_cellData.cells) {
         cell.reset();
     }
 
     CellData &cellData = m_cellData;
-
-    m_atoms.iterate([&](Atom &atom, const int &atomIndex) {
+    cout << "Updating cells" << endl;
+    atoms().iterate([&](Atom &atom) {
+        // cout << atom << endl;
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
         Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
     });
 
-    m_ghostAtoms.iterate([&](Atom &atom, const int &atomIndex) {
+    ghostAtoms().iterate([&](Atom &atom) {
+        // cout << atom << endl;
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
         Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
     });
 
+}
+
+std::ostream& operator<<(std::ostream &stream, AtomManager &atomManager) {
+    return stream << "Atom manager: " << std::endl << "Ghost atoms: " << atomManager.ghostAtoms() << endl << "Atoms: " << atomManager.atoms() << endl;
 }

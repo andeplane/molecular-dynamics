@@ -3,8 +3,7 @@
 #include <vector>
 using std::vector;
 
-class System;
-class Atom;
+class System; class Atom; class AtomManager;
 
 class Topology
 {
@@ -30,7 +29,7 @@ public:
     ~Topology();
     void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
     void MPIMove(System &system);         // Will move atoms between processors
-    void MPICopy(System &system, double cutoffDistance);         // Will copy ghost atoms between processors
+    void copyGhostAtomsWithMPI(AtomManager &atomManager);
     int numNodes() const;
     int nodeIndex() const;
     vector<double> systemLength() const;

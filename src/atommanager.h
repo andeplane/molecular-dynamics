@@ -7,16 +7,22 @@ using std::vector; using std::map; using std::pair;
 
 #include <atomlist.h>
 #include <cell.h>
-class Atom;
+class Atom; class Topology;
 
 class AtomManager
 {
 private:
+    friend std::ostream& operator<<(std::ostream&stream, AtomManager &atomManager);
     AtomList m_atoms;
     AtomList m_ghostAtoms;
     CellData m_cellData;
     bool m_cellStructureDirty;
     bool m_cellDataDirty;
+    bool m_ghostAtomsDirty;
+    bool m_updatingGhostAtoms;
+    vector<double> m_mpiSendBuffer;
+    vector<double> m_mpiReceiveBuffer;
+    Topology *m_topology;
 
     void updateCellStructure();
 public:
@@ -36,6 +42,8 @@ public:
     void setSystemLength(vector<double> &systemLength);
     int numberOfAtoms();
     int numberOfGhostAtoms();
+    void setTopology(Topology *topology);
+    void updateGhostAtoms();
 };
 
 #endif // ATOMMANAGER_H

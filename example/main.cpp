@@ -20,9 +20,9 @@ int main()
 
     atom1.setPosition(2,0,0);
 
-    cout << simulator.system().atomManager().atoms() << endl;
+    cout << "Before step: " << simulator.system().atomManager() << endl;
     simulator.step();
-    cout << simulator.system().atomManager().atoms() << endl;
+    cout << "After step: " << simulator.system().atomManager() << endl;
 
     return 0;
 }

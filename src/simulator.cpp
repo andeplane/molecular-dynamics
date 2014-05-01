@@ -12,8 +12,8 @@ void Simulator::initialize(int nodeIndex, vector<int> numNodesVector, vector<dou
 
 Simulator::Simulator() :
     m_integrator(NULL),
-    m_initialized(false),
-    m_timestep(0.01)
+    m_timestep(0.01),
+    m_initialized(false)
 {
 
 }

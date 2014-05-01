@@ -10,7 +10,7 @@ private:
     double m_epsilon;
     double m_cutoffDistance;
     AtomIteratorDefault m_iterator;
-
+    void twoParticleAction(Atom *atom1, Atom *atom2);
 public:
     LennardJonesPotential();
     double sigma() const;

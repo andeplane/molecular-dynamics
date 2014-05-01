@@ -27,6 +27,7 @@ void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double
 {
     m_isInitialized = true;
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
+    m_atomManager.setTopology(&m_topology);
     m_atomManager.setSystemLength(systemLength);
     m_atomManager.removeAllAtoms();
 }
