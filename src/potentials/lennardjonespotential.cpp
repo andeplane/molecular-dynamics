@@ -7,6 +7,7 @@ LennardJonesPotential::LennardJonesPotential() :
     m_epsilon(1),
     m_cutoffDistance(2.5)
 {
+    setName("Lennard Jones");
     using namespace std::placeholders;
     m_iterator.setTwoParticleAction(std::bind(&LennardJonesPotential::twoParticleAction, this, _1, _2));
 }
