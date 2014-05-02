@@ -4,6 +4,7 @@ CONFIG += ordered
 SUBDIRS += \
     src \
     tests \
-    example
+    example \
+    createMovie
 
 BUILD_DIR = $$OUT_PWD
