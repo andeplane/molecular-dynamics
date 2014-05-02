@@ -19,6 +19,12 @@ void LennardJonesPotential::twoParticleAction(Atom *atom1, Atom *atom2)
     dr[1] = atom1->position[1] - atom2->position[1];
     dr[2] = atom1->position[2] - atom2->position[2];
     double dr2 = dr[0]*dr[0] + dr[1]*dr[1] + dr[2]*dr[2];
+    if(dr2 == 0) {
+        std::cout << "Error in LennardJonesPotential::twoParticleAction. Relative distance is zero:" << std::endl;
+        std::cout << *atom1 << endl;
+        std::cout << *atom2 << endl;
+        return;
+    }
 
     if (dr2<cutoffDistanceSquared) {
         double dr2Inverse = 1.0/dr2;
