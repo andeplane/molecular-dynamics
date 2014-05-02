@@ -42,6 +42,7 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
     m_nodeLength.resize(3);
     m_systemLength.resize(3);
     m_nodeIndices.resize(3);
+    m_origo.resize(3);
     m_isInitialized = true;
 
     for(int a=0; a<3; a++) {
@@ -55,7 +56,9 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
     m_nodeIndices[1] = (nodeIndex/numNodesVector[2]) % numNodesVector[1];
     m_nodeIndices[2] = nodeIndex%numNodesVector[2];
 
-
+    m_origo[0] = m_nodeIndices[0]*m_nodeLength[0];
+    m_origo[1] = m_nodeIndices[1]*m_nodeLength[1];
+    m_origo[2] = m_nodeIndices[2]*m_nodeLength[2];
 
     /* Integer vectors to specify the six neighbor nodes */
     int integerVector[6][3] = {
@@ -130,6 +133,12 @@ vector<int> Topology::nodeIndices() const
 double Topology::maxSystemLength() const
 {
     return std::max(m_systemLength[0],std::max(m_systemLength[1], m_systemLength[2]));
+}
+
+
+vector<double> Topology::origo() const
+{
+    return m_origo;
 }
 
 bool Topology::atomShouldBeCopied(Atom &atom, int &dimension, bool higher, double &cutoffDistance) {

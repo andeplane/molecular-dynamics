@@ -18,11 +18,12 @@ private:
     bool isMovieFileOpen() const;
 public:
     FileManager();
+    ~FileManager();
     void loadState(string stateFolder, vector<Atom> &atoms);
     void saveState(string stateFolder, vector<Atom> &atoms);
     ofstream *getMovieFile() const;
-
-    void saveMovieFrame(vector<Atom> &atoms, Topology &topology);
+    void finalize();
+    void saveMovieFrame(const vector<Atom> &atoms, Topology &topology);
 };
 
 #endif // FILEMANAGER_H

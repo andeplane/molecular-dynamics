@@ -9,6 +9,11 @@ FileManager::FileManager() :
 
 }
 
+FileManager::~FileManager()
+{
+    if(isMovieFileOpen()) m_movieFile->close();
+}
+
 bool FileManager::isMovieFileOpen() const {
     return (m_movieFile!=NULL);
 }
@@ -18,7 +23,12 @@ ofstream *FileManager::getMovieFile() const
     return m_movieFile;
 }
 
-void FileManager::saveMovieFrame(vector<Atom> &atoms, Topology &topology) {
+void FileManager::finalize()
+{
+    if(isMovieFileOpen()) m_movieFile->close();
+}
+
+void FileManager::saveMovieFrame(const vector<Atom> &atoms, Topology &topology) {
     if(!isMovieFileOpen()) {
         char *filename = new char[10000];
         sprintf(filename,"movie_files/movie%04d.bin",topology.nodeIndex());
@@ -26,13 +36,11 @@ void FileManager::saveMovieFrame(vector<Atom> &atoms, Topology &topology) {
 
         delete filename;
     }
-
     m_dataArray.clear();
-
-    for(Atom &atom : atoms) {
-        double x = atom.position[0] + topology.systemLength()[0];
-        double y = atom.position[1] + topology.systemLength()[1];
-        double z = atom.position[2] + topology.systemLength()[2];
+    for(const Atom &atom : atoms) {
+        double x = atom.position[0] + topology.origo()[0];
+        double y = atom.position[1] + topology.origo()[1];
+        double z = atom.position[2] + topology.origo()[2];
         double atomicNumber = atom.type()->atomicNumber();
         double atomID = atom.id();
         m_dataArray.push_back(x);
