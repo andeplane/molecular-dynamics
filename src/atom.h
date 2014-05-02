@@ -19,8 +19,8 @@ private:
     static int numberOfCreatedAtoms;
     bool m_removed;
     bool m_ghost;
-    function<void()> m_onRemoved;
-    function<void()> m_onMoved;
+    vector<function<void()>> m_onRemoved;
+    vector<function<void()>> m_onMoved;
 public:
     double position[3];
     double initial_position[3];
@@ -43,13 +43,13 @@ public:
     void setId(int id);
     bool ghost() const;
     void setGhost(bool ghost);
-    void setOnRemoved(const function<void ()> &value);
-    void setOnMoved(const function<void ()> &onMoved);
     inline void setPosition(const double x, const double y, const double z) {
         position[0] = x;
         position[1] = y;
         position[2] = z;
-        if(m_onMoved) m_onMoved();
+        for(function<void()> onMoved : m_onMoved) {
+            onMoved();
+        }
     }
 
     inline void setVelocity(const double x, const double y, const double z) {
@@ -57,6 +57,9 @@ public:
         velocity[1] = y;
         velocity[2] = z;
     }
+
+    void addOnMoved(const function<void ()> &value);
+    void addOnRemoved(const function<void ()> &value);
 };
 
 #endif // ATOM_H

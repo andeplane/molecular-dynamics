@@ -13,6 +13,7 @@ private:
     vector<Atom> m_atoms;
     bool m_atomsDirty;
     function<void()> m_onAtomMoved;
+    function<void()> m_onAtomRemoved;
 public:
     AtomList(int initialAtomCount = 1000);
     ~AtomList();

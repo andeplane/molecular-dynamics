@@ -25,11 +25,11 @@ Atom &AtomList::addAtom(AtomType *atomType)
     m_atoms.resize(m_atoms.size()+1); // Default constructor will be called
     Atom &atom = m_atoms.back();
     atom.setType(atomType);
-    atom.setOnRemoved([&]() {
+    atom.addOnRemoved([&]() {
         // This list should know if an atom has been moved
         m_atomsDirty = true;
     });
-    atom.setOnMoved(m_onAtomMoved); // Set default function that will be called on move function on atoms
+    atom.addOnMoved(m_onAtomMoved); // Set default function that will be called on move function on atoms
 
     return atom;
 }

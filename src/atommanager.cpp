@@ -50,7 +50,12 @@ int AtomManager::numberOfGhostAtoms()
 
 Atom &AtomManager::addAtom(AtomType *atomType)
 {
-    return m_atoms.addAtom(atomType);
+    Atom &atom = m_atoms.addAtom(atomType);
+    atom.addOnRemoved([&]() {
+        m_ghostAtomsDirty = true;
+    });
+
+    return atom;
 }
 
 Atom &AtomManager::addGhostAtom(AtomType *atomType)
@@ -105,6 +110,7 @@ AtomList &AtomManager::atoms()
 }
 
 void AtomManager::updateGhostAtoms() {
+    cout << "Ghost atoms are dirty, updating" << endl;
     m_updatingGhostAtoms = true;
     m_topology->copyGhostAtomsWithMPI(*this);
     m_updatingGhostAtoms = false;
@@ -198,4 +204,5 @@ void AtomManager::updateCellList() {
 
 std::ostream& operator<<(std::ostream &stream, AtomManager &atomManager) {
     return stream << "Atom manager: " << std::endl << "Ghost atoms: " << atomManager.ghostAtoms() << endl << "Atoms: " << atomManager.atoms();
+    // return stream << "Atom manager: " << std::endl << endl << "Atoms: " << atomManager.atoms();
 }

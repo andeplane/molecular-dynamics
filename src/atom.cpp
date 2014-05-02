@@ -4,14 +4,14 @@
 
 int Atom::numberOfCreatedAtoms = 0;
 
-void Atom::setOnRemoved(const function<void ()> &value)
+void Atom::addOnRemoved(const function<void ()> &value)
 {
-    m_onRemoved = value;
+    m_onRemoved.push_back(value);
 }
 
-void Atom::setOnMoved(const function<void ()> &onMoved)
+void Atom::addOnMoved(const function<void ()> &value)
 {
-    m_onMoved = onMoved;
+    m_onMoved.push_back(value);
 }
 
 void Atom::resetMaxwellianVelocity(double temperature)
@@ -80,7 +80,9 @@ void Atom::move(const double &timestep)
     position[1] += velocity[1]*timestep;
     position[2] += velocity[2]*timestep;
 
-    m_onMoved();
+    for(function<void()> onMoved : m_onMoved) {
+        onMoved();
+    }
 }
 
 void Atom::kick(const double &timestep, const double oneOverMass)
@@ -99,7 +101,9 @@ bool Atom::removed() const
 void Atom::setRemoved(bool removed)
 {
     if(m_removed != removed) {
-        m_onRemoved();
+        for(function<void()> onRemoved : m_onRemoved) {
+            onRemoved();
+        }
         m_removed = removed;
     }
 }
