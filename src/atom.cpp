@@ -16,6 +16,9 @@ void Atom::setOnMoved(const function<void ()> &onMoved)
 
 void Atom::resetMaxwellianVelocity(double temperature)
 {
+    if(m_type->atomicNumber() == 0) {
+        std::cout << "Warning: Tried to reset maxwellian velocity on an atom of type NoAtom." << std::endl;
+    }
     double standardDeviation = sqrt(temperature*m_type->massInverse());
     velocity[0] = Random::nextGauss(0, standardDeviation);
     velocity[1] = Random::nextGauss(0, standardDeviation);
@@ -102,7 +105,9 @@ void Atom::setRemoved(bool removed)
 }
 
 void Atom::resetForce() {
-    memset(force,0,3*sizeof(double));
+    force[0] = 0;
+    force[1] = 0;
+    force[2] = 0;
 }
 
 std::ostream& operator<<(std::ostream &stream, const Atom &atom) {
