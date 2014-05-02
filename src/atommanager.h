@@ -20,6 +20,7 @@ private:
     bool m_cellDataDirty;
     bool m_ghostAtomsDirty;
     bool m_updatingGhostAtoms;
+    bool m_ghostAtomsEnabled;
     vector<double> m_mpiSendBuffer;
     vector<double> m_mpiReceiveBuffer;
     Topology *m_topology;
@@ -44,6 +45,8 @@ public:
     int numberOfGhostAtoms();
     void setTopology(Topology *topology);
     void updateGhostAtoms();
+    bool ghostAtomsEnabled() const;
+    void setGhostAtomsEnabled(bool ghostAtomsEnabled);
 };
 
 #endif // ATOMMANAGER_H

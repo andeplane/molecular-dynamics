@@ -19,7 +19,8 @@ AtomManager::AtomManager() :
     m_cellDataDirty(true),
     m_ghostAtomsDirty(true),
     m_topology(0),
-    m_updatingGhostAtoms(false)
+    m_updatingGhostAtoms(false),
+    m_ghostAtomsEnabled(true)
 {
     m_cellData.cutoffDistance = INFINITY;
     m_cellData.initialized = false;
@@ -112,13 +113,26 @@ void AtomManager::updateGhostAtoms() {
 
 AtomList &AtomManager::ghostAtoms()
 {
-    if(m_ghostAtomsDirty && !m_updatingGhostAtoms) updateGhostAtoms();
+    if(m_ghostAtomsEnabled) {
+        if(m_ghostAtomsDirty && !m_updatingGhostAtoms) updateGhostAtoms();
+    } else removeGhostAtoms();
+
     return m_ghostAtoms;
 }
 
 void AtomManager::setTopology(Topology *topology)
 {
     m_topology = topology;
+}
+
+bool AtomManager::ghostAtomsEnabled() const
+{
+    return m_ghostAtomsEnabled;
+}
+
+void AtomManager::setGhostAtomsEnabled(bool ghostAtomsEnabled)
+{
+    m_ghostAtomsEnabled = ghostAtomsEnabled;
 }
 void AtomManager::updateCellStructure() {
     if(!m_cellData.initialized) {
@@ -183,5 +197,5 @@ void AtomManager::updateCellList() {
 }
 
 std::ostream& operator<<(std::ostream &stream, AtomManager &atomManager) {
-    return stream << "Atom manager: " << std::endl << "Ghost atoms: " << atomManager.ghostAtoms() << endl << "Atoms: " << atomManager.atoms() << endl;
+    return stream << "Atom manager: " << std::endl << "Ghost atoms: " << atomManager.ghostAtoms() << endl << "Atoms: " << atomManager.atoms();
 }
