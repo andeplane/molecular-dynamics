@@ -22,7 +22,7 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
 
                             for(Atom *atom1 : cell1.atoms()) {
                                 for(Atom *atom2: cell2.atoms()) {
-                                    if(atom1->id() <= atom2->id()) continue; // Newton's 3rd law
+                                    if(atom1->id() <= atom2->id() && !atom2->ghost()) continue; // Newton's 3rd law, always calculate if atom2 is ghost
                                     this->twoParticleAction()(atom1,atom2);
                                 }
                             } // Loop atoms
