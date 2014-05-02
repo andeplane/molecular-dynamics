@@ -95,3 +95,15 @@ Topology &System::topology()
 {
     return m_topology;
 }
+
+std::ostream& operator<<(std::ostream &stream, System &system) {
+    stream << "System information:" << endl;
+    stream << "Length: (" << system.systemLength()[0] << ", " << system.systemLength()[1] << ", " << system.systemLength()[2] << ")" << endl;
+    stream << "Number of atoms: " << system.numberOfAtoms() << endl;
+    stream << "Number of ghost atoms: " << system.numberOfGhostAtoms() << endl;
+    stream << "Potentials (" << system.potentials().size() << "): " << endl;
+    for(Potential *potential : system.potentials()) {
+        stream << "   " << potential->name() << endl;
+    }
+    return stream;
+}

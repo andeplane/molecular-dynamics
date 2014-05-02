@@ -11,6 +11,7 @@ using std::vector;
 class System
 {
 private:
+    friend std::ostream& operator<<(std::ostream&stream, System &system);
     vector<Potential*> m_potentials;
     Topology m_topology;
     AtomManager m_atomManager;
