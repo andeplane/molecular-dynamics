@@ -110,11 +110,11 @@ AtomList &AtomManager::atoms()
 }
 
 void AtomManager::updateGhostAtoms() {
-    cout << "Ghost atoms are dirty, updating" << endl;
     m_updatingGhostAtoms = true;
     m_topology->copyGhostAtomsWithMPI(*this);
     m_updatingGhostAtoms = false;
     m_ghostAtomsDirty = false;
+    m_cellDataDirty = true;
 }
 
 AtomList &AtomManager::ghostAtoms()

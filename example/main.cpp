@@ -18,22 +18,33 @@ int main()
 
     LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
     double latticeConstant = 1.54478708;
-    Generator::generateFCC(simulator.system(), latticeConstant, vector<int>(3,1), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+    latticeConstant = 1.0;
+    Generator::generateFCC(simulator.system(), latticeConstant, vector<int>(3,2), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+
 //    Atom &atom1 = simulator.system().addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
 //    Atom &atom2 = simulator.system().addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Argon));
 //    atom2.setPosition(1.0,0,0);
-//    atom2.setVelocity(-1,0,0);
+//    atom2.setVelocity(-0.05,0,0);
 
     FileManager fileManager;
     int timesteps = 0;
-    for(int i=0; i<500; i++) {
+//    cout << "Before timesteps" << endl;
+//    cout << simulator.system().atomManager() << endl;
+    cout << simulator.system() << endl;
+    for(int i=0; i<10; i++) {
         if(i%100 == 0) {
             cout << i << endl;
         }
         simulator.step();
-        fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
+//        cout << "After step " << i << endl;
+//        cout << simulator.system().atomManager() << endl;
+
+        // fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
         timesteps++;
     }
+
+//    cout << "After step " << timesteps-1 << endl;
+//    cout << simulator.system().atomManager() << endl;
 
     fileManager.finalize();
 
