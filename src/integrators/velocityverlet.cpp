@@ -28,11 +28,28 @@ void VelocityVerlet::move(System &system, double timestep)
         atom.move(timestep);
     });
 }
+
+void VelocityVerlet::firstKick(System &system, const double &timestep) {
+    m_firstStep = false;
+
+    system.atomManager().atoms().iterate([](Atom &atom) {
+        atom.resetForce();
+    });
+
+    for(Potential *potential: system.potentials()) {
+        potential->calculateForces(system.atomManager());
+    }
+
+    halfKick(system,timestep);
+}
+
 // #define DEBUGVELOCITYVERLET
 
 #ifdef DEBUGVELOCITYVERLET
 void VelocityVerlet::integrate(System &system, const double &timestep)
 {
+    if(m_firstStep) firstKick(system, timestep);
+
     cout << "Beginning of timestep" << endl;
     cout << system.atomManager() << endl;
     halfKick(system, timestep);
@@ -66,15 +83,6 @@ void VelocityVerlet::integrate(System &system, const double &timestep)
     cout << system.atomManager() << endl;
 }
 #else
-
-void VelocityVerlet::firstKick(System &system, const double &timestep) {
-    m_firstStep = false;
-    for(Potential *potential: system.potentials()) {
-        potential->calculateForces(system.atomManager());
-    }
-
-    halfKick(system,timestep);
-}
 
 void VelocityVerlet::integrate(System &system, const double &timestep)
 {
