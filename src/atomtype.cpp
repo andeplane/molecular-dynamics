@@ -11,7 +11,7 @@ AtomType::AtomType(int atomicNumber, double mass, string name, string symbol) :
     m_symbol(symbol),
     m_massInverse(1.0/mass)
 {
-    std::cout << "I am atom " << m_name << " with mass " << m_mass << " and inverse mass " << m_massInverse << std::endl;
+
 }
 
 AtomType *AtomType::atomTypeFromAtomicNumber(int atomicNumber) {
