@@ -1,4 +1,5 @@
 #include "atomtype.h"
+#include <iostream>
 
 bool AtomType::isInitialized = false;
 vector<AtomType*> AtomType::atomTypes;
@@ -10,7 +11,7 @@ AtomType::AtomType(int atomicNumber, double mass, string name, string symbol) :
     m_symbol(symbol),
     m_massInverse(1.0/mass)
 {
-
+    std::cout << "I am atom " << m_name << " with mass " << m_mass << " and inverse mass " << m_massInverse << std::endl;
 }
 
 AtomType *AtomType::atomTypeFromAtomicNumber(int atomicNumber) {
@@ -57,6 +58,7 @@ void AtomType::initialize()
     AtomType::atomTypes.push_back(new AtomType(16,32.065, "Sulfur", "S"));
     AtomType::atomTypes.push_back(new AtomType(17,35.453, "Chlorine", "Cl"));
     AtomType::atomTypes.push_back(new AtomType(18,39.948, "Argon", "Ar"));
+    AtomType::isInitialized = true;
 }
 
 int AtomType::atomicNumber() const
