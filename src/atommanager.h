@@ -47,6 +47,9 @@ public:
     void updateGhostAtoms();
     bool ghostAtomsEnabled() const;
     void setGhostAtomsEnabled(bool ghostAtomsEnabled);
+    Atom *getAtomByOriginalUniqueId(unsigned long uniqueId);
+    Atom *getOriginalAtomFromGhostAtom(Atom &ghostAtom);
+    Atom *getAtomByUniqueId(unsigned long uniqueId);
 };
 
 #endif // ATOMMANAGER_H

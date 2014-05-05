@@ -103,6 +103,38 @@ void AtomManager::setSystemLength(vector<double> &systemLength) {
     m_cellData.initialized = true;
 }
 
+Atom *AtomManager::getOriginalAtomFromGhostAtom(Atom &ghostAtom) {
+    return getAtomByOriginalUniqueId(ghostAtom.originalUniqueId());
+}
+
+Atom *AtomManager::getAtomByOriginalUniqueId(unsigned long originalUniqueId) {
+    Atom *atom = 0;
+
+    m_atoms.iterate([&](Atom &currentAtom) {
+        if(currentAtom.originalUniqueId() == originalUniqueId) atom = &currentAtom;
+        return;
+    });
+
+    return atom;
+}
+
+Atom *AtomManager::getAtomByUniqueId(unsigned long uniqueId) {
+    Atom *atom = 0;
+
+    m_atoms.iterate([&](Atom &currentAtom) {
+        if(currentAtom.uniqueId() == uniqueId) atom = &currentAtom;
+        return;
+    });
+
+    if(!atom) {
+        m_ghostAtoms.iterate([&](Atom &currentAtom) {
+            if(currentAtom.uniqueId() == uniqueId) atom = &currentAtom;
+            return;
+        });
+    }
+
+    return atom;
+}
 
 AtomList &AtomManager::atoms()
 {
@@ -146,15 +178,13 @@ void AtomManager::updateCellStructure() {
         return;
     }
 
-    if(isinf(m_cellData.cutoffDistance)) {
-        m_cellData.numberOfCellsWithoutGhostCells[0] = 1;
-        m_cellData.numberOfCellsWithoutGhostCells[1] = 1;
-        m_cellData.numberOfCellsWithoutGhostCells[2] = 1;
-    } else {
-        m_cellData.numberOfCellsWithoutGhostCells[0] = ceil( m_cellData.systemLength[0] / m_cellData.cutoffDistance);
-        m_cellData.numberOfCellsWithoutGhostCells[1] = ceil( m_cellData.systemLength[1] / m_cellData.cutoffDistance);
-        m_cellData.numberOfCellsWithoutGhostCells[2] = ceil( m_cellData.systemLength[2] / m_cellData.cutoffDistance);
-    }
+    m_cellData.numberOfCellsWithoutGhostCells[0] = floor( m_cellData.systemLength[0] / m_cellData.cutoffDistance);
+    m_cellData.numberOfCellsWithoutGhostCells[1] = floor( m_cellData.systemLength[1] / m_cellData.cutoffDistance);
+    m_cellData.numberOfCellsWithoutGhostCells[2] = floor( m_cellData.systemLength[2] / m_cellData.cutoffDistance);
+
+    m_cellData.numberOfCellsWithoutGhostCells[0] = std::max(1, m_cellData.numberOfCellsWithoutGhostCells[0]);
+    m_cellData.numberOfCellsWithoutGhostCells[1] = std::max(1, m_cellData.numberOfCellsWithoutGhostCells[1]);
+    m_cellData.numberOfCellsWithoutGhostCells[2] = std::max(1, m_cellData.numberOfCellsWithoutGhostCells[2]);
 
     m_cellData.numberOfCellsWithGhostCells[0] = m_cellData.numberOfCellsWithoutGhostCells[0]+2;
     m_cellData.numberOfCellsWithGhostCells[1] = m_cellData.numberOfCellsWithoutGhostCells[1]+2;
@@ -190,12 +220,20 @@ void AtomManager::updateCellList() {
     CellData &cellData = m_cellData;
     atoms().iterate([&](Atom &atom) {
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
+
+        if(cellIndex < 0) { cout << "Skipping negative cell index" << endl; return; }
+        if(cellIndex >=cellData.cells.size()) { cout << "Skipping too large cell index" << endl; return; }
+
         Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
     });
 
     ghostAtoms().iterate([&](Atom &atom) {
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
+
+        if(cellIndex < 0) { cout << "Skipping negative cell index" << endl; return; }
+        if(cellIndex >=cellData.cells.size()) { cout << "Skipping too large cell index" << endl; return; }
+
         Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
     });
@@ -203,6 +241,6 @@ void AtomManager::updateCellList() {
 }
 
 std::ostream& operator<<(std::ostream &stream, AtomManager &atomManager) {
-    return stream << "Atom manager: " << std::endl << "Ghost atoms: " << atomManager.ghostAtoms() << endl << "Atoms: " << atomManager.atoms();
+    return stream << "Atom manager: " << std::endl << "Atoms: " << atomManager.atoms() << endl << "Ghost atoms: " << atomManager.ghostAtoms() << endl;
     // return stream << "Atom manager: " << std::endl << endl << "Atoms: " << atomManager.atoms();
 }
