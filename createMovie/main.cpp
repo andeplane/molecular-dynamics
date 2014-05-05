@@ -4,10 +4,9 @@
 
 using namespace std;
 
-//char atom_type_string[][5] = {"Ar ", "H "};
 char atomNames[][5] = {"NA", "H ", "He", "Li", "Be", "B ", "C ", "N ", "O ", "F ", "Ne", "Na", "Mg", "Al", "Si", "P ", "S ", "Cl", "Ar"};
 
-int main(int args, char *argv[])
+int main()
 {
     int nodeIndex = 0;
 
@@ -27,12 +26,15 @@ int main(int args, char *argv[])
     while(!movieFile.eof()) {
         unsigned long numberOfAtoms = 0;
         movieFile.read(reinterpret_cast<char*>(&numberOfAtoms), sizeof(unsigned long));
+        if(numberOfAtoms == 0) break;
+        cout << "Number of atoms: " << numberOfAtoms << endl;
+
         dataArray.resize(5*numberOfAtoms);
         movieFile.read(reinterpret_cast<char*>(&dataArray.front()), 5*numberOfAtoms*sizeof(double));
 
-        sprintf(tmpString, "%d\nstuff \n", numberOfAtoms);
+        sprintf(tmpString, "%ld\nstuff \n", numberOfAtoms);
         xyzFile << tmpString;
-        for(int i=0; i<numberOfAtoms; i++) {
+        for(unsigned long i=0; i<numberOfAtoms; i++) {
             double x = dataArray[5*i + 0];
             double y = dataArray[5*i + 1];
             double z = dataArray[5*i + 2];
