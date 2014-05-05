@@ -2,7 +2,7 @@
 #include <string>
 #include <random.h>
 
-int Atom::numberOfCreatedAtoms = 0;
+unsigned long  Atom::numberOfCreatedAtoms = 0;
 
 void Atom::addOnRemoved(const function<void ()> &value)
 {
@@ -14,7 +14,7 @@ void Atom::addOnMoved(const function<void ()> &value)
     m_onMoved.push_back(value);
 }
 
-void Atom::resetMaxwellianVelocity(double temperature)
+void Atom::resetVelocityMaxwellian(double temperature)
 {
     if(m_type->atomicNumber() == 0) {
         std::cout << "Warning: Tried to reset maxwellian velocity on an atom of type NoAtom." << std::endl;
@@ -25,6 +25,21 @@ void Atom::resetMaxwellianVelocity(double temperature)
     velocity[2] = Random::nextGauss(0, standardDeviation);
 }
 
+
+unsigned long  Atom::uniqueId() const
+{
+    return m_uniqueId;
+}
+
+unsigned long Atom::originalUniqueId() const
+{
+    return m_originalUniqueId;
+}
+
+void Atom::setOriginalUniqueId(unsigned long originalUniqueId)
+{
+    m_originalUniqueId = originalUniqueId;
+}
 Atom::Atom() :
     Atom(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom))
 {
@@ -36,20 +51,22 @@ Atom::Atom(AtomType *type) :
     m_removed(false),
     m_ghost(false),
     m_onRemoved(0),
+    m_type(type),
     m_onMoved(0),
-    m_type(type)
+    m_uniqueId(m_id),
+    m_originalUniqueId(m_uniqueId)
 {
     memset(position,0,3*sizeof(double));
     memset(velocity,0,3*sizeof(double));
     memset(force,0,3*sizeof(double));
 }
 
-int Atom::id() const
+unsigned long  Atom::id() const
 {
     return m_id;
 }
 
-void Atom::setId(int id)
+void Atom::setId(unsigned long id)
 {
     m_id = id;
 }
@@ -115,7 +132,7 @@ void Atom::resetForce() {
 }
 
 std::ostream& operator<<(std::ostream &stream, const Atom &atom) {
-    if(!atom.m_ghost) return stream << "Atom of type '" << atom.type()->name() << "' with id " << atom.id() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
-    else return stream << "Ghost atom of type '" << atom.type()->name() << "' with id " << atom.id() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
+    if(!atom.m_ghost) return stream << "Atom (unique id " << atom.uniqueId() << ", original unique id " << atom.originalUniqueId() << ") of type '" << atom.type()->name() << "' with id " << atom.id() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
+    else return stream << "Ghost atom (unique id " << atom.uniqueId() << ", original unique id " << atom.originalUniqueId() << ") of type '" << atom.type()->name() << "' with id " << atom.id() << " r=(" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << ")  v=(" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << ")  f= (" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << ")";
 
 }

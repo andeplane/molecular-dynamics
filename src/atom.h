@@ -15,8 +15,10 @@ class Atom
 private:
     friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);
     AtomType *m_type;
-    int m_id;
-    static int numberOfCreatedAtoms;
+    unsigned long  m_id;
+    unsigned long  m_uniqueId;
+    unsigned long  m_originalUniqueId;
+    static unsigned long numberOfCreatedAtoms;
     bool m_removed;
     bool m_ghost;
     vector<function<void()>> m_onRemoved;
@@ -33,14 +35,14 @@ public:
     void resetForce();
     void move(const double &timestep);
     void kick(const double &timestep, const double oneOverMass);
-    void resetMaxwellianVelocity(double temperature);
+    void resetVelocityMaxwellian(double temperature);
 
     AtomType *type() const;
     void setType(AtomType *type);
     bool removed() const;
     void setRemoved(bool removed);
-    int id() const;
-    void setId(int id);
+    unsigned long  id() const;
+    void setId(unsigned long  id);
     bool ghost() const;
     void setGhost(bool ghost);
     inline void setPosition(const double x, const double y, const double z) {
@@ -60,6 +62,9 @@ public:
 
     void addOnMoved(const function<void ()> &value);
     void addOnRemoved(const function<void ()> &value);
+    unsigned long  uniqueId() const;
+    unsigned long originalUniqueId() const;
+    void setOriginalUniqueId(unsigned long originalUniqueId);
 };
 
 #endif // ATOM_H
