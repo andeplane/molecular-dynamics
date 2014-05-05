@@ -43,47 +43,6 @@ void VelocityVerlet::firstKick(System &system, const double &timestep) {
     halfKick(system,timestep);
 }
 
-// #define DEBUGVELOCITYVERLET
-
-#ifdef DEBUGVELOCITYVERLET
-void VelocityVerlet::integrate(System &system, const double &timestep)
-{
-    if(m_firstStep) firstKick(system, timestep);
-
-    cout << "Beginning of timestep" << endl;
-    cout << system.atomManager() << endl;
-    halfKick(system, timestep);
-    cout << "After half kick" << endl;
-    cout << system.atomManager() << endl;
-
-    move(system, timestep);
-    cout << "After move" << endl;
-    cout << system.atomManager() << endl;
-
-    system.topology().MPIMove(system);
-    cout << "After MPI Move" << endl;
-    cout << system.atomManager() << endl;
-
-    system.atomManager().atoms().iterate([](Atom &atom) {
-        atom.resetForce();
-    });
-
-    cout << "After reset force" << endl;
-    cout << system.atomManager() << endl;
-
-    for(Potential *potential: system.potentials()) {
-        potential->calculateForces(system.atomManager());
-    }
-
-    cout << "After calculating forces" << endl;
-    cout << system.atomManager() << endl;
-
-    halfKick(system, timestep);
-    cout << "After half kick" << endl;
-    cout << system.atomManager() << endl;
-}
-#else
-
 void VelocityVerlet::integrate(System &system, const double &timestep)
 {
     if(m_firstStep) firstKick(system, timestep);
@@ -102,4 +61,3 @@ void VelocityVerlet::integrate(System &system, const double &timestep)
 
     halfKick(system, timestep);
 }
-#endif
