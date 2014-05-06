@@ -7,16 +7,6 @@
 
 using namespace std;
 
-std::ostream& operator<<(std::ostream &stream, const std::vector<double> &vec) {
-    stream << "(";
-    for(unsigned long i=0; i<vec.size(); i++) {
-        if(i+1 == vec.size()) stream << vec[i] << ")";
-        else stream << vec[i] << ", ";
-    }
-
-    return stream;
-}
-
 int main()
 {
     Random::setSeed(1);
@@ -34,15 +24,15 @@ int main()
     Generator::generateFCC(simulator.system(),latticeConstant,vector<int>(3,5), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
     simulator.system().removeTotalMomentum();
 
-    for(int i=0; i<1000; i++) {
+    for(int i=0; i<200; i++) {
+        simulator.step();
+
         if(i%10 == 0) {
             cout << "Timestep " << i << "   Total energy: " << simulator.sampler().calculateTotalEnergy(simulator.system());
             cout << " (K=" << simulator.sampler().calculateKineticEnergy(simulator.system()) << "  P=" << simulator.sampler().calculatePotentialEnergy(simulator.system()) << ")" << endl;
         }
 
-        simulator.step();
-
-        fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
+        // fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
         timesteps++;
     }
 

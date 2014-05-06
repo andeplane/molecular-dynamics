@@ -5,11 +5,8 @@ CONFIG -= qt
 CONFIG += c++11
 Debug: QMAKE_CFLAGS += -DDEBUG
 
-SOURCES += \
-    main.cpp \
-    forces.cpp \
-    system.cpp \
-    generator.cpp
+SOURCES += main.cpp \
+    LennardJones.cpp
 
 INCLUDEPATH += /repos/UnitTest++/src
 INCLUDEPATH += $$PWD/../src

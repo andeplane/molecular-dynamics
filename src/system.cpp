@@ -135,11 +135,3 @@ std::ostream& operator<<(std::ostream &stream, System &system) {
     stream << "Total momentum: (" << momentum.at(0) << "," << momentum.at(1) << "," << momentum.at(2) << ")";
     return stream;
 }
-
-std::ostream& operator<<(std::ostream &stream, const std::vector<double> &vec) {
-    stream << "(";
-    for(int i=0; i<vec.size(); i++) {
-        if(i+1 == vec.size()) stream << vec[i] << ")";
-        else stream << vec[i] << ", ";
-    }
-}

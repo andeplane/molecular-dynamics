@@ -1,10 +1,7 @@
 #include <vector>
 using std::vector;
-
-
 #include <UnitTest++.h>
 #include <potentials/lennardjonespotential.h>
-#include <includes.h>
 
 void lennardJones(Atom &atom1, Atom &atom2, vector<double> &forceVector, double cutoffDistance) {
     forceVector.resize(3,0);

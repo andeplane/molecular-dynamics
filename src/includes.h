@@ -13,6 +13,24 @@
 #include <atomiterators/atomiterators.h>
 #include <vector>
 
-std::ostream& operator<<(std::ostream &stream, std::vector<double> &vec);
+std::ostream& operator<<(std::ostream &stream, const std::vector<double> &vec) {
+    stream << "(";
+    for(unsigned long i=0; i<vec.size(); i++) {
+        if(i+1 == vec.size()) stream << vec[i] << ")";
+        else stream << vec[i] << ", ";
+    }
+
+    return stream;
+}
+
+template <typename T>
+T &safeOrQuickVectorLookup(vector<T> &vec, int index) {
+#ifdef DEBUG
+    return vec.at(index);
+#else
+    return vec[index];
+#endif
+}
+
 
 #endif // INCLUDES_H

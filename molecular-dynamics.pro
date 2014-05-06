@@ -5,6 +5,7 @@ SUBDIRS += \
     src \
     tests \
     example \
-    createMovie
+    createMovie \
+    Benchmarks
 
 BUILD_DIR = $$OUT_PWD
