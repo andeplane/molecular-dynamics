@@ -21,7 +21,7 @@ Topology::~Topology()
     m_nodeIndices.clear();
     m_nodeLength.clear();
     m_systemLength.clear();
-    for(vector<Atom*> vec : m_moveQueue) {
+    for(vector<unsigned long> vec : m_moveQueue) {
          vec.clear();
     }
     m_moveQueue.clear();
@@ -70,7 +70,6 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
     for (int n=0; n<6; n++) {
         /* Vector index of neighbor */
         for (int a=0; a<3; a++) {
-
             k1[a] = (m_nodeIndices[a]+integerVector[n][a]+m_numNodesVector[a])%m_numNodesVector[a];
         }
 
@@ -152,7 +151,7 @@ bool Topology::atomDidChangeNode(Atom &atom, int &dimension, bool higher) {
 }
 
 void Topology::MPIMove(System &system) {
-    for(vector<Atom*> &queue : m_moveQueue) {
+    for(vector<unsigned long> &queue : m_moveQueue) {
         queue.clear();
     }
 
@@ -163,9 +162,9 @@ void Topology::MPIMove(System &system) {
 
             if (!atom.removed()) { /* Don't scan moved-out atoms */
                 if(atomDidChangeNode(atom,dimension,false)) {
-                    m_moveQueue.at(nodeLower).push_back(&atom);
+                    m_moveQueue.at(nodeLower).push_back(atom.uniqueId());
                 } else if (atomDidChangeNode(atom, dimension, true)) {
-                    m_moveQueue.at(nodeHigher).push_back(&atom);
+                    m_moveQueue.at(nodeHigher).push_back(atom.uniqueId());
                 }
             }
         });
@@ -175,45 +174,48 @@ void Topology::MPIMove(System &system) {
             int numberToSend = m_moveQueue.at(localNodeID).size();
             int numberToReceive = numberToSend;
 
-            /* Message buffering */
             int i = 0;
-            for (Atom *atom : m_moveQueue.at(localNodeID)) {
+            for (unsigned long uniqueId : m_moveQueue.at(localNodeID)) {
+                Atom *atom = system.atomManager().getAtomByUniqueId(uniqueId);
+
                 /* Shift the coordinate origin */
-                m_mpiSendBuffer[11*i    + 0] = atom->position[0] - m_shiftVector[localNodeID][0];
-                m_mpiSendBuffer[11*i    + 1] = atom->position[1] - m_shiftVector[localNodeID][1];
-                m_mpiSendBuffer[11*i    + 2] = atom->position[2] - m_shiftVector[localNodeID][2];
-                m_mpiSendBuffer[11*i+ 3 + 0] = atom->velocity[0];
-                m_mpiSendBuffer[11*i+ 3 + 1] = atom->velocity[1];
-                m_mpiSendBuffer[11*i+ 3 + 2] = atom->velocity[2];
-                m_mpiSendBuffer[11*i+ 6 + 0] = atom->initial_position[0];
-                m_mpiSendBuffer[11*i+ 6 + 1] = atom->initial_position[1];
-                m_mpiSendBuffer[11*i+ 6 + 2] = atom->initial_position[2];
-                m_mpiSendBuffer[11*i + 9]    = (double)atom->id();
-                m_mpiSendBuffer[11*i + 10]   = (double)atom->type()->atomicNumber();
+                m_mpiSendBuffer[12*i    + 0] = atom->position[0] - m_shiftVector[localNodeID][0];
+                m_mpiSendBuffer[12*i    + 1] = atom->position[1] - m_shiftVector[localNodeID][1];
+                m_mpiSendBuffer[12*i    + 2] = atom->position[2] - m_shiftVector[localNodeID][2];
+                m_mpiSendBuffer[12*i+ 3 + 0] = atom->velocity[0];
+                m_mpiSendBuffer[12*i+ 3 + 1] = atom->velocity[1];
+                m_mpiSendBuffer[12*i+ 3 + 2] = atom->velocity[2];
+                m_mpiSendBuffer[12*i+ 6 + 0] = atom->initial_position[0];
+                m_mpiSendBuffer[12*i+ 6 + 1] = atom->initial_position[1];
+                m_mpiSendBuffer[12*i+ 6 + 2] = atom->initial_position[2];
+                m_mpiSendBuffer[12*i + 9]    = (double)atom->id();
+                m_mpiSendBuffer[12*i + 10]   = (double)atom->type()->atomicNumber();
+                m_mpiSendBuffer[12*i + 11]   = (double)atom->originalUniqueId();
                 atom->setRemoved(true);
                 i++;
             }
 
-            memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),11*numberToReceive*sizeof(double));
+            memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),12*numberToReceive*sizeof(double));
 
-            /* Message storing */
             for (i=0; i<numberToReceive; i++) {
                 Atom &atom = system.addAtom();
-                atom.position[0] = m_mpiReceiveBuffer[11*i + 0];
-                atom.position[1] = m_mpiReceiveBuffer[11*i + 1];
-                atom.position[2] = m_mpiReceiveBuffer[11*i + 2];
+                atom.position[0] = m_mpiReceiveBuffer[12*i + 0];
+                atom.position[1] = m_mpiReceiveBuffer[12*i + 1];
+                atom.position[2] = m_mpiReceiveBuffer[12*i + 2];
 
-                atom.velocity[0] = m_mpiReceiveBuffer[11*i + 3];
-                atom.velocity[1] = m_mpiReceiveBuffer[11*i + 4];
-                atom.velocity[2] = m_mpiReceiveBuffer[11*i + 5];
+                atom.velocity[0] = m_mpiReceiveBuffer[12*i + 3];
+                atom.velocity[1] = m_mpiReceiveBuffer[12*i + 4];
+                atom.velocity[2] = m_mpiReceiveBuffer[12*i + 5];
 
-                atom.initial_position[0] = m_mpiReceiveBuffer[11*i + 6];
-                atom.initial_position[1] = m_mpiReceiveBuffer[11*i + 7];
-                atom.initial_position[2] = m_mpiReceiveBuffer[11*i + 8];
+                atom.initial_position[0] = m_mpiReceiveBuffer[12*i + 6];
+                atom.initial_position[1] = m_mpiReceiveBuffer[12*i + 7];
+                atom.initial_position[2] = m_mpiReceiveBuffer[12*i + 8];
 
-                atom.setId(m_mpiReceiveBuffer[11*i + 9]);
-                int atomicNumber = m_mpiReceiveBuffer[11*i + 10];
+                atom.setId(m_mpiReceiveBuffer[12*i + 9]);
+                int atomicNumber = m_mpiReceiveBuffer[12*i + 10];
+                unsigned long originalUniqueId = m_mpiReceiveBuffer[12*i + 11];
                 atom.setType(AtomType::atomTypeFromAtomicNumber(atomicNumber));
+                atom.setOriginalUniqueId(originalUniqueId);
             }
         }
     }
@@ -224,19 +226,18 @@ void Topology::MPIMove(System &system) {
 void Topology::copyGhostAtomsWithMPI(AtomManager &atomManager)
 {
     atomManager.removeGhostAtoms();
-    double cutoffDistance = std::min(atomManager.cellData().cutoffDistance, maxSystemLength());
-
-    for(vector<Atom*> &queue : m_moveQueue) {
-        queue.clear();
-    }
+    double cutoffDistance = atomManager.cellData().cutoffDistance;
 
     for(int dimension=0;dimension<3;dimension++) {
+        for(vector<unsigned long> &queue : m_moveQueue) {
+            queue.clear();
+        }
 
         atomManager.ghostAtoms().iterate([&](Atom &atom) {
             for(int higher=0; higher<=1; higher++) {
                 int localNodeID = 2*dimension + higher;
                 if(atomShouldBeCopied(atom,dimension,higher,cutoffDistance)) {
-                    m_moveQueue.at(localNodeID).push_back(&atom);
+                    m_moveQueue.at(localNodeID).push_back(atom.uniqueId());
                 }
             }
         });
@@ -245,41 +246,45 @@ void Topology::copyGhostAtomsWithMPI(AtomManager &atomManager)
             for(int higher=0; higher<=1; higher++) {
                 int localNodeID = 2*dimension + higher;
                 if(atomShouldBeCopied(atom,dimension,higher,cutoffDistance)) {
-                    m_moveQueue.at(localNodeID).push_back(&atom);
+                    m_moveQueue.at(localNodeID).push_back(atom.uniqueId());
                 }
             }
         });
 
-
-
         /* Loop through higher and lower node in this dimension */
-        for(int higher=0;higher<2;higher++) {
+        for(int higher=0;higher<=1;higher++) {
             int localNodeID = 2*dimension+higher;
             int numberToSend = m_moveQueue.at(localNodeID).size();
             int numberToRecieve = numberToSend;
 
             int i = 0;
-            for (Atom *atom : m_moveQueue.at(localNodeID)) {
-                /* Shift the coordinate origin */
-                m_mpiSendBuffer[5*i+0] = atom->position[0]-m_shiftVector[localNodeID][0];
-                m_mpiSendBuffer[5*i+1] = atom->position[1]-m_shiftVector[localNodeID][1];
-                m_mpiSendBuffer[5*i+2] = atom->position[2]-m_shiftVector[localNodeID][2];
-                m_mpiSendBuffer[5*i+3] = atom->type()->atomicNumber();
-                m_mpiSendBuffer[5*i+4] = atom->id();
+            int numberOfValuesToCopy = 6;
+
+            for (unsigned long uniqueId : m_moveQueue.at(localNodeID)) {
+                Atom *atom = atomManager.getAtomByUniqueId(uniqueId);
+
+                m_mpiSendBuffer[numberOfValuesToCopy*i+0] = atom->position[0]-m_shiftVector[localNodeID][0];
+                m_mpiSendBuffer[numberOfValuesToCopy*i+1] = atom->position[1]-m_shiftVector[localNodeID][1];
+                m_mpiSendBuffer[numberOfValuesToCopy*i+2] = atom->position[2]-m_shiftVector[localNodeID][2];
+                m_mpiSendBuffer[numberOfValuesToCopy*i+3] = atom->type()->atomicNumber();
+                m_mpiSendBuffer[numberOfValuesToCopy*i+4] = atom->id();
+                m_mpiSendBuffer[numberOfValuesToCopy*i+5] = atom->originalUniqueId();
                 i++;
             }
-
-            memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),5*numberToRecieve*sizeof(double));
+            memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),numberOfValuesToCopy*numberToRecieve*sizeof(double));
 
             for(int i=0; i<numberToRecieve; i++) {
                 Atom &ghostAtom = atomManager.addGhostAtom();
-                ghostAtom.position[0] = m_mpiReceiveBuffer[5*i+0];
-                ghostAtom.position[1] = m_mpiReceiveBuffer[5*i+1];
-                ghostAtom.position[2] = m_mpiReceiveBuffer[5*i+2];
-                int atomicNumber = m_mpiReceiveBuffer[5*i+3];
-                int atomID = m_mpiReceiveBuffer[5*i+4];
+                ghostAtom.position[0] = m_mpiReceiveBuffer[numberOfValuesToCopy*i+0];
+                ghostAtom.position[1] = m_mpiReceiveBuffer[numberOfValuesToCopy*i+1];
+                ghostAtom.position[2] = m_mpiReceiveBuffer[numberOfValuesToCopy*i+2];
+                int atomicNumber = m_mpiReceiveBuffer[numberOfValuesToCopy*i+3];
+                int atomId = m_mpiReceiveBuffer[numberOfValuesToCopy*i+4];
+                unsigned long OriginalUniqueId = m_mpiReceiveBuffer[numberOfValuesToCopy*i+5];
+
                 ghostAtom.setType(AtomType::atomTypeFromAtomicNumber(atomicNumber));
-                ghostAtom.setId(atomID);
+                ghostAtom.setId(atomId);
+                ghostAtom.setOriginalUniqueId(OriginalUniqueId);
             }
         }
     }

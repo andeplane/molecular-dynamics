@@ -18,7 +18,7 @@ private:
     vector<double> m_nodeLength;               // Physical size of this processor
     vector<double> m_systemLength;             // System length in md units
     vector<double> m_origo;
-    vector<vector<Atom *> > m_moveQueue;     // Queue for atom indices to be moved to other processorr
+    vector<vector<unsigned long> > m_moveQueue;     // Queue for atom indices to be moved to other processorr
     vector<double> m_mpiSendBuffer;
     vector<double> m_mpiReceiveBuffer;
     bool m_isInitialized;
