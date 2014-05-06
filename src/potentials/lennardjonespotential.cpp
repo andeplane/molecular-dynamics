@@ -58,14 +58,16 @@ void LennardJonesPotential::twoParticleActionMinimumImageConvention(Atom *atom1,
     if(dr[2] < -m_systemLength[2]*0.5) dr[2] += m_systemLength[2];
 
     double dr2 = dr[0]*dr[0] + dr[1]*dr[1] + dr[2]*dr[2];
+#ifdef DEBUG
     if(dr2 == 0) {
         std::cout << "Error in LennardJonesPotential::twoParticleAction. Relative distance is zero:" << std::endl;
         std::cout << *atom1 << endl;
         std::cout << *atom2 << endl;
         return;
     }
+#endif
 
-    if (true || dr2<cutoffDistanceSquared) {
+    if (dr2<cutoffDistanceSquared) {
         m_numberOfComputedPairsWithinCutoffDistance++;
         double dr2Inverse = 1.0/dr2;
         double sigmaOverDr2 = m_sigma*m_sigma*dr2Inverse;
