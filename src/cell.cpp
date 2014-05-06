@@ -26,7 +26,7 @@ void Cell::reset() {
     m_atoms.clear();
 }
 
-vector<Atom *> Cell::atoms() const
+vector<Atom *> &Cell::atoms()
 {
     return m_atoms;
 }

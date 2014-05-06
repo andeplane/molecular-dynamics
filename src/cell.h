@@ -24,7 +24,7 @@ private:
 public:
     Cell();
     void addAtom(Atom *atom);
-    vector<Atom *> atoms() const;
+    vector<Atom *> &atoms();
     void setAtoms(const vector<Atom *> &atoms);
     void reset();
 
