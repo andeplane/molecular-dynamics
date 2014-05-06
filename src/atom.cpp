@@ -26,35 +26,45 @@ void Atom::resetVelocityMaxwellian(double temperature)
 }
 
 
-unsigned long  Atom::uniqueId() const
+atomUniqueId  Atom::uniqueId() const
 {
     return m_uniqueId;
 }
 
-unsigned long Atom::originalUniqueId() const
+atomUniqueId Atom::originalUniqueId() const
 {
     return m_originalUniqueId;
 }
 
-void Atom::setOriginalUniqueId(unsigned long originalUniqueId)
+void Atom::setOriginalUniqueId(atomUniqueId originalUniqueId)
 {
     m_originalUniqueId = originalUniqueId;
 }
+
+vector<atomUniqueId> &Atom::neighbors()
+{
+    return m_neighbors;
+}
+
+void Atom::addNeighbor(Atom &atom) {
+    m_neighbors.push_back(atom.uniqueId());
+}
+
 Atom::Atom() :
     Atom(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom))
 {
-
+    
 }
 
 Atom::Atom(AtomType *type) :
+    m_type(type),
     m_id(Atom::numberOfCreatedAtoms++),
+    m_uniqueId(m_id),
+    m_originalUniqueId(m_uniqueId),
     m_removed(false),
     m_ghost(false),
     m_onRemoved(0),
-    m_type(type),
-    m_onMoved(0),
-    m_uniqueId(m_id),
-    m_originalUniqueId(m_uniqueId)
+    m_onMoved(0)
 {
     memset(position,0,3*sizeof(double));
     memset(velocity,0,3*sizeof(double));
@@ -93,13 +103,10 @@ void Atom::setType(AtomType *type)
 
 void Atom::move(const double &timestep)
 {
-    position[0] += velocity[0]*timestep;
-    position[1] += velocity[1]*timestep;
-    position[2] += velocity[2]*timestep;
-
-    for(function<void()> onMoved : m_onMoved) {
-        onMoved();
-    }
+    double x = position[0] + velocity[0]*timestep;
+    double y = position[1] + velocity[1]*timestep;
+    double z = position[2] + velocity[2]*timestep;
+    setPosition(x,y,z);
 }
 
 void Atom::kick(const double &timestep, const double oneOverMass)

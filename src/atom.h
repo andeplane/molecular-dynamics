@@ -1,5 +1,4 @@
-#ifndef ATOM_H
-#define ATOM_H
+#pragma once
 #include <string>
 #include <iostream>
 #include <atomtype.h>
@@ -7,6 +6,7 @@
 #include <random>
 
 using std::string; using std::function;
+typedef unsigned long atomUniqueId;
 
 class AtomType;
 
@@ -16,13 +16,14 @@ private:
     friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);
     AtomType *m_type;
     unsigned long  m_id;
-    unsigned long  m_uniqueId;
-    unsigned long  m_originalUniqueId;
+    atomUniqueId  m_uniqueId;
+    atomUniqueId  m_originalUniqueId;
     static unsigned long numberOfCreatedAtoms;
     bool m_removed;
     bool m_ghost;
     vector<function<void()>> m_onRemoved;
     vector<function<void()>> m_onMoved;
+    vector<unsigned long> m_neighbors;
 public:
     double position[3];
     double initial_position[3];
@@ -52,6 +53,7 @@ public:
         for(function<void()> onMoved : m_onMoved) {
             onMoved();
         }
+        m_neighbors.clear(); // This is not valid anymore
     }
 
     inline void setVelocity(const double x, const double y, const double z) {
@@ -62,9 +64,9 @@ public:
 
     void addOnMoved(const function<void ()> &value);
     void addOnRemoved(const function<void ()> &value);
-    unsigned long  uniqueId() const;
-    unsigned long originalUniqueId() const;
-    void setOriginalUniqueId(unsigned long originalUniqueId);
+    atomUniqueId  uniqueId() const;
+    atomUniqueId originalUniqueId() const;
+    void setOriginalUniqueId(atomUniqueId originalUniqueId);
+    vector<atomUniqueId> &neighbors();
+    void addNeighbor(Atom &atom);
 };
-
-#endif // ATOM_H

@@ -1,5 +1,4 @@
-#ifndef ATOMITERATOR_H
-#define ATOMITERATOR_H
+#pragma once
 #include <functional>
 #include <vector>
 using std::vector;
@@ -22,5 +21,3 @@ public:
     function<void (Atom *atom1, Atom *atom2, Atom *atom3)> threeParticleAction() const;
     virtual void setThreeParticleAction(const function<void (Atom *atom1, Atom *atom2, Atom *atom3)> &threeParticleAction);
 };
-
-#endif // ATOMITERATOR_H

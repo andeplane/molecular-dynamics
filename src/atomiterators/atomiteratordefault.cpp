@@ -2,8 +2,6 @@
 #include <cell.h>
 #include <atommanager.h>
 #include <includes.h>
-#include <neighborlist.h>
-
 
 double AtomIteratorDefault::maximumNeighborDistance() const
 {
@@ -39,9 +37,6 @@ AtomIteratorDefault::AtomIteratorDefault() :
 }
 
 void AtomIteratorDefault::iterate(AtomManager &atomManager) {
-    NeighborList neighborList;
-
-
     CellData &cellData = atomManager.cellData();
     vector<Cell> &cells = cellData.cells;
     double maximumNeighborDistanceSquared = m_maximumNeighborDistance*m_maximumNeighborDistance;
@@ -67,7 +62,8 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                                         double dr2 = dx*dx + dy*dy + dz*dz;
 
                                         if(dr2 < maximumNeighborDistanceSquared) {
-                                            neighborList.addNeighbors(atom1,atom2);
+                                            atom1->addNeighbor(*atom2);
+                                            atom2->addNeighbor(*atom1);
                                         }
                                     }
                                 }
@@ -78,17 +74,21 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
             }
         }
     }
-    return;
+
     if(!m_threeParticleAction) return;
     // Three particle loop
     atomManager.atoms().iterate([&](Atom &atom) {
         Atom *atom1 = &atom;
-        vector<Atom*> neighbors = neighborList.neighborsForAtom(atom1);
+        vector<atomUniqueId> &neighbors = atom1->neighbors();
         if(neighbors.size() < 2) return; // No three particle contribution here
+
         for(unsigned long neighborIndex1 = 0; neighborIndex1<neighbors.size()-1; neighborIndex1++) {
-            Atom *atom2 = safeOrQuickVectorLookup(neighbors,neighborIndex1);
+            atomUniqueId &neighbor1UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex1);
+            Atom *atom2 = &atomManager.getAtomByUniqueId(neighbor1UniqueId);
+
             for(unsigned long neighborIndex2 = neighborIndex1+1; neighborIndex2<neighbors.size(); neighborIndex2++) {
-                Atom *atom3 = safeOrQuickVectorLookup(neighbors,neighborIndex2);
+                atomUniqueId &neighbor2UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex2);
+                Atom *atom3 = &atomManager.getAtomByUniqueId(neighbor2UniqueId);
                 m_threeParticleAction(atom1,atom2,atom3);
             }
         }

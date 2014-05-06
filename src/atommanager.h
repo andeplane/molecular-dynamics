@@ -1,6 +1,4 @@
-#ifndef ATOMMANAGER_H
-#define ATOMMANAGER_H
-
+#pragma once
 #include <vector>
 #include <map>
 using std::vector; using std::map; using std::pair;
@@ -51,5 +49,3 @@ public:
     Atom *getOriginalAtomFromGhostAtom(Atom &ghostAtom);
     Atom &getAtomByUniqueId(unsigned long uniqueId);
 };
-
-#endif // ATOMMANAGER_H

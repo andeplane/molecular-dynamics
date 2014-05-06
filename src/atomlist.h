@@ -1,5 +1,4 @@
-#ifndef ATOMLIST_H
-#define ATOMLIST_H
+#pragma once
 #include <vector>
 #include <functional>
 #include <unordered_map>
@@ -16,7 +15,6 @@ private:
     function<void()> m_onAtomMoved;
     function<void()> m_onAtomRemoved;
     unordered_map<unsigned long, unsigned long> m_indexMap;
-
 public:
     AtomList(int initialAtomCount = 1000);
     ~AtomList();
@@ -31,7 +29,5 @@ public:
     void resetVelocityZero();
     void resetVelocityMaxwellian(double temperature);
     bool containsAtomWithUniqueId(unsigned long uniqueId);
-    Atom &getAtomByUniqueId(unsigned long uniqueid);
+    Atom &getAtomByUniqueId(unsigned long uniqueId);
 };
-
-#endif // ATOMLIST_H

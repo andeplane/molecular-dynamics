@@ -1,5 +1,4 @@
-#ifndef GENERATOR_H
-#define GENERATOR_H
+#pragma once
 #include <vector>
 using std::vector;
 
@@ -10,5 +9,3 @@ class Generator
 public:
     static void generateFCC(System &system, double latticeConstant, vector<int> numberOfUnitCells, AtomType *atomType, double temperature = 1.0);
 };
-
-#endif // GENERATOR_H

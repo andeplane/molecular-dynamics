@@ -1,5 +1,4 @@
-#ifndef SYSTEMCELL_H
-#define SYSTEMCELL_H
+#pragma once
 #include <vector>
 #include <atom.h>
 #include <iostream>
@@ -38,13 +37,6 @@ public:
         int j = atom.position[1] / cellData.cellLength[1] + 1;
         int k = atom.position[2] / cellData.cellLength[2] + 1;
         int index = Cell::cellIndexFromIJK(i,j,k,cellData);
-
-//        if(!atom.ghost()) {
-//            cout << atom << endl;
-//            cout << "Size: " << cellData.cells.size() << endl;
-//            cout << "IJK: " << i << ", " << j << ", " << k << endl;
-//            cout << "index: " << index << endl;
-//        }
         return index;
     }
 
@@ -62,5 +54,3 @@ public:
     int cellIndex() const;
     void setCellIndex(int cellIndex);
 };
-
-#endif // SYSTEMCELL_H

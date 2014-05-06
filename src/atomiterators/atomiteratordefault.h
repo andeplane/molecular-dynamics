@@ -1,5 +1,4 @@
-#ifndef ATOMITERATORDEFAULT_H
-#define ATOMITERATORDEFAULT_H
+#pragma once
 #include <atomiterators/atomiterator.h>
 
 class AtomIteratorDefault : public AtomIterator
@@ -16,5 +15,3 @@ public:
     void setCreateNeighborList(bool createNeighborList);
     virtual void setThreeParticleAction(const function<void (Atom *atom1, Atom *atom2, Atom *atom3)> &threeParticleAction);
 };
-
-#endif // ATOMITERATORDEFAULT_H

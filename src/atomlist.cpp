@@ -25,8 +25,11 @@ bool AtomList::containsAtomWithUniqueId(unsigned long uniqueId) {
     return m_indexMap.find(uniqueId) != m_indexMap.end();
 }
 
-Atom &AtomList::getAtomByUniqueId(unsigned long uniqueid) {
-    return safeOrQuickVectorLookup(m_atoms,m_indexMap[uniqueid]);
+Atom &AtomList::getAtomByUniqueId(unsigned long uniqueId) {
+    if(!containsAtomWithUniqueId(uniqueId)) {
+        throw std::range_error("The atom is not in this list");
+    }
+    return safeOrQuickVectorLookup(m_atoms,m_indexMap[uniqueId]);
 }
 
 Atom &AtomList::addAtom(AtomType *atomType)

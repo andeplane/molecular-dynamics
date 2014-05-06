@@ -1,5 +1,4 @@
-#ifndef RANDOM_H
-#define RANDOM_H
+#pragma once
 #include <random>
 
 class Random
@@ -14,5 +13,3 @@ public:
     static double nextGauss(const double &mean, const double &standardDeviation);
     static void setSeed(int seed);
 };
-
-#endif // RANDOM_H

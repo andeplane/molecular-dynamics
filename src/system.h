@@ -1,5 +1,4 @@
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#pragma once
 #include <vector>
 using std::vector;
 
@@ -38,5 +37,3 @@ public:
 protected:
     void checkIfInitialized();
 };
-
-#endif // SYSTEM_H

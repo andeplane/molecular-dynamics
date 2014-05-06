@@ -1,5 +1,4 @@
-#ifndef LENNARDJONESPOTENTIAL_H
-#define LENNARDJONESPOTENTIAL_H
+#pragma once
 #include <potentials/potential.h>
 #include <atomiterators/atomiteratordefault.h>
 #include <atomiterators/atomiteratorallpairs.h>
@@ -32,5 +31,3 @@ public:
     bool calculateForcesBetweenAllPairsWithMinimumImageConvention() const;
     void setCalculateForcesBetweenAllPairsWithMinimumImageConvention(bool calculateForcesBetweenAllPairsWithMinimumImageConvention);
 };
-
-#endif // LENNARDJONESPOTENTIAL_H

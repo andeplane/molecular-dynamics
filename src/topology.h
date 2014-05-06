@@ -1,5 +1,4 @@
-#ifndef TOPOLOGY_H
-#define TOPOLOGY_H
+#pragma once
 #include <vector>
 using std::vector;
 
@@ -40,5 +39,3 @@ public:
     double maxSystemLength() const;
     vector<double> origo() const;
 };
-
-#endif // TOPOLOGY_H

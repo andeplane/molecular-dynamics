@@ -1,7 +1,4 @@
-#ifndef INTEGRATORS_H
-#define INTEGRATORS_H
+#pragma once
 
 #include <integrators/velocityverlet.h>
 #include <integrators/integrators.h>
-
-#endif // INTEGRATORS_H

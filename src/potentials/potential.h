@@ -1,5 +1,4 @@
-#ifndef POTENTIAL_H
-#define POTENTIAL_H
+#pragma once
 #include <string>
 #include <vector>
 
@@ -21,5 +20,3 @@ public:
     double potentialEnergy() const;
     void setPotentialEnergy(double potentialEnergy);
 };
-
-#endif // POTENTIAL_H

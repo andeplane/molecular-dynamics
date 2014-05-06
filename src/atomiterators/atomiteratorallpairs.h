@@ -1,5 +1,4 @@
-#ifndef ATOMITERATORALLPAIRS_H
-#define ATOMITERATORALLPAIRS_H
+#pragma once
 #include <atomiterators/atomiterator.h>
 
 class AtomIteratorAllPairs : public AtomIterator
@@ -12,5 +11,3 @@ public:
     bool loopThroughGhosts() const;
     void setLoopThroughGhosts(bool loopThroughGhosts);
 };
-
-#endif // ATOMITERATORALLPAIRS_H

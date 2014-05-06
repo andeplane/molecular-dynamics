@@ -1,6 +1,4 @@
-#ifndef INTEGRATOR_H
-#define INTEGRATOR_H
-
+#pragma once
 enum class Integrators {VelocityVerlet = 0};
 
 class System;
@@ -10,5 +8,3 @@ public:
     Integrator();
     virtual void integrate(System &system, const double &timestep) = 0;
 };
-
-#endif // INTEGRATOR_H

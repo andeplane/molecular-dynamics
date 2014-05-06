@@ -1,5 +1,4 @@
-#ifndef STATISTICSSAMPLER_H
-#define STATISTICSSAMPLER_H
+#pragma once
 #include <vector>
 using std::vector;
 
@@ -13,5 +12,3 @@ public:
     double calculateTotalEnergy(System &system);
     vector<double> calculateTotalMomentum(System &system);
 };
-
-#endif // STATISTICSSAMPLER_H

@@ -1,10 +1,7 @@
-#ifndef UNITCONVERTER_H
-#define UNITCONVERTER_H
+#pragma once
 
 class UnitConverter
 {
 public:
     UnitConverter();
 };
-
-#endif // UNITCONVERTER_H

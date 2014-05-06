@@ -1,5 +1,4 @@
-#ifndef VELOCITYVERLET_H
-#define VELOCITYVERLET_H
+#pragma once
 #include <integrators/integrator.h>
 
 class VelocityVerlet : public Integrator
@@ -14,5 +13,3 @@ public:
     VelocityVerlet();
     virtual void integrate(System &system, const double &timestep);
 };
-
-#endif // VELOCITYVERLET_H

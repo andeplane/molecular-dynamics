@@ -1,5 +1,4 @@
-#ifndef SIMULATOR_H
-#define SIMULATOR_H
+#pragma once
 #include <system.h>
 #include <integrators/integrator.h>
 #include <statisticssampler.h>
@@ -32,5 +31,3 @@ public:
 
     void step();
 };
-
-#endif // SIMULATOR_H

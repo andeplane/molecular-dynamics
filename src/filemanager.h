@@ -1,5 +1,4 @@
-#ifndef FILEMANAGER_H
-#define FILEMANAGER_H
+#pragma once
 #include <string>
 #include <fstream>
 #include <vector>
@@ -25,5 +24,3 @@ public:
     void finalize();
     void saveMovieFrame(const vector<Atom> &atoms, Topology &topology);
 };
-
-#endif // FILEMANAGER_H
