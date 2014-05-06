@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include <topology.h>
+#include <includes.h>
 
 using std::cerr; using std::endl; using std::cout;
 
@@ -220,21 +221,14 @@ void AtomManager::updateCellList() {
     CellData &cellData = m_cellData;
     atoms().iterate([&](Atom &atom) {
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
-
-        if(cellIndex < 0) { cout << "Skipping negative cell index" << endl; return; }
-        if(cellIndex >=cellData.cells.size()) { cout << "Skipping too large cell index" << endl; return; }
-
-        Cell &cell = cellData.cells.at(cellIndex);
+        Cell &cell = safeOrQuickVectorLookup(cellData.cells, cellIndex);
         cell.addAtom(&atom);
     });
 
     ghostAtoms().iterate([&](Atom &atom) {
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
 
-        if(cellIndex < 0) { cout << "Skipping negative cell index" << endl; return; }
-        if(cellIndex >=cellData.cells.size()) { cout << "Skipping too large cell index" << endl; return; }
-
-        Cell &cell = cellData.cells.at(cellIndex);
+        Cell &cell = safeOrQuickVectorLookup(cellData.cells, cellIndex);
         cell.addAtom(&atom);
     });
 
