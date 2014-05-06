@@ -22,7 +22,7 @@ SUITE(System) {
 
         atom.setPosition(0,0,0);
         CHECK_EQUAL(1, system.atomManager().numberOfAtoms());
-        CHECK_EQUAL(7, system.atomManager().numberOfGhostAtoms());
+        CHECK_EQUAL(26, system.atomManager().numberOfGhostAtoms());
 
         atom.setPosition(0.5,0.5,0.5);
         CHECK_EQUAL(1, system.atomManager().numberOfAtoms());
@@ -38,17 +38,13 @@ SUITE(System) {
         Generator::generateFCC(system,1.0,vector<int>(3,1),AtomType::atomTypeFromAtomType(AtomTypes::Argon));
 
         CHECK_EQUAL(4, system.atomManager().numberOfAtoms());
-        CHECK_EQUAL(58, system.atomManager().numberOfGhostAtoms());
+        CHECK_EQUAL(104, system.atomManager().numberOfGhostAtoms());
 
-//        Generator::generateFCC(system, 1,vector<int>(3,10), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
-//        system.atomManager().setCutoffDistance(2.5);
+        Generator::generateFCC(system, 1,vector<int>(3,10), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
+        system.atomManager().setCutoffDistance(2.5);
 
-//        CHECK_EQUAL(4000, system.atomManager().numberOfAtoms());
-//        CHECK_EQUAL(8195, system.atomManager().numberOfGhostAtoms());
-
-//        Generator::generateFCC(system, 1,vector<int>(3,30), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
-//        CHECK_EQUAL(108000, system.atomManager().numberOfAtoms());
-//        CHECK_EQUAL(56255, system.atomManager().numberOfGhostAtoms());
+        CHECK_EQUAL(4000, system.atomManager().numberOfAtoms());
+        CHECK_EQUAL(8195, system.atomManager().numberOfGhostAtoms());
     }
 
     TEST(Cells) {
