@@ -14,6 +14,8 @@ private:
     unsigned long m_numberOfComputedPairs;
     unsigned long m_numberOfComputedPairsWithinCutoffDistance;
     double m_potentialEnergyCorrection; // To correct for cutoff distance
+    AtomIteratorAllPairs m_iteratorAllPairs;
+    AtomIteratorDefault m_iteratorDefault;
 public:
     LennardJonesPotential();
     double sigma() const;
