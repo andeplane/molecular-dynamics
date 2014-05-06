@@ -1,15 +1,18 @@
-#include "atomtype.h"
+#include <atomtype.h>
 #include <iostream>
 
 bool AtomType::isInitialized = false;
 vector<AtomType*> AtomType::atomTypes;
+int operator + (AtomTypes val) {
+    return static_cast<int>(val);
+}
 
 AtomType::AtomType(int atomicNumber, double mass, string name, string symbol) :
     m_atomicNumber(atomicNumber),
     m_mass(mass),
+    m_massInverse(1.0/mass),
     m_name(name),
-    m_symbol(symbol),
-    m_massInverse(1.0/mass)
+    m_symbol(symbol)
 {
 
 }
