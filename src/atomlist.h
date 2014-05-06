@@ -2,8 +2,8 @@
 #define ATOMLIST_H
 #include <vector>
 #include <functional>
-#include <map>
-using std::vector; using std::function; using std::map; using std::pair;
+#include <unordered_map>
+using std::vector; using std::function; using std::unordered_map; using std::pair;
 
 #include <atom.h>
 
@@ -15,7 +15,7 @@ private:
     bool m_atomsDirty;
     function<void()> m_onAtomMoved;
     function<void()> m_onAtomRemoved;
-    map<unsigned long, unsigned long> m_indexMap;
+    unordered_map<unsigned long, unsigned long> m_indexMap;
 
 public:
     AtomList(int initialAtomCount = 1000);
