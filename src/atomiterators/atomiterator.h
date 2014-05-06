@@ -20,7 +20,7 @@ public:
     function<void (Atom *atom1, Atom *atom2)> twoParticleAction() const;
     void setTwoParticleAction(const function<void (Atom *atom1, Atom *atom2)> &twoParticleAction);
     function<void (Atom *atom1, Atom *atom2, Atom *atom3)> threeParticleAction() const;
-    void setThreeParticleAction(const function<void (Atom *atom1, Atom *atom2, Atom *atom3)> &threeParticleAction);
+    virtual void setThreeParticleAction(const function<void (Atom *atom1, Atom *atom2, Atom *atom3)> &threeParticleAction);
 };
 
 #endif // ATOMITERATOR_H

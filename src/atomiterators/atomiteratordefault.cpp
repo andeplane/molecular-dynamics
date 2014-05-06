@@ -14,8 +14,28 @@ void AtomIteratorDefault::setMaximumNeighborDistance(double maximumNeighborDista
 {
     m_maximumNeighborDistance = maximumNeighborDistance;
 }
-AtomIteratorDefault::AtomIteratorDefault()
+
+bool AtomIteratorDefault::createNeighborList() const
 {
+    return m_createNeighborList;
+}
+
+void AtomIteratorDefault::setCreateNeighborList(bool createNeighborList)
+{
+    m_createNeighborList = createNeighborList;
+}
+
+void AtomIteratorDefault::setThreeParticleAction(const function<void (Atom *, Atom *, Atom *)> &threeParticleAction)
+{
+    AtomIterator::setThreeParticleAction(threeParticleAction);
+    m_createNeighborList = true;
+}
+
+AtomIteratorDefault::AtomIteratorDefault() :
+    m_maximumNeighborDistance(INFINITY),
+    m_createNeighborList(false)
+{
+
 }
 
 void AtomIteratorDefault::iterate(AtomManager &atomManager) {
@@ -40,14 +60,15 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                                 for(Atom *atom2 : cell2.atoms()) {
                                     if(atom1->originalUniqueId() <= atom2->originalUniqueId() && !atom2->ghost()) continue; // Newton's 3rd law, always calculate if atom2 is ghost
                                     m_twoParticleAction(atom1,atom2);
+                                    if(m_createNeighborList) {
+                                        double dx = atom1->position[0] - atom2->position[0];
+                                        double dy = atom1->position[1] - atom2->position[1];
+                                        double dz = atom1->position[2] - atom2->position[2];
+                                        double dr2 = dx*dx + dy*dy + dz*dz;
 
-                                    double dx = atom1->position[0] - atom2->position[0];
-                                    double dy = atom1->position[1] - atom2->position[1];
-                                    double dz = atom1->position[2] - atom2->position[2];
-                                    double dr2 = dx*dx + dy*dy + dz*dz;
-
-                                    if(dr2 < maximumNeighborDistanceSquared) {
-                                        neighborList.addNeighbors(atom1,atom2);
+                                        if(dr2 < maximumNeighborDistanceSquared) {
+                                            neighborList.addNeighbors(atom1,atom2);
+                                        }
                                     }
                                 }
                             } // Loop atoms
@@ -57,4 +78,19 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
             }
         }
     }
+    return;
+    if(!m_threeParticleAction) return;
+    // Three particle loop
+    atomManager.atoms().iterate([&](Atom &atom) {
+        Atom *atom1 = &atom;
+        vector<Atom*> neighbors = neighborList.neighborsForAtom(atom1);
+        if(neighbors.size() < 2) return; // No three particle contribution here
+        for(unsigned long neighborIndex1 = 0; neighborIndex1<neighbors.size()-1; neighborIndex1++) {
+            Atom *atom2 = safeOrQuickVectorLookup(neighbors,neighborIndex1);
+            for(unsigned long neighborIndex2 = neighborIndex1+1; neighborIndex2<neighbors.size(); neighborIndex2++) {
+                Atom *atom3 = safeOrQuickVectorLookup(neighbors,neighborIndex2);
+                m_threeParticleAction(atom1,atom2,atom3);
+            }
+        }
+    });
 }

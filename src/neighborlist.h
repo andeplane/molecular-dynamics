@@ -5,7 +5,7 @@
 using std::unordered_map; using std::vector;
 class Atom;
 
-typedef unordered_map<Atom*,vector<Atom*> > NeighborMap;
+typedef unordered_map<unsigned long,vector<Atom*> > NeighborMap;
 class NeighborList
 {
 private:
@@ -15,6 +15,7 @@ public:
     ~NeighborList();
     NeighborMap &neighborMap();
     void addNeighbors(Atom *atom1, Atom *atom2);
+    vector<Atom*> &neighborsForAtom(Atom *atom);
 };
 
 #endif // NEIGHBORLIST_H

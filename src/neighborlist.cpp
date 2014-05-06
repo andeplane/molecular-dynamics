@@ -1,7 +1,6 @@
 #include <neighborlist.h>
 #include <atom.h>
 
-
 NeighborMap &NeighborList::neighborMap()
 {
     return m_neighborMap;
@@ -9,8 +8,13 @@ NeighborMap &NeighborList::neighborMap()
 
 void NeighborList::addNeighbors(Atom *atom1, Atom *atom2)
 {
-    m_neighborMap[atom1].push_back(atom2);
-    m_neighborMap[atom2].push_back(atom1);
+    m_neighborMap[atom1->uniqueId()].push_back(atom2);
+    m_neighborMap[atom1->uniqueId()].push_back(atom1);
+}
+
+vector<Atom *> &NeighborList::neighborsForAtom(Atom *atom)
+{
+    return m_neighborMap[atom->uniqueId()];
 }
 
 NeighborList::NeighborList()
