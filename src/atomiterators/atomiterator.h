@@ -10,7 +10,7 @@ using std::function;
 
 class AtomIterator
 {
-private:
+protected:
     function<void(Atom *atom1, Atom *atom2)> m_twoParticleAction;
     function<void(Atom *atom1, Atom *atom2, Atom *atom3)> m_threeParticleAction;
 public:

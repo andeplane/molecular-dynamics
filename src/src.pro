@@ -31,7 +31,8 @@ HEADERS += \
     atomiterators/atomiterators.h \
     potentials/potentials.h \
     atomiterators/atomiteratordefault.h \
-    atomiterators/atomiteratorallpairs.h
+    atomiterators/atomiteratorallpairs.h \
+    neighborlist.h
 
 SOURCES += \
     atom.cpp \
@@ -54,4 +55,5 @@ SOURCES += \
     atomlist.cpp \
     random.cpp \
     atomiterators/atomiteratordefault.cpp \
-    atomiterators/atomiteratorallpairs.cpp
+    atomiterators/atomiteratorallpairs.cpp \
+    neighborlist.cpp
