@@ -1,6 +1,8 @@
 #include <atomlist.h>
 #include <utility>
 #include <iostream>
+#include <includes.h>
+
 using namespace std;
 
 AtomList::AtomList(int initialAtomCount) :
@@ -42,7 +44,7 @@ void AtomList::removeAllAtoms()
 void AtomList::iterate(function<void (Atom &atom)> action)
 {
     for(unsigned long atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
-        Atom &atom = m_atoms.at(atomIndex);
+        Atom &atom = safeOrQuickVectorLookup(m_atoms,atomIndex);
         action(atom);
     }
 }
@@ -50,7 +52,7 @@ void AtomList::iterate(function<void (Atom &atom)> action)
 void AtomList::iterate(function<void (Atom &atom, const int &atomIndex)> action)
 {
     for(unsigned long atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
-        Atom &atom = m_atoms.at(atomIndex);
+        Atom &atom = safeOrQuickVectorLookup(m_atoms,atomIndex);
         action(atom, atomIndex);
     }
 }
@@ -70,7 +72,7 @@ void AtomList::cleanupList() {
     vector<Atom>::iterator lastElementIterator = --m_atoms.end();
 
     for(int atomIndex=0; atomIndex<numberOfAtoms; atomIndex++) {
-        Atom &atom = m_atoms.at(atomIndex);
+        Atom &atom = safeOrQuickVectorLookup(m_atoms,atomIndex);
         if(atom.removed()) {
             std::swap(atom,*lastElementIterator);   // Swap this moved element and the back element
             lastElementIterator--;                  // Now, choose the previous element as back element

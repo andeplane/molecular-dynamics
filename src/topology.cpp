@@ -7,12 +7,9 @@
 #include <atomtype.h>
 #include <cmath>
 #include <atommanager.h>
-#include <includes.h>
 
 Topology::Topology() :
-    m_isInitialized(false),
-    m_mpiReceiveBuffer(0),
-    m_mpiSendBuffer(0)
+    m_isInitialized(false)
 {
 
 }
