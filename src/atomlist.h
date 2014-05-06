@@ -25,6 +25,8 @@ public:
     const vector<Atom> &atoms();
     void setOnAtomMoved(const function<void ()> &onAtomMoved);
     void cleanupList();
+    void resetVelocityZero();
+    void resetVelocityMaxwellian(double temperature);
 };
 
 #endif // ATOMLIST_H

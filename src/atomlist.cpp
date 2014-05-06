@@ -22,15 +22,15 @@ int AtomList::numberOfAtoms()
 
 Atom &AtomList::addAtom(AtomType *atomType)
 {
-    m_atoms.resize(m_atoms.size()+1); // Default constructor will be called
+    m_atoms.push_back(Atom(atomType));
     Atom &atom = m_atoms.back();
+
     atom.setType(atomType);
     atom.addOnRemoved([&]() {
         // This list should know if an atom has been moved
         m_atomsDirty = true;
     });
     atom.addOnMoved(m_onAtomMoved); // Set default function that will be called on move function on atoms
-
     return atom;
 }
 
@@ -41,7 +41,7 @@ void AtomList::removeAllAtoms()
 
 void AtomList::iterate(function<void (Atom &atom)> action)
 {
-    for(int atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
+    for(unsigned long atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
         Atom &atom = m_atoms.at(atomIndex);
         action(atom);
     }
@@ -49,7 +49,7 @@ void AtomList::iterate(function<void (Atom &atom)> action)
 
 void AtomList::iterate(function<void (Atom &atom, const int &atomIndex)> action)
 {
-    for(int atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
+    for(unsigned long atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
         Atom &atom = m_atoms.at(atomIndex);
         action(atom, atomIndex);
     }
@@ -80,6 +80,20 @@ void AtomList::cleanupList() {
     }
 
     m_atoms.resize(numberOfAtoms);
+}
+
+void AtomList::resetVelocityZero()
+{
+    iterate([](Atom &atom) {
+       atom.setVelocity(0,0,0);
+    });
+}
+
+void AtomList::resetVelocityMaxwellian(double temperature)
+{
+    iterate([&](Atom &atom) {
+       atom.resetVelocityMaxwellian(temperature);
+    });
 }
 
 void AtomList::setOnAtomMoved(const function<void ()> &onAtomMoved)
