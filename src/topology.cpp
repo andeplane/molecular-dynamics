@@ -7,6 +7,7 @@
 #include <atomtype.h>
 #include <cmath>
 #include <atommanager.h>
+#include <includes.h>
 
 Topology::Topology() :
     m_isInitialized(false),
