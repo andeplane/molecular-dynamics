@@ -26,7 +26,7 @@ public:
     Atom &addGhostAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
     void removeAllAtoms();
     void removeGhostAtoms();
-    void setSystemLength(vector<double> &systemLength);
+    void setSystemLength(vector<double> systemLength);
 
     Topology &topology();
     AtomManager &atomManager();
@@ -34,6 +34,7 @@ public:
     int numberOfAtoms();
     int numberOfGhostAtoms();
     vector<double> systemLength();
+    void removeTotalMomentum();
 protected:
     void checkIfInitialized();
 };

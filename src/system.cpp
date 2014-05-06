@@ -4,6 +4,7 @@
 #include <cmath>
 #include <potentials/lennardjonespotential.h>
 #include <iostream>
+#include <statisticssampler.h>
 using namespace std;
 
 AtomManager &System::atomManager()
@@ -30,6 +31,7 @@ void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double
     m_atomManager.setTopology(&m_topology);
     m_atomManager.setSystemLength(systemLength);
     m_atomManager.removeAllAtoms();
+    setSystemLength(systemLength);
 }
 
 Atom &System::addAtom(AtomType *atomType)
@@ -62,21 +64,43 @@ vector<double> System::systemLength()
     return m_topology.systemLength();
 }
 
+void System::removeTotalMomentum()
+{
+    StatisticsSampler sampler;
+    vector<double> momentum = sampler.calculateTotalMomentum(*this);
+
+    if(numberOfAtoms() > 0) {
+        momentum[0] /= numberOfAtoms();
+        momentum[1] /= numberOfAtoms();
+        momentum[2] /= numberOfAtoms();
+    }
+
+    atomManager().atoms().iterate([&](Atom &atom) {
+        atom.velocity[0] -= momentum[0]*atom.type()->massInverse();
+        atom.velocity[1] -= momentum[1]*atom.type()->massInverse();
+        atom.velocity[2] -= momentum[2]*atom.type()->massInverse();
+    });
+}
+
 int System::numberOfAtoms()
 {
     return m_atomManager.numberOfAtoms();
 }
 
-void System::setSystemLength(vector<double> &systemLength)
+void System::setSystemLength(vector<double> systemLength)
 {
     m_topology.setSystemLength(systemLength);
     m_atomManager.setSystemLength(systemLength);
+    for(Potential *potential : potentials()) {
+        potential->setSystemLength(systemLength);
+    }
 }
 
 Potential *System::addPotential(PotentialType type) {
     checkIfInitialized();
     if(type == PotentialType::LennardJones) {
         LennardJonesPotential *lennardJones = new LennardJonesPotential();
+        lennardJones->setSystemLength(systemLength());
         potentials().push_back(lennardJones);
         return lennardJones;
     }
@@ -97,6 +121,8 @@ Topology &System::topology()
 }
 
 std::ostream& operator<<(std::ostream &stream, System &system) {
+    StatisticsSampler sampler;
+
     stream << "System information:" << endl;
     stream << "Length: (" << system.systemLength()[0] << ", " << system.systemLength()[1] << ", " << system.systemLength()[2] << ")" << endl;
     stream << "Number of atoms: " << system.numberOfAtoms() << endl;
@@ -105,5 +131,15 @@ std::ostream& operator<<(std::ostream &stream, System &system) {
     for(Potential *potential : system.potentials()) {
         stream << "   " << potential->name() << endl;
     }
+    vector<double> momentum = sampler.calculateTotalMomentum(system);
+    stream << "Total momentum: (" << momentum.at(0) << "," << momentum.at(1) << "," << momentum.at(2) << ")";
     return stream;
+}
+
+std::ostream& operator<<(std::ostream &stream, const std::vector<double> &vec) {
+    stream << "(";
+    for(int i=0; i<vec.size(); i++) {
+        if(i+1 == vec.size()) stream << vec[i] << ")";
+        else stream << vec[i] << ", ";
+    }
 }
