@@ -2,8 +2,9 @@
 #define ATOMLIST_H
 #include <vector>
 #include <functional>
-using std::vector;
-using std::function;
+#include <map>
+using std::vector; using std::function; using std::map; using std::pair;
+
 #include <atom.h>
 
 class AtomList
@@ -14,6 +15,8 @@ private:
     bool m_atomsDirty;
     function<void()> m_onAtomMoved;
     function<void()> m_onAtomRemoved;
+    map<unsigned long, unsigned long> m_indexMap;
+
 public:
     AtomList(int initialAtomCount = 1000);
     ~AtomList();
@@ -27,6 +30,8 @@ public:
     void cleanupList();
     void resetVelocityZero();
     void resetVelocityMaxwellian(double temperature);
+    bool containsAtomWithUniqueId(unsigned long uniqueId);
+    Atom &getAtomByUniqueId(unsigned long uniqueid);
 };
 
 #endif // ATOMLIST_H

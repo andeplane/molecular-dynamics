@@ -3,8 +3,6 @@
 #include <iostream>
 #include <includes.h>
 
-using namespace std;
-
 AtomList::AtomList(int initialAtomCount) :
     m_atomsDirty(false),
     m_onAtomMoved(0)
@@ -14,6 +12,7 @@ AtomList::AtomList(int initialAtomCount) :
 
 AtomList::~AtomList()
 {
+    m_indexMap.clear();
     m_atoms.clear();
 }
 
@@ -22,10 +21,20 @@ int AtomList::numberOfAtoms()
     return atoms().size();
 }
 
+bool AtomList::containsAtomWithUniqueId(unsigned long uniqueId) {
+    return m_indexMap.find(uniqueId) != m_indexMap.end();
+}
+
+Atom &AtomList::getAtomByUniqueId(unsigned long uniqueid) {
+    return safeOrQuickVectorLookup(m_atoms,m_indexMap[uniqueid]);
+}
+
 Atom &AtomList::addAtom(AtomType *atomType)
 {
     m_atoms.push_back(Atom(atomType));
     Atom &atom = m_atoms.back();
+    unsigned long indexOfThisAtom = m_atoms.size()-1;
+    m_indexMap.insert(pair<unsigned long, unsigned long>(atom.uniqueId(),indexOfThisAtom));
 
     atom.setType(atomType);
     atom.addOnRemoved([&]() {
@@ -38,6 +47,7 @@ Atom &AtomList::addAtom(AtomType *atomType)
 
 void AtomList::removeAllAtoms()
 {
+    m_indexMap.clear();
     m_atoms.clear();
 }
 
@@ -74,7 +84,10 @@ void AtomList::cleanupList() {
     for(int atomIndex=0; atomIndex<numberOfAtoms; atomIndex++) {
         Atom &atom = safeOrQuickVectorLookup(m_atoms,atomIndex);
         if(atom.removed()) {
-            std::swap(atom,*lastElementIterator);   // Swap this moved element and the back element
+            Atom &lastAtomInList = *lastElementIterator;
+            std::swap(atom,lastAtomInList);   // Swap this moved element and the back element
+            std::swap(m_indexMap[atom.uniqueId()], m_indexMap[lastAtomInList.uniqueId()]); // Swap the index map for these two atoms
+
             lastElementIterator--;                  // Now, choose the previous element as back element
             numberOfAtoms--;                        // For the for loop range check
             atomIndex--;                            // Re-check this index, a new atom has taken its place

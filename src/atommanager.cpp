@@ -119,22 +119,10 @@ Atom *AtomManager::getAtomByOriginalUniqueId(unsigned long originalUniqueId) {
     return atom;
 }
 
-Atom *AtomManager::getAtomByUniqueId(unsigned long uniqueId) {
-    Atom *atom = 0;
+Atom &AtomManager::getAtomByUniqueId(unsigned long uniqueId) {
 
-    m_atoms.iterate([&](Atom &currentAtom) {
-        if(currentAtom.uniqueId() == uniqueId) atom = &currentAtom;
-        return;
-    });
-
-    if(!atom) {
-        m_ghostAtoms.iterate([&](Atom &currentAtom) {
-            if(currentAtom.uniqueId() == uniqueId) atom = &currentAtom;
-            return;
-        });
-    }
-
-    return atom;
+    if(m_atoms.containsAtomWithUniqueId(uniqueId)) return m_atoms.getAtomByUniqueId(uniqueId);
+    else return m_ghostAtoms.getAtomByUniqueId(uniqueId);
 }
 
 AtomList &AtomManager::atoms()
