@@ -29,7 +29,8 @@ HEADERS += \
     integrators/integrators.h \
     atomiterators/atomiterators.h \
     potentials/potentials.h \
-    atomiterators/atomiteratordefault.h
+    atomiterators/atomiteratordefault.h \
+    atomiterators/atomiteratorallpairs.h
 
 SOURCES += \
     atom.cpp \
@@ -51,4 +52,5 @@ SOURCES += \
     cell.cpp \
     atomlist.cpp \
     random.cpp \
-    atomiterators/atomiteratordefault.cpp
+    atomiterators/atomiteratordefault.cpp \
+    atomiterators/atomiteratorallpairs.cpp

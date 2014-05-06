@@ -121,7 +121,7 @@ SUITE(System) {
         CHECK_ARRAY_CLOSE(expectedPosition,atom.position,3,1e-7);
 
         // Now test with random velocity
-        atom.resetMaxwellianVelocity(1.0);
+        atom.resetVelocityMaxwellian(1.0);
         for(int i=0; i<10000; i++) {
             expectedPosition[0] = fmod(atom.position[0] + atom.velocity[0]*timestep + systemLength[0],systemLength[0]);
             expectedPosition[1] = fmod(atom.position[1] + atom.velocity[1]*timestep + systemLength[1],systemLength[1]);
@@ -134,7 +134,7 @@ SUITE(System) {
 
         // Test with random velocity each timestep
         for(int i=0; i<10000; i++) {
-            atom.resetMaxwellianVelocity(1.0);
+            atom.resetVelocityMaxwellian(1.0);
             expectedPosition[0] = fmod(atom.position[0] + atom.velocity[0]*timestep + systemLength[0],systemLength[0]);
             expectedPosition[1] = fmod(atom.position[1] + atom.velocity[1]*timestep + systemLength[1],systemLength[1]);
             expectedPosition[2] = fmod(atom.position[2] + atom.velocity[2]*timestep + systemLength[2],systemLength[2]);
