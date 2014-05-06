@@ -32,7 +32,8 @@ HEADERS += \
     potentials/potentials.h \
     atomiterators/atomiteratordefault.h \
     atomiterators/atomiteratorallpairs.h \
-    units.h
+    units.h \
+    potentials/uscsio2potential.h
 
 SOURCES += \
     atom.cpp \
@@ -55,4 +56,5 @@ SOURCES += \
     atomlist.cpp \
     random.cpp \
     atomiterators/atomiteratordefault.cpp \
-    atomiterators/atomiteratorallpairs.cpp
+    atomiterators/atomiteratorallpairs.cpp \
+    potentials/uscsio2potential.cpp
