@@ -11,10 +11,8 @@ int main()
 {
     Random::setSeed(1);
     Simulator simulator;
-    FileManager fileManager;
-
-    int timesteps = 0;
-    vector<double> systemLength(3,3.0);
+    int numberOfTimesteps = 50;
+    vector<double> systemLength(3,1.0);
 
     simulator.initialize(0, vector<int>(3,1), systemLength);
     simulator.setTimestep(0.02);
@@ -24,22 +22,18 @@ int main()
     Generator::generateFCC(simulator.system(),latticeConstant,vector<int>(3,5), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
     simulator.system().removeTotalMomentum();
 
-    for(int i=0; i<200; i++) {
+    for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         simulator.step();
 
-        if(i%10 == 0) {
-            cout << "Timestep " << i << "   Total energy: " << simulator.sampler().calculateTotalEnergy(simulator.system());
-            cout << " (K=" << simulator.sampler().calculateKineticEnergy(simulator.system()) << "  P=" << simulator.sampler().calculatePotentialEnergy(simulator.system()) << ")" << endl;
-        }
+//        if(timestep%100 == 0) {
+//            cout << "Timestep " << timestep;
+//            cout << "   Total energy: " << simulator.sampler().calculateTotalEnergy(simulator.system());
+//            cout << " (K=" << simulator.sampler().calculateKineticEnergy(simulator.system()) << "  P=" << simulator.sampler().calculatePotentialEnergy(simulator.system()) << ")" << endl;
+//        } else {
+//            cout << "Timestep " << timestep << endl;
+//        }
 
-        // fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
-        timesteps++;
     }
-
-    fileManager.finalize();
-
-    cout << "Saved " << timesteps << " movie frames." << endl;
-
     return 0;
 }
 
