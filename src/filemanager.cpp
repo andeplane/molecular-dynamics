@@ -1,7 +1,6 @@
-#include "filemanager.h"
+#include <filemanager.h>
 #include <topology.h>
 #include <atom.h>
-#include <atomtype.h>
 
 FileManager::FileManager() :
     m_movieFile(NULL)
