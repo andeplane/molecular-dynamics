@@ -1,5 +1,5 @@
-#ifndef INCLUDES_H
-#define INCLUDES_H
+#pragma once
+
 #include <system.h>
 #include <simulator.h>
 #include <potentials/potential.h>
@@ -13,7 +13,8 @@
 #include <atomiterators/atomiterators.h>
 #include <vector>
 
-std::ostream& operator<<(std::ostream &stream, const std::vector<double> &vec) {
+template<typename T>
+std::ostream& operator<<(std::ostream &stream, const std::vector<T> &vec) {
     stream << "(";
     for(unsigned long i=0; i<vec.size(); i++) {
         if(i+1 == vec.size()) stream << vec[i] << ")";
@@ -31,6 +32,3 @@ T &safeOrQuickVectorLookup(vector<T> &vec, int index) {
     return vec[index];
 #endif
 }
-
-
-#endif // INCLUDES_H
