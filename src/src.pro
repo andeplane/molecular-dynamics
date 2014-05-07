@@ -8,7 +8,7 @@ Debug: QMAKE_CFLAGS += -DDEBUG
 
 HEADERS += \
     atom.h \
-    filemanager.h \
+    filemanager/filemanager.h \
     generator.h \
     simulator.h \
     statisticalproperty.h \
@@ -32,11 +32,12 @@ HEADERS += \
     potentials/potentials.h \
     atomiterators/atomiteratordefault.h \
     atomiterators/atomiteratorallpairs.h \
-    potentials/uscsio2potential.h
+    potentials/uscsio2potential.h \
+    filemanager/mts0io.h
 
 SOURCES += \
     atom.cpp \
-    filemanager.cpp \
+    filemanager/filemanager.cpp \
     generator.cpp \
     simulator.cpp \
     statisticalproperty.cpp \
@@ -56,4 +57,5 @@ SOURCES += \
     random.cpp \
     atomiterators/atomiteratordefault.cpp \
     atomiterators/atomiteratorallpairs.cpp \
-    potentials/uscsio2potential.cpp
+    potentials/uscsio2potential.cpp \
+    filemanager/mts0io.cpp

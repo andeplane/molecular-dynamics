@@ -2,7 +2,7 @@
 #include <includes.h>
 #include <random.h>
 #include <atomiterators/atomiteratordefault.h>
-#include <filemanager.h>
+#include <filemanager/filemanager.h>
 #include <statisticssampler.h>
 
 using namespace std;
@@ -18,6 +18,7 @@ int main()
     simulator.setTimestep(0.02);
 
     LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
+
     double latticeConstant = 1.54478708;
     Generator::generateFCC(simulator.system(),latticeConstant,vector<int>(3,5), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
     simulator.system().removeTotalMomentum();

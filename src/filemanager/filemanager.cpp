@@ -1,4 +1,4 @@
-#include <filemanager.h>
+#include <filemanager/filemanager.h>
 #include <topology.h>
 #include <atom.h>
 
@@ -62,3 +62,4 @@ void FileManager::loadState(string stateFolder, vector<Atom> &atoms) {
 void FileManager::saveState(string stateFolder, vector<Atom> &atoms) {
 
 }
+
