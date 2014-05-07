@@ -20,8 +20,11 @@ int main()
     USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system().addPotential(PotentialType::USCSilica);
     FileManager fileManager;
     fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
+    simulator.step();
+
     fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
     fileManager.finalize();
+
     return 0;
 
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {

@@ -4,6 +4,7 @@
 
 #include <potentials/uscsio2potential.h>
 #include <unitconverter.h>
+#include <cmath>
 
 int operator + (AtomConfiguration val) {
     return static_cast<int>(val);
@@ -51,9 +52,86 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
                     - D_ij.at(configurationIndex)*0.5*oneOverR5*exp(-r*oneOverR4s.at(configurationIndex))*oneOverR4s.at(configurationIndex);
 }
 
-void USCSIO2Potential::threeParticleAction(Atom *atom1, Atom *atom2, Atom *atom3)
+void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
 {
+    int atomicNumber1 = atomi->type()->atomicNumber();
+    int atomicNumber2 = atomj->type()->atomicNumber();
+    int atomicNumber3 = atomk->type()->atomicNumber();
+    int configurationIndex = m_configurationMap.at(atomicNumber1).at(atomicNumber2).at(atomicNumber3);
+    if(configurationIndex == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
 
+    double xij = atomi->position[0] - atomj->position[0];
+    double xik = atomi->position[0] - atomk->position[0];
+
+    double yij = atomi->position[1] - atomj->position[1];
+    double yik = atomi->position[1] - atomk->position[1];
+
+    double zij = atomi->position[2] - atomj->position[2];
+    double zik = atomi->position[2] - atomk->position[2];
+
+    double rij = xij*xij + yij*yij + zij*zij;
+    double rik = xik*xik + yik*yik + zik*zik;
+    double rijDotRik = xij*xik + yij*yik + zij*zik;
+
+    double oneOverRij = 1.0/rij;
+    double oneOverRik = 1.0/rik;
+    double oneOverRijMinusRzero = 1.0/(rij - r_0.at(configurationIndex));
+    double oneOverRikMinusRzero = 1.0/(rik - r_0.at(configurationIndex));
+    double cosThetaIJK = rijDotRik*oneOverRij*oneOverRik;
+    double cosThetaIJKMinusCosThetaZero = cosThetaIJK - cosThetaZero.at(configurationIndex);
+    double oneOverCosThetaIJKMinusCosThetaZero = 1.0/cosThetaIJKMinusCosThetaZero;
+
+    double Vijk = B_ijk.at(configurationIndex)
+                  *exp(ksi.at(configurationIndex)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
+                  *pow(cosThetaIJKMinusCosThetaZero, 2);
+
+    // Atom i
+    double dCosThetaXi = oneOverRij*oneOverRik*( xij*(1 + rijDotRik*oneOverRij*oneOverRij) + xik*(1 + rijDotRik*oneOverRik*oneOverRik));
+    double dCosThetaYi = oneOverRij*oneOverRik*( yij*(1 + rijDotRik*oneOverRij*oneOverRij) + yik*(1 + rijDotRik*oneOverRik*oneOverRik));
+    double dCosThetaZi = oneOverRij*oneOverRik*( zij*(1 + rijDotRik*oneOverRij*oneOverRij) + zik*(1 + rijDotRik*oneOverRik*oneOverRik));
+
+    double Fxi = Vijk*(-ksi.at(configurationIndex)*( xij*oneOverRij*pow(oneOverRijMinusRzero,2) + xik*oneOverRik*pow(oneOverRikMinusRzero,2))
+                       +2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaXi);
+    double Fyi = Vijk*(-ksi.at(configurationIndex)*( yij*oneOverRij*pow(oneOverRijMinusRzero,2) + yik*oneOverRik*pow(oneOverRikMinusRzero,2))
+                       +2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaYi);
+    double Fzi = Vijk*(-ksi.at(configurationIndex)*( zij*oneOverRij*pow(oneOverRijMinusRzero,2) + zik*oneOverRik*pow(oneOverRikMinusRzero,2))
+                       +2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaZi);
+
+    // Atom j
+    double dCosThetaXj = -oneOverRij*oneOverRik*(xik + xij*rijDotRik*oneOverRij*oneOverRij);
+    double dCosThetaYj = -oneOverRij*oneOverRik*(yik + yij*rijDotRik*oneOverRij*oneOverRij);
+    double dCosThetaZj = -oneOverRij*oneOverRik*(zik + zij*rijDotRik*oneOverRij*oneOverRij);
+
+    double Fxj = Vijk*(ksi.at(configurationIndex)*oneOverRijMinusRzero*oneOverRijMinusRzero
+                       + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaXj);
+    double Fyj = Vijk*(ksi.at(configurationIndex)*oneOverRijMinusRzero*oneOverRijMinusRzero
+                       + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaYj);
+    double Fzj = Vijk*(ksi.at(configurationIndex)*oneOverRijMinusRzero*oneOverRijMinusRzero
+                       + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaZj);
+
+    // Atom k
+    double dCosThetaXk = -oneOverRij*oneOverRik*(xij + xik*rijDotRik*oneOverRik*oneOverRik);
+    double dCosThetaYk = -oneOverRij*oneOverRik*(yij + yik*rijDotRik*oneOverRik*oneOverRik);
+    double dCosThetaZk = -oneOverRij*oneOverRik*(zij + zik*rijDotRik*oneOverRik*oneOverRik);
+
+    double Fxk = Vijk*(ksi.at(configurationIndex)*oneOverRikMinusRzero*oneOverRikMinusRzero
+                       + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaXk);
+    double Fyk = Vijk*(ksi.at(configurationIndex)*oneOverRikMinusRzero*oneOverRikMinusRzero
+                       + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaYk);
+    double Fzk = Vijk*(ksi.at(configurationIndex)*oneOverRikMinusRzero*oneOverRikMinusRzero
+                       + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaZk);
+
+    atomi->force[0] += Fxi;
+    atomi->force[1] += Fyi;
+    atomi->force[2] += Fzi;
+
+    atomj->force[0] += Fxj;
+    atomj->force[1] += Fyj;
+    atomj->force[2] += Fzj;
+
+    atomk->force[0] += Fxk;
+    atomk->force[1] += Fyk;
+    atomk->force[2] += Fzk;
 }
 
 
@@ -77,7 +155,7 @@ void USCSIO2Potential::initialize() {
     }
 
     B_ijk.resize(+AtomConfiguration::NumberOfConfigurations,0);
-    theta_zero.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    cosThetaZero.resize(+AtomConfiguration::NumberOfConfigurations,0);
     r_0.resize(+AtomConfiguration::NumberOfConfigurations,0);
     ksi.resize(+AtomConfiguration::NumberOfConfigurations,0);
     C_ijk.resize(+AtomConfiguration::NumberOfConfigurations,0);
@@ -120,8 +198,8 @@ void USCSIO2Potential::initialize() {
     B_ijk.at(+AtomConfiguration::O_Si_O) = uc.energyFromEv(4.993);
     B_ijk.at(+AtomConfiguration::Si_O_Si) = uc.energyFromEv(19.972);
 
-    theta_zero.at(+AtomConfiguration::O_Si_O) = uc.degreesToRadians(109.47);
-    theta_zero.at(+AtomConfiguration::Si_O_Si) = uc.degreesToRadians(141.0);
+    cosThetaZero.at(+AtomConfiguration::O_Si_O) = cos(uc.degreesToRadians(109.47));
+    cosThetaZero.at(+AtomConfiguration::Si_O_Si) = cos(uc.degreesToRadians(141.0));
 
     r_0.at(+AtomConfiguration::O_Si_O) = uc.lengthFromAngstroms(2.60);
     r_0.at(+AtomConfiguration::Si_O_Si) = uc.lengthFromAngstroms(2.60);

@@ -60,8 +60,6 @@ Integrator *Simulator::integrator()
 
 void Simulator::setIntegrator(Integrators integrator)
 {
-    if(m_integrator) delete m_integrator;
-
     if(integrator == Integrators::VelocityVerlet) {
         m_integrator = new VelocityVerlet();
     }

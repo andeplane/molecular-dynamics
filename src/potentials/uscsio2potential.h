@@ -40,7 +40,7 @@ private:
 
     // Three particle coefficients
     coeff_B_ijk B_ijk;
-    coeff_theta_zero theta_zero;
+    coeff_theta_zero cosThetaZero;
     coeff_r_0 r_0;
     coeff_ksi ksi;
     coeff_C_ijk C_ijk;
