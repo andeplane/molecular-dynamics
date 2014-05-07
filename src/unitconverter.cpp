@@ -5,21 +5,24 @@ using namespace std;
 
 UnitConverter::UnitConverter()
 {
-    m0 = 1.66053886e-27;  // SI [kg]
-    L0 = 3.405e-10;       // SI [m]
-    L0_angstrom = 3.405;  // Angstroms
-    E0 = 1.65088e-21;     // SI [J]
-    E0ev = 1.030398291e-2;
-    kb = 1.3806503e-23;   // SI [J/K]
-    e  = 1.60217657e-19;  // SI [C]
+    // Atomic units
+    // [1] http://en.wikipedia.org/wiki/Atomic_units
 
-    t0 = L0*sqrt(m0/E0);
-    F0 = E0/L0;
+    m0 = 9.10938291e-31;  // SI [kg]
+    q0 = 1.602176565e-19; // SI [C]
+    hbar0 = 1.054571726e-34; // SI [Js]
+    electricConstant0 = 8.9875517873681e9; // SI [kgm^3/(s^-2 C^-2)]
+    kb = 1.3806488e-23; // SI [J/K]
+
+    a0 = hbar0*hbar0/(electricConstant0*m0*q0*q0);
+    E0 = m0*q0*q0*q0*q0*electricConstant0*electricConstant0/(hbar0*hbar0);
+    t0 = hbar0/E0;
+    v0 = a0*E0/hbar0;
+    F0 = E0/a0;
     T0 = E0/kb;
-    P0 = m0/(t0*t0*L0);
-    v0 = L0/t0;
+    P0 = E0/(a0*a0*a0);
     visc0 = P0*t0;
-    diff0 = L0*L0/t0;
+    diff0 = a0*a0/t0;
 }
 
 double UnitConverter::pressureToSI(double P) { return P0*P; }
@@ -31,14 +34,20 @@ double UnitConverter::temperatureFromSI(double T) { return T/T0; }
 double UnitConverter::massToSI(double m) { return m0*m; }
 double UnitConverter::massFromSI(double m) { return m/m0; }
 
-double UnitConverter::chargeToSI(double q) { return 0; }
-double UnitConverter::chargeFromSI(double q) { return 0; }
+double UnitConverter::chargeToSI(double q) { return q*q0; }
+double UnitConverter::chargeFromSI(double q) { return q/q0; }
 
-double UnitConverter::lengthToSI(double L) { return L0*L; }
-double UnitConverter::lengthFromSI(double L) { return L/L0; }
+double UnitConverter::hbarToSI(double hbar) { return hbar*hbar0; }
+double UnitConverter::hbarFromSI(double hbar) { return hbar/hbar0; }
 
-double UnitConverter::lengthToAngstroms(double L) { return L0_angstrom*L; }
-double UnitConverter::lengthFromAngstroms(double L) { return L/L0_angstrom; }
+double UnitConverter::electricConstantToSI(double electricConstant) { return electricConstant*electricConstant0; }
+double UnitConverter::electricConstantFromSI(double electricConstant) { return electricConstant/electricConstant0; }
+
+double UnitConverter::lengthToSI(double L) { return a0*L; }
+double UnitConverter::lengthFromSI(double L) { return L/a0; }
+
+double UnitConverter::lengthToAngstroms(double L) { return a0*L*1e10; }
+double UnitConverter::lengthFromAngstroms(double L) { return L/(a0*1e10); }
 
 double UnitConverter::forceToSI(double F) { return F0*F; }
 double UnitConverter::forceFromSI(double F) { return F/F0; }

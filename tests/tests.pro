@@ -9,7 +9,8 @@ SOURCES += \
     main.cpp \
     forces.cpp \
     system.cpp \
-    generator.cpp
+    generator.cpp \
+    units.cpp
 
 INCLUDEPATH += /repos/UnitTest++/src
 INCLUDEPATH += $$PWD/../src

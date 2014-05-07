@@ -4,11 +4,13 @@ class UnitConverter
 {
 public:
     double m0;
-    double L0;
-    double L0_angstrom;
+    double q0;
+    double hbar0;
+    double electricConstant0;
+    double a0;
+    double a0_angstrom;
     double E0;
     double E0ev;
-    double e;
     double kb;
     double t0;
     double F0;
@@ -60,4 +62,8 @@ public:
     double radiansToDegrees(double v);
     double chargeToSI(double m);
     double chargeFromSI(double m);
+    double hbarToSI(double hbar);
+    double hbarFromSI(double hbar);
+    double electricConstantToSI(double electricConstant);
+    double electricConstantFromSI(double electricConstant);
 };

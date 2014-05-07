@@ -18,8 +18,9 @@ typedef vector<double> coeff_r1s;
 typedef vector<double> coeff_r4s;
 typedef vector<double> coeff_cutoff_distance;
 
-enum class AtomConfiguration {Si_O = 0, Si_Si, O_O, O_Si_O, Si_O_Si, NumberOfConfigurations};
+enum class AtomConfiguration {NotUsed = 0, Si_O, Si_Si, O_O, O_Si_O, Si_O_Si, NumberOfConfigurations};
 int operator + (AtomConfiguration val);
+
 
 class USCSIO2Potential : public Potential
 {
@@ -28,6 +29,7 @@ private:
     // Two particle coefficients
     double m_maxCutoffDistance;
     coeff_cutoff_distance cutoffDistances;
+    coeff_cutoff_distance cutoffDistancesSquared;
     coeff_eta_ij eta_ij;
     coeff_H_ij H_ij;
     coeff_D_ij D_ij;
@@ -44,8 +46,9 @@ private:
     coeff_C_ijk C_ijk;
 
     vector<int> m_atomicNumberMap;
-
+    vector<vector<vector<int> > > m_configurationMap;
     void initialize();
+
 public:
     USCSIO2Potential();
     virtual void calculateForces(AtomManager &atomManager);

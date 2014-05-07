@@ -17,22 +17,31 @@ void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 
 void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
-    double dr[3];
+    int configurationIndex = m_configurationMap.at(atom1->type()->atomicNumber()).at(atom2->type()->atomicNumber()).at(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)->atomicNumber());
 
-    dr[0] = atom1->position[0] - atom2->position[0];
-    dr[1] = atom1->position[1] - atom2->position[1];
-    dr[2] = atom1->position[2] - atom2->position[2];
+    double dx = atom1->position[0] - atom2->position[0];
+    double dy = atom1->position[1] - atom2->position[1];
+    double dz = atom1->position[2] - atom2->position[2];
 
-    double dr2 = dr[0]*dr[0] + dr[1]*dr[1] + dr[2]*dr[2];
+    double r2 = dx*dx + dy*dy + dz*dz;
+    if(r2 > cutoffDistancesSquared.at(configurationIndex)) return;
 
 #ifdef DEBUG
-    if(dr2 < 1e-5) {
+    if(r2 < 1e-5) {
         std::cout << "Error in USCSIO2Potential::twoParticleAction. Relative distance is near zero:" << std::endl;
         std::cout << *atom1 << endl;
         std::cout << *atom2 << endl;
         return;
     }
 #endif
+//    double r = sqrt(r2);
+//    double oneOverR2 = 1.0/r2;
+//    double oneOverR = 1.0/r;
+//    double oneOverR3 = oneOverR2*oneOverR;
+//    double oneOverR5 = oneOverR2*oneOverR3;
+//    double oneOverR6 = oneOverR3*oneOverR3;
+//    double force = H_ij.at(configurationIndex)*eta_ij.at(configurationIndex)*pow(r, -eta_ij.at(configurationIndex) - 2)
+//                    +
 }
 
 void USCSIO2Potential::threeParticleAction(Atom *atom1, Atom *atom2, Atom *atom3)
@@ -47,12 +56,14 @@ double USCSIO2Potential::maxCutoffDistance() const
 }
 
 void USCSIO2Potential::initialize() {
+    int highestAtomicNumber = 14;
+    int numberOfAtomicNumbers = highestAtomicNumber+1;
     UnitConverter uc;
 
     vector<int> activeAtomTypes;
     activeAtomTypes.push_back(+AtomTypes::Oxygen);
     activeAtomTypes.push_back(+AtomTypes::Silicon);
-    m_atomicNumberMap.resize(30,-1);
+    m_atomicNumberMap.resize(numberOfAtomicNumbers,-1);
     int atomMapIndex = 0; // First used atom will be the first index
     for(int atomType : activeAtomTypes) {
         m_atomicNumberMap.at(atomType) = atomMapIndex++;
@@ -86,6 +97,10 @@ void USCSIO2Potential::initialize() {
     cutoffDistances.at(+AtomConfiguration::Si_Si) = uc.lengthFromAngstroms(5.5);
     cutoffDistances.at(+AtomConfiguration::O_O) = uc.lengthFromAngstroms(5.5);
 
+    for(unsigned long i=0; i<cutoffDistances.size(); i++) {
+        cutoffDistancesSquared.at(i) = cutoffDistances.at(i)*cutoffDistances.at(i);
+    }
+
     D_ij.at(+AtomConfiguration::Si_O) = 3.456*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4.0);
     D_ij.at(+AtomConfiguration::Si_Si) = 0.0;
     D_ij.at(+AtomConfiguration::O_O) = 1.728*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4.0);
@@ -108,6 +123,25 @@ void USCSIO2Potential::initialize() {
 
     C_ijk.at(+AtomConfiguration::O_Si_O) = 0;
     C_ijk.at(+AtomConfiguration::Si_O_Si) = 0;
+
+    // Remember the maximum cutoff distance. This will be used to generate the cells before two particle forces
+    m_maxCutoffDistance = *std::max_element(cutoffDistances.begin(), cutoffDistances.end());
+    m_configurationMap.resize(numberOfAtomicNumbers,vector<vector<int> >(numberOfAtomicNumbers, vector<int>(numberOfAtomicNumbers,0)));
+    // Two particle configurations
+    m_configurationMap.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen).at(+AtomTypes::NoAtom) = +AtomConfiguration::O_O;
+    m_configurationMap.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::NoAtom) = +AtomConfiguration::Si_O;
+    m_configurationMap.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::NoAtom) = +AtomConfiguration::Si_O;
+    m_configurationMap.at(+AtomTypes::Silicon).at(+AtomTypes::Silicon).at(+AtomTypes::NoAtom) = +AtomConfiguration::Si_Si;
+
+    // Si-O-Si
+    m_configurationMap.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = +AtomConfiguration::Si_O_Si;
+    m_configurationMap.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::Silicon) = +AtomConfiguration::Si_O_Si;
+    m_configurationMap.at(+AtomTypes::Silicon).at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = +AtomConfiguration::Si_O_Si;
+
+    // O-Si-O
+    m_configurationMap.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = +AtomConfiguration::O_Si_O;
+    m_configurationMap.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = +AtomConfiguration::O_Si_O;
+    m_configurationMap.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen) = +AtomConfiguration::O_Si_O;
 }
 
 USCSIO2Potential::USCSIO2Potential()

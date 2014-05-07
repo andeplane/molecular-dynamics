@@ -42,25 +42,25 @@ double AtomType::massInverse() const
 
 void AtomType::initialize()
 {
-    AtomType::atomTypes.push_back(new AtomType(0,1, "ERROR - ATOM NOT IN USE", "ER"));
-    AtomType::atomTypes.push_back(new AtomType(1,1.00794, "Hydrogen", "H"));
-    AtomType::atomTypes.push_back(new AtomType(2,4.002602, "Helium", "He"));
-    AtomType::atomTypes.push_back(new AtomType(3,6.941, "Lithium", "Li"));
-    AtomType::atomTypes.push_back(new AtomType(4,9.012182, "Beryllium", "Be"));
-    AtomType::atomTypes.push_back(new AtomType(5,10.811, "Boron", "B"));
-    AtomType::atomTypes.push_back(new AtomType(6,12.0107, "Carbon", "C"));
-    AtomType::atomTypes.push_back(new AtomType(7,14.0067, "Nitrogen", "N"));
-    AtomType::atomTypes.push_back(new AtomType(8,15.9994, "Oxygen", "O"));
-    AtomType::atomTypes.push_back(new AtomType(9,18.9984032, "Fluorine", "F"));
-    AtomType::atomTypes.push_back(new AtomType(10,20.1797, "Neon", "Ne"));
-    AtomType::atomTypes.push_back(new AtomType(11,22.98976928, "Sodium", "Na"));
-    AtomType::atomTypes.push_back(new AtomType(12,24.3050, "Magnesium", "Mg"));
-    AtomType::atomTypes.push_back(new AtomType(13,26.9815386, "Aluminium", "Al"));
-    AtomType::atomTypes.push_back(new AtomType(14,28.0855, "Silicon", "Si"));
-    AtomType::atomTypes.push_back(new AtomType(15,30.973762, "Phosphorus", "P"));
-    AtomType::atomTypes.push_back(new AtomType(16,32.065, "Sulfur", "S"));
-    AtomType::atomTypes.push_back(new AtomType(17,35.453, "Chlorine", "Cl"));
-    AtomType::atomTypes.push_back(new AtomType(18,39.948, "Argon", "Ar"));
+    AtomType::atomTypes.push_back(new AtomType(0,1822.88841781, "ERROR - ATOM NOT IN USE", "ER"));
+    AtomType::atomTypes.push_back(new AtomType(1,1837.36215184, "Hydrogen", "H"));
+    AtomType::atomTypes.push_back(new AtomType(2,7296.29682689, "Helium", "He"));
+    AtomType::atomTypes.push_back(new AtomType(3,12652.668508, "Lithium", "Li"));
+    AtomType::atomTypes.push_back(new AtomType(4,16428.202187, "Beryllium", "Be"));
+    AtomType::atomTypes.push_back(new AtomType(5,19707.2466849, "Boron", "B"));
+    AtomType::atomTypes.push_back(new AtomType(6,21894.1659197, "Carbon", "C"));
+    AtomType::atomTypes.push_back(new AtomType(7,25532.6512017, "Nitrogen", "N"));
+    AtomType::atomTypes.push_back(new AtomType(8,29165.1209518, "Oxygen", "O"));
+    AtomType::atomTypes.push_back(new AtomType(9,34631.9691501, "Fluorine", "F"));
+    AtomType::atomTypes.push_back(new AtomType(10,36785.3414048, "Neon", "Ne"));
+    AtomType::atomTypes.push_back(new AtomType(11,41907.7841485, "Sodium", "Na"));
+    AtomType::atomTypes.push_back(new AtomType(12,44305.3029948, "Magnesium", "Mg"));
+    AtomType::atomTypes.push_back(new AtomType(13,49184.3342085, "Aluminium", "Al"));
+    AtomType::atomTypes.push_back(new AtomType(14,51196.7326583, "Silicon", "Si"));
+    AtomType::atomTypes.push_back(new AtomType(15,56461.7120057, "Phosphorus", "P"));
+    AtomType::atomTypes.push_back(new AtomType(16,58450.917117, "Sulfur", "S"));
+    AtomType::atomTypes.push_back(new AtomType(17,64626.8630765, "Chlorine", "Cl"));
+    AtomType::atomTypes.push_back(new AtomType(18,72820.7465145, "Argon", "Ar"));
     AtomType::isInitialized = true;
 }
 
