@@ -27,7 +27,7 @@ int main()
         unsigned long numberOfAtoms = 0;
         movieFile.read(reinterpret_cast<char*>(&numberOfAtoms), sizeof(unsigned long));
         if(numberOfAtoms == 0) break;
-        cout << "Number of atoms: " << numberOfAtoms << endl;
+        cout << "We read number of atoms: " << numberOfAtoms << endl;
 
         dataArray.resize(5*numberOfAtoms);
         movieFile.read(reinterpret_cast<char*>(&dataArray.front()), 5*numberOfAtoms*sizeof(double));

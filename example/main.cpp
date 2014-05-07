@@ -15,13 +15,14 @@ int main()
     vector<double> systemLength(3,1.0);
 
     simulator.initialize(0, vector<int>(3,1), systemLength);
-    simulator.setTimestep(0.02);
+    simulator.setTimestep(1.0);
 
-    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
-
-    double latticeConstant = 1.54478708;
-    Generator::generateFCC(simulator.system(),latticeConstant,vector<int>(3,5), AtomType::atomTypeFromAtomType(AtomTypes::Argon));
-    simulator.system().removeTotalMomentum();
+    USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system().addPotential(PotentialType::USCSilica);
+    FileManager fileManager;
+    fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
+    fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
+    fileManager.finalize();
+    return 0;
 
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         simulator.step();

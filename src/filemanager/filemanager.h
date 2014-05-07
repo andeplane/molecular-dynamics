@@ -23,4 +23,5 @@ public:
     ofstream *getMovieFile() const;
     void finalize();
     void saveMovieFrame(const vector<Atom> &atoms, Topology &topology);
+    void loadMts0(string mts0Directory, vector<int> numberOfCPUs, System &system);
 };
