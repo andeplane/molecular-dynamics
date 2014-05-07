@@ -2,7 +2,7 @@
 #include <atom.h>
 #include <topology.h>
 #include <cmath>
-#include <potentials/lennardjonespotential.h>
+#include <potentials/potentials.h>
 #include <iostream>
 #include <statisticssampler.h>
 using namespace std;
@@ -103,7 +103,17 @@ Potential *System::addPotential(PotentialType type) {
         lennardJones->setSystemLength(systemLength());
         potentials().push_back(lennardJones);
         return lennardJones;
+    } else if(type == PotentialType::USCSilica) {
+        USCSIO2Potential *uscsilica = new USCSIO2Potential();
+        uscsilica->setSystemLength(systemLength());
+        potentials().push_back(uscsilica);
+        return uscsilica;
+    } else if(type == PotentialType::USCSilicaWater) {
+        cout << "USC Silica+Water is not implemented yet." << endl;
+        return 0;
     }
+
+    return 0;
 }
 
 void System::checkIfInitialized() {

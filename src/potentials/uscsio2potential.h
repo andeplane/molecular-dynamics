@@ -14,8 +14,8 @@ typedef vector<double> coeff_H_ij;
 typedef vector<double> coeff_D_ij;
 typedef vector<double> coeff_W_ij;
 typedef vector<double> coeff_Z_i;
-typedef vector<double> coeff_r1s;
-typedef vector<double> coeff_r4s;
+typedef vector<double> coeff_oneOverR1s;
+typedef vector<double> coeff_oneOverR4s;
 typedef vector<double> coeff_cutoff_distance;
 
 enum class AtomConfiguration {NotUsed = 0, Si_O, Si_Si, O_O, O_Si_O, Si_O_Si, NumberOfConfigurations};
@@ -35,8 +35,8 @@ private:
     coeff_D_ij D_ij;
     coeff_W_ij W_ij;
     coeff_Z_i Z_i;
-    coeff_r1s r1s;
-    coeff_r4s r4s;
+    coeff_oneOverR1s oneOverR1s;
+    coeff_oneOverR4s oneOverR4s;
 
     // Three particle coefficients
     coeff_B_ijk B_ijk;

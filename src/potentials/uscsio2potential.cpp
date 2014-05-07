@@ -17,7 +17,11 @@ void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 
 void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
-    int configurationIndex = m_configurationMap.at(atom1->type()->atomicNumber()).at(atom2->type()->atomicNumber()).at(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom)->atomicNumber());
+    int atomicNumber1 = atom1->type()->atomicNumber();
+    int atomicNumber2 = atom2->type()->atomicNumber();
+    int configurationIndex = m_configurationMap.at(atomicNumber1).at(atomicNumber2).at(+AtomTypes::NoAtom);
+
+    if(configurationIndex == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
 
     double dx = atom1->position[0] - atom2->position[0];
     double dy = atom1->position[1] - atom2->position[1];
@@ -34,14 +38,17 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
         return;
     }
 #endif
-//    double r = sqrt(r2);
-//    double oneOverR2 = 1.0/r2;
-//    double oneOverR = 1.0/r;
-//    double oneOverR3 = oneOverR2*oneOverR;
-//    double oneOverR5 = oneOverR2*oneOverR3;
-//    double oneOverR6 = oneOverR3*oneOverR3;
-//    double force = H_ij.at(configurationIndex)*eta_ij.at(configurationIndex)*pow(r, -eta_ij.at(configurationIndex) - 2)
-//                    +
+    double r = sqrt(r2);
+    double oneOverR2 = 1.0/r2;
+    double oneOverR = 1.0/r;
+    double oneOverR3 = oneOverR2*oneOverR;
+    double oneOverR5 = oneOverR2*oneOverR3;
+    double oneOverR6 = oneOverR3*oneOverR3;
+    double force = H_ij.at(configurationIndex)*eta_ij.at(configurationIndex)*pow(r, -eta_ij.at(configurationIndex) - 2)
+                    + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR3*exp(-r*oneOverR1s.at(configurationIndex))
+                    + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR2*exp(-r*oneOverR1s.at(configurationIndex))*oneOverR1s.at(configurationIndex)
+                    - D_ij.at(configurationIndex)*0.5*4*oneOverR6*exp(-r*oneOverR4s.at(configurationIndex))
+                    - D_ij.at(configurationIndex)*0.5*oneOverR5*exp(-r*oneOverR4s.at(configurationIndex))*oneOverR4s.at(configurationIndex);
 }
 
 void USCSIO2Potential::threeParticleAction(Atom *atom1, Atom *atom2, Atom *atom3)
@@ -79,15 +86,16 @@ void USCSIO2Potential::initialize() {
     D_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
     W_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
     cutoffDistances.resize(+AtomConfiguration::NumberOfConfigurations,0);
-    Z_i.resize(+AtomConfiguration::NumberOfConfigurations,0);
-    r1s.resize(+AtomConfiguration::NumberOfConfigurations,0);
-    r4s.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    oneOverR1s.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    oneOverR4s.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    Z_i.resize(highestAtomicNumber,0);
 
     // ALL THESE VALUES ARE FROM TABLE 1 IN [1]
-    r1s.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(4.43);
-    r4s.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(2.5);
+    oneOverR1s.at(+AtomConfiguration::Si_O) = 1.0/uc.lengthFromAngstroms(4.43);
+    oneOverR4s.at(+AtomConfiguration::Si_O) = 1.0/uc.lengthFromAngstroms(2.5);
 
-    Z_i.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(2.5);
+    Z_i.at(+AtomTypes::Silicon) = 1.2; // Given in atomic units
+    Z_i.at(+AtomTypes::Oxygen) = -0.6; // Given in atomic units
 
     eta_ij.at(+AtomConfiguration::Si_O) = 9;
     eta_ij.at(+AtomConfiguration::Si_Si) = 11;
