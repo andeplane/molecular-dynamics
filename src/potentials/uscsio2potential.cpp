@@ -5,6 +5,10 @@
 #include <potentials/uscsio2potential.h>
 #include <unitconverter.h>
 
+int operator + (AtomConfiguration val) {
+    return static_cast<int>(val);
+}
+
 void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
     atomManager.setCutoffDistance(m_maxCutoffDistance);
@@ -54,66 +58,56 @@ void USCSIO2Potential::initialize() {
         m_atomicNumberMap.at(atomType) = atomMapIndex++;
     }
 
-    B_ijk.resize(activeAtomTypes.size(), vector<vector<double> >(activeAtomTypes.size(), vector<double>(activeAtomTypes.size(),0)));
-    theta_zero.resize(activeAtomTypes.size(), vector<vector<double> >(activeAtomTypes.size(), vector<double>(activeAtomTypes.size(),0)));
-    r_0.resize(activeAtomTypes.size(), vector<vector<double> >(activeAtomTypes.size(), vector<double>(activeAtomTypes.size(),0)));
-    ksi.resize(activeAtomTypes.size(), vector<vector<double> >(activeAtomTypes.size(), vector<double>(activeAtomTypes.size(),0)));
-    C_ijk.resize(activeAtomTypes.size(), vector<vector<double> >(activeAtomTypes.size(), vector<double>(activeAtomTypes.size(),0)));
-
-    eta_ij.resize(activeAtomTypes.size(),vector<double>(activeAtomTypes.size(),0));
-    H_ij.resize(activeAtomTypes.size(),vector<double>(activeAtomTypes.size(),0));
-    D_ij.resize(activeAtomTypes.size(),vector<double>(activeAtomTypes.size(),0));
-    W_ij.resize(activeAtomTypes.size(),vector<double>(activeAtomTypes.size(),0));
-    cutoffDistances.resize(activeAtomTypes.size(),vector<double>(activeAtomTypes.size(),INFINITY));
-    Z_i.resize(activeAtomTypes.size(),0);
-    r1s.resize(activeAtomTypes.size(),INFINITY);
-    r4s.resize(activeAtomTypes.size(),INFINITY);
-
+    B_ijk.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    theta_zero.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    r_0.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    ksi.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    C_ijk.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    eta_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    H_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    D_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    W_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    cutoffDistances.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    Z_i.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    r1s.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    r4s.resize(+AtomConfiguration::NumberOfConfigurations,0);
 
     // ALL THESE VALUES ARE FROM TABLE 1 IN [1]
-    r1s.at(+AtomTypes::Oxygen) = uc.lengthFromAngstroms(4.43);
-    r1s.at(+AtomTypes::Silicon) = uc.lengthFromAngstroms(4.43);
+    r1s.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(4.43);
+    r4s.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(2.5);
 
-    r4s.at(+AtomTypes::Oxygen) = uc.lengthFromAngstroms(2.5);
-    r4s.at(+AtomTypes::Silicon) = uc.lengthFromAngstroms(2.5);
+    Z_i.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(2.5);
 
-    Z_i.at(+AtomTypes::Oxygen) = uc.lengthFromAngstroms(2.5);
-    Z_i.at(+AtomTypes::Silicon) = uc.lengthFromAngstroms(2.5);
+    eta_ij.at(+AtomConfiguration::Si_O) = 9;
+    eta_ij.at(+AtomConfiguration::Si_Si) = 11;
+    eta_ij.at(+AtomConfiguration::O_O) = 7;
 
-    eta_ij.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = 9;
-    eta_ij.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = 9;
-    eta_ij.at(+AtomTypes::Silicon).at(+AtomTypes::Silicon) = 11;
-    eta_ij.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen) = 7;
+    cutoffDistances.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(5.5);
+    cutoffDistances.at(+AtomConfiguration::Si_Si) = uc.lengthFromAngstroms(5.5);
+    cutoffDistances.at(+AtomConfiguration::O_O) = uc.lengthFromAngstroms(5.5);
 
-    cutoffDistances.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = uc.lengthFromAngstroms(5.5);
-    cutoffDistances.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = uc.lengthFromAngstroms(5.5);
-    cutoffDistances.at(+AtomTypes::Silicon).at(+AtomTypes::Silicon) = uc.lengthFromAngstroms(5.5);
-    cutoffDistances.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen) = uc.lengthFromAngstroms(5.5);
+    D_ij.at(+AtomConfiguration::Si_O) = 3.456*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4.0);
+    D_ij.at(+AtomConfiguration::Si_Si) = 0.0;
+    D_ij.at(+AtomConfiguration::O_O) = 1.728*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4.0);
 
-    D_ij.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = 3.456*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4.0);
-    D_ij.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = 3.456*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4.0);
-    D_ij.at(+AtomTypes::Silicon).at(+AtomTypes::Silicon) = 0.0;
-    D_ij.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen) = 1.728*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4.0);
+    H_ij.at(+AtomConfiguration::Si_O) = 78.3143*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomConfiguration::Si_O));
+    H_ij.at(+AtomConfiguration::Si_Si) = 0.39246*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomConfiguration::Si_Si));
+    H_ij.at(+AtomConfiguration::O_O) = 355.5263*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomConfiguration::O_O));
 
-    H_ij.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = 78.3143*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen));
-    H_ij.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = 78.3143*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon));
-    H_ij.at(+AtomTypes::Silicon).at(+AtomTypes::Silicon) = 0.39246*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomTypes::Silicon).at(+AtomTypes::Silicon));
-    H_ij.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen) = 355.5263*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen));
+    B_ijk.at(+AtomConfiguration::O_Si_O) = uc.energyFromEv(4.993);
+    B_ijk.at(+AtomConfiguration::Si_O_Si) = uc.energyFromEv(19.972);
 
-    B_ijk.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = uc.energyFromEv(4.993);
-    B_ijk.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = uc.energyFromEv(19.972);
+    theta_zero.at(+AtomConfiguration::O_Si_O) = uc.degreesToRadians(109.47);
+    theta_zero.at(+AtomConfiguration::Si_O_Si) = uc.degreesToRadians(141.0);
 
-    theta_zero.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = uc.degreesToRadians(109.47);
-    theta_zero.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = uc.degreesToRadians(141.0);
+    r_0.at(+AtomConfiguration::O_Si_O) = uc.lengthFromAngstroms(2.60);
+    r_0.at(+AtomConfiguration::Si_O_Si) = uc.lengthFromAngstroms(2.60);
 
-    r_0.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = uc.lengthFromAngstroms(2.60);
-    r_0.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = uc.lengthFromAngstroms(2.60);
+    ksi.at(+AtomConfiguration::O_Si_O) = uc.lengthFromAngstroms(1.0);
+    ksi.at(+AtomConfiguration::Si_O_Si) = uc.lengthFromAngstroms(1.0);
 
-    ksi.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = uc.lengthFromAngstroms(1.0);
-    ksi.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = uc.lengthFromAngstroms(1.0);
-
-    C_ijk.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = 0;
-    C_ijk.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = 0;
+    C_ijk.at(+AtomConfiguration::O_Si_O) = 0;
+    C_ijk.at(+AtomConfiguration::Si_O_Si) = 0;
 }
 
 USCSIO2Potential::USCSIO2Potential()
