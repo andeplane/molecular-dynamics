@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <vector>
+using std::vector;
 
 enum class Units {SIUnits = 0, AtomicUnits};
 
@@ -39,6 +41,11 @@ public:
 
     static double lengthToSI(double L);
     static double lengthFromSI(double L);
+    static vector<double> lengthToSI(const vector<double> position);
+    static vector<double> lengthFromSI(const vector<double> position);
+
+    static vector<double> lengthToAngstroms(const vector<double> position);
+    static vector<double> lengthFromAngstroms(const vector<double> position);
 
     static double lengthToAngstroms(double L);
     static double lengthFromAngstroms(double L);

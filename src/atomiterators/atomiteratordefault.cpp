@@ -53,9 +53,7 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
 
                             for(Atom *atom1 : cell1.atoms()) {
                                 for(Atom *atom2 : cell2.atoms()) {
-                                    if(atom1->originalUniqueId() <= atom2->originalUniqueId() && !atom2->ghost()) continue; // Newton's 3rd law, always calculate if atom2 is ghost
-                                    m_twoParticleAction(atom1,atom2);
-                                    if(m_createNeighborList) {
+                                    if(m_createNeighborList && (atom1->uniqueId() < atom2->uniqueId() || atom2->ghost())) {
                                         double dx = atom1->position[0] - atom2->position[0];
                                         double dy = atom1->position[1] - atom2->position[1];
                                         double dz = atom1->position[2] - atom2->position[2];
@@ -66,6 +64,9 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                                             atom2->addNeighbor(*atom1);
                                         }
                                     }
+
+                                    if(atom1->originalUniqueId() <= atom2->originalUniqueId() && !atom2->ghost()) continue; // Newton's 3rd law, always calculate if atom2 is ghost
+                                    m_twoParticleAction(atom1,atom2);
                                 }
                             } // Loop atoms
                         }
@@ -82,13 +83,21 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
         vector<atomUniqueId> &neighbors = atom1->neighbors();
         if(neighbors.size() < 2) return; // No three particle contribution here
 
+        unsigned long atom1OriginalUniqueId = atom1->originalUniqueId();
         for(unsigned long neighborIndex1 = 0; neighborIndex1<neighbors.size()-1; neighborIndex1++) {
             atomUniqueId &neighbor1UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex1);
             Atom *atom2 = &atomManager.getAtomByUniqueId(neighbor1UniqueId);
 
+            unsigned long atom2OriginalUniqueId = atom2->originalUniqueId();
+            if(atom2OriginalUniqueId < atom1OriginalUniqueId) continue; // Only accept configurations where the original atom ids are in ascending order
+
             for(unsigned long neighborIndex2 = neighborIndex1+1; neighborIndex2<neighbors.size(); neighborIndex2++) {
                 atomUniqueId &neighbor2UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex2);
                 Atom *atom3 = &atomManager.getAtomByUniqueId(neighbor2UniqueId);
+
+                unsigned long atom3OriginalUniqueId = atom3->originalUniqueId();
+                if(atom3OriginalUniqueId < atom2OriginalUniqueId) continue;  // Only accept configurations where the original atom ids are in ascending order
+
                 m_threeParticleAction(atom1,atom2,atom3);
             }
         }

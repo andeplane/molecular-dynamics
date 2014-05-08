@@ -52,6 +52,8 @@ void UnitConverter::initializeAtomicUnits() {
     UnitConverter::P0 = E0/(a0*a0*a0);
     UnitConverter::visc0 = P0*t0;
     UnitConverter::diff0 = a0*a0/t0;
+    UnitConverter::E0ev = UnitConverter::energyFromSI(1.60217657e-19);
+
 }
 
 void UnitConverter::makeSureInitialized() {
@@ -83,6 +85,26 @@ double UnitConverter::electricConstantFromSI(double electricConstant) {UnitConve
 double UnitConverter::lengthToSI(double L) {UnitConverter::makeSureInitialized(); return UnitConverter::a0*L; }
 double UnitConverter::lengthFromSI(double L) {UnitConverter::makeSureInitialized(); return L/UnitConverter::a0; }
 
+vector<double> UnitConverter::lengthToSI(const vector<double> position)
+{
+    return {UnitConverter::lengthToSI(position.at(0)), UnitConverter::lengthToSI(position.at(1)), UnitConverter::lengthToSI(position.at(2))};
+}
+
+vector<double> UnitConverter::lengthFromSI(const vector<double> position)
+{
+    return {UnitConverter::lengthFromSI(position.at(0)), UnitConverter::lengthFromSI(position.at(1)), UnitConverter::lengthFromSI(position.at(2))};
+}
+
+vector<double> UnitConverter::lengthToAngstroms(const vector<double> position)
+{
+    return {UnitConverter::lengthToAngstroms(position.at(0)), UnitConverter::lengthToAngstroms(position.at(1)), UnitConverter::lengthToAngstroms(position.at(2))};
+}
+
+vector<double> UnitConverter::lengthFromAngstroms(const vector<double> position)
+{
+    return {UnitConverter::lengthFromAngstroms(position.at(0)), UnitConverter::lengthFromAngstroms(position.at(1)), UnitConverter::lengthFromAngstroms(position.at(2))};
+}
+
 double UnitConverter::lengthToAngstroms(double L) {UnitConverter::makeSureInitialized(); return UnitConverter::a0*L*1e10; }
 double UnitConverter::lengthFromAngstroms(double L) {UnitConverter::makeSureInitialized(); return L/(UnitConverter::a0*1e10); }
 
@@ -92,8 +114,8 @@ double UnitConverter::forceFromSI(double F) {UnitConverter::makeSureInitialized(
 double UnitConverter::energyToSI(double E) {UnitConverter::makeSureInitialized(); return UnitConverter::E0*E; }
 double UnitConverter::energyFromSI(double E) {UnitConverter::makeSureInitialized(); return E/UnitConverter::E0; }
 
-double UnitConverter::energyToEv(double E) {UnitConverter::makeSureInitialized(); return UnitConverter::E0*E; }
-double UnitConverter::energyFromEv(double E) {UnitConverter::makeSureInitialized(); return E/UnitConverter::E0; }
+double UnitConverter::energyToEv(double E) {UnitConverter::makeSureInitialized(); return UnitConverter::E0ev*E; }
+double UnitConverter::energyFromEv(double E) {UnitConverter::makeSureInitialized(); return E/UnitConverter::E0ev; }
 
 double UnitConverter::degreesToRadians(double v) {UnitConverter::makeSureInitialized(); return M_PI/180*v; }
 double UnitConverter::radiansToDegrees(double v) {UnitConverter::makeSureInitialized(); return 180/M_PI*v; }

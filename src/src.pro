@@ -4,7 +4,6 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
 TARGET = molecular-dynamics
-Debug: QMAKE_CFLAGS += -DDEBUG
 
 HEADERS += \
     atom.h \

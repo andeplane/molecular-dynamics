@@ -20,16 +20,16 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
     int atomicNumber1 = atom1->type()->atomicNumber();
     int atomicNumber2 = atom2->type()->atomicNumber();
-    int configurationIndex = m_configurationMap.at(atomicNumber1).at(atomicNumber2).at(+AtomTypes::NoAtom);
+    int atomConfiguration = m_configurationMap.at(atomicNumber1).at(atomicNumber2).at(+AtomTypes::NoAtom);
 
-    if(configurationIndex == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
+    if(atomConfiguration == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
 
     double dx = atom1->position[0] - atom2->position[0];
     double dy = atom1->position[1] - atom2->position[1];
     double dz = atom1->position[2] - atom2->position[2];
 
     double r2 = dx*dx + dy*dy + dz*dz;
-    if(r2 > cutoffDistancesSquared.at(configurationIndex)) return;
+    if(r2 > cutoffDistancesSquared.at(atomConfiguration)) return;
 
 #ifdef DEBUG
     if(r2 < 1e-5) {
@@ -45,11 +45,19 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     double oneOverR3 = oneOverR2*oneOverR;
     double oneOverR5 = oneOverR2*oneOverR3;
     double oneOverR6 = oneOverR3*oneOverR3;
-    double force = H_ij.at(configurationIndex)*eta_ij.at(configurationIndex)*pow(r, -eta_ij.at(configurationIndex) - 2)
-                    + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR3*exp(-r*oneOverR1s.at(configurationIndex))
-                    + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR2*exp(-r*oneOverR1s.at(configurationIndex))*oneOverR1s.at(configurationIndex)
-                    - D_ij.at(configurationIndex)*0.5*4*oneOverR6*exp(-r*oneOverR4s.at(configurationIndex))
-                    - D_ij.at(configurationIndex)*0.5*oneOverR5*exp(-r*oneOverR4s.at(configurationIndex))*oneOverR4s.at(configurationIndex);
+    double force = H_ij.at(atomConfiguration)*eta_ij.at(atomConfiguration)*pow(r, -eta_ij.at(atomConfiguration) - 2)
+                    + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR3*exp(-r*oneOverR1s.at(atomConfiguration))
+                    + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR2*exp(-r*oneOverR1s.at(atomConfiguration))*oneOverR1s.at(atomConfiguration)
+                    - D_ij.at(atomConfiguration)*0.5*4*oneOverR6*exp(-r*oneOverR4s.at(atomConfiguration))
+                    - D_ij.at(atomConfiguration)*0.5*oneOverR5*exp(-r*oneOverR4s.at(atomConfiguration))*oneOverR4s.at(atomConfiguration);
+
+//    atom1->force[0] += force*dx;
+//    atom1->force[1] += force*dy;
+//    atom1->force[2] += force*dz;
+
+//    atom2->force[0] -= force*dx;
+//    atom2->force[1] -= force*dy;
+//    atom2->force[2] -= force*dz;
 }
 
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
@@ -57,8 +65,9 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     int atomicNumber1 = atomi->type()->atomicNumber();
     int atomicNumber2 = atomj->type()->atomicNumber();
     int atomicNumber3 = atomk->type()->atomicNumber();
-    int configurationIndex = m_configurationMap.at(atomicNumber1).at(atomicNumber2).at(atomicNumber3);
-    if(configurationIndex == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
+    int atomConfiguration = m_configurationMap.at(atomicNumber1).at(atomicNumber2).at(atomicNumber3);
+    if(atomConfiguration == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
+    sortAtoms(atomj, atomi, atomk, atomConfiguration);
 
     double xij = atomi->position[0] - atomj->position[0];
     double xik = atomi->position[0] - atomk->position[0];
@@ -71,18 +80,24 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
 
     double rij = xij*xij + yij*yij + zij*zij;
     double rik = xik*xik + yik*yik + zik*zik;
+
+    if(rij > r0.at(atomConfiguration) || rik > r0.at(atomConfiguration)) return;
+
     double rijDotRik = xij*xik + yij*yik + zij*zik;
 
     double oneOverRij = 1.0/rij;
     double oneOverRik = 1.0/rik;
-    double oneOverRijMinusRzero = 1.0/(rij - r_0.at(configurationIndex));
-    double oneOverRikMinusRzero = 1.0/(rik - r_0.at(configurationIndex));
+    double oneOverRijMinusRzero = 1.0/(rij - r0.at(atomConfiguration));
+    double oneOverRikMinusRzero = 1.0/(rik - r0.at(atomConfiguration));
     double cosThetaIJK = rijDotRik*oneOverRij*oneOverRik;
-    double cosThetaIJKMinusCosThetaZero = cosThetaIJK - cosThetaZero.at(configurationIndex);
+    double cosThetaIJKMinusCosThetaZero = cosThetaIJK - cosThetaZero.at(atomConfiguration);
     double oneOverCosThetaIJKMinusCosThetaZero = 1.0/cosThetaIJKMinusCosThetaZero;
 
-    double Vijk = B_ijk.at(configurationIndex)
-                  *exp(ksi.at(configurationIndex)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
+    double bijk = B_ijk.at(atomConfiguration);
+    double expthing = exp(ksi.at(atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero));
+    double powthing = pow(cosThetaIJKMinusCosThetaZero, 2);
+    double Vijk = B_ijk.at(atomConfiguration)
+                  *exp(ksi.at(atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
                   *pow(cosThetaIJKMinusCosThetaZero, 2);
 
     // Atom i
@@ -90,11 +105,11 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double dCosThetaYi = oneOverRij*oneOverRik*( yij*(1 + rijDotRik*oneOverRij*oneOverRij) + yik*(1 + rijDotRik*oneOverRik*oneOverRik));
     double dCosThetaZi = oneOverRij*oneOverRik*( zij*(1 + rijDotRik*oneOverRij*oneOverRij) + zik*(1 + rijDotRik*oneOverRik*oneOverRik));
 
-    double Fxi = Vijk*(-ksi.at(configurationIndex)*( xij*oneOverRij*pow(oneOverRijMinusRzero,2) + xik*oneOverRik*pow(oneOverRikMinusRzero,2))
+    double Fxi = Vijk*(-ksi.at(atomConfiguration)*( xij*oneOverRij*pow(oneOverRijMinusRzero,2) + xik*oneOverRik*pow(oneOverRikMinusRzero,2))
                        +2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaXi);
-    double Fyi = Vijk*(-ksi.at(configurationIndex)*( yij*oneOverRij*pow(oneOverRijMinusRzero,2) + yik*oneOverRik*pow(oneOverRikMinusRzero,2))
+    double Fyi = Vijk*(-ksi.at(atomConfiguration)*( yij*oneOverRij*pow(oneOverRijMinusRzero,2) + yik*oneOverRik*pow(oneOverRikMinusRzero,2))
                        +2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaYi);
-    double Fzi = Vijk*(-ksi.at(configurationIndex)*( zij*oneOverRij*pow(oneOverRijMinusRzero,2) + zik*oneOverRik*pow(oneOverRikMinusRzero,2))
+    double Fzi = Vijk*(-ksi.at(atomConfiguration)*( zij*oneOverRij*pow(oneOverRijMinusRzero,2) + zik*oneOverRik*pow(oneOverRikMinusRzero,2))
                        +2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaZi);
 
     // Atom j
@@ -102,11 +117,11 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double dCosThetaYj = -oneOverRij*oneOverRik*(yik + yij*rijDotRik*oneOverRij*oneOverRij);
     double dCosThetaZj = -oneOverRij*oneOverRik*(zik + zij*rijDotRik*oneOverRij*oneOverRij);
 
-    double Fxj = Vijk*(ksi.at(configurationIndex)*oneOverRijMinusRzero*oneOverRijMinusRzero
+    double Fxj = Vijk*(ksi.at(atomConfiguration)*oneOverRijMinusRzero*oneOverRijMinusRzero
                        + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaXj);
-    double Fyj = Vijk*(ksi.at(configurationIndex)*oneOverRijMinusRzero*oneOverRijMinusRzero
+    double Fyj = Vijk*(ksi.at(atomConfiguration)*oneOverRijMinusRzero*oneOverRijMinusRzero
                        + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaYj);
-    double Fzj = Vijk*(ksi.at(configurationIndex)*oneOverRijMinusRzero*oneOverRijMinusRzero
+    double Fzj = Vijk*(ksi.at(atomConfiguration)*oneOverRijMinusRzero*oneOverRijMinusRzero
                        + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaZj);
 
     // Atom k
@@ -114,11 +129,11 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double dCosThetaYk = -oneOverRij*oneOverRik*(yij + yik*rijDotRik*oneOverRik*oneOverRik);
     double dCosThetaZk = -oneOverRij*oneOverRik*(zij + zik*rijDotRik*oneOverRik*oneOverRik);
 
-    double Fxk = Vijk*(ksi.at(configurationIndex)*oneOverRikMinusRzero*oneOverRikMinusRzero
+    double Fxk = Vijk*(ksi.at(atomConfiguration)*oneOverRikMinusRzero*oneOverRikMinusRzero
                        + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaXk);
-    double Fyk = Vijk*(ksi.at(configurationIndex)*oneOverRikMinusRzero*oneOverRikMinusRzero
+    double Fyk = Vijk*(ksi.at(atomConfiguration)*oneOverRikMinusRzero*oneOverRikMinusRzero
                        + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaYk);
-    double Fzk = Vijk*(ksi.at(configurationIndex)*oneOverRikMinusRzero*oneOverRikMinusRzero
+    double Fzk = Vijk*(ksi.at(atomConfiguration)*oneOverRikMinusRzero*oneOverRikMinusRzero
                        + 2*oneOverCosThetaIJKMinusCosThetaZero*dCosThetaZk);
 
     atomi->force[0] += Fxi;
@@ -140,8 +155,26 @@ double USCSIO2Potential::maxCutoffDistance() const
     return m_maxCutoffDistance;
 }
 
+void USCSIO2Potential::printCoefficients()
+{
+    printf("                     Si                     O                          \n");
+    printf(" Zi [e]             %.2f                  %.2f                         \n",Z_i.at(+AtomTypes::Silicon),Z_i.at(+AtomTypes::Oxygen));
+    printf("r1s=%.2fÅ         r4s=%.2fÅ              rc=%.2fÅ       e=%eC         \n",UnitConverter::lengthToAngstroms(r1s.at(+AtomConfiguration::Si_O)), UnitConverter::lengthToAngstroms(r4s.at(+AtomConfiguration::Si_O)), UnitConverter::lengthToAngstroms(cutoffDistances.at(+AtomConfiguration::Si_O)), UnitConverter::chargeToSI(1.0));
+    printf("                              Two body                                 \n");
+    printf("                   Si-Si                  Si-O                  O-O    \n");
+    printf("eta_ij              %d                     %d                     %d    \n", eta_ij.at(+AtomConfiguration::Si_Si), eta_ij.at(+AtomConfiguration::Si_O), eta_ij.at(+AtomConfiguration::O_O));
+    printf("H_ij [eVÅ^eta_ij] %f              %f            %f    \n", H_ij.at(+AtomConfiguration::Si_Si)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),eta_ij.at(+AtomConfiguration::Si_Si)), H_ij.at(+AtomConfiguration::Si_O)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),eta_ij.at(+AtomConfiguration::Si_O)), H_ij.at(+AtomConfiguration::O_O)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),eta_ij.at(+AtomConfiguration::O_O)));
+    printf("D_ij [eVÅ^4]      %f              %f               %f    \n", D_ij.at(+AtomConfiguration::Si_Si)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),4), D_ij.at(+AtomConfiguration::Si_O)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),4), D_ij.at(+AtomConfiguration::O_O)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),4));
+    printf("W_ij [eVÅ^6]      %f              %f               %f    \n", W_ij.at(+AtomConfiguration::Si_Si)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),6), W_ij.at(+AtomConfiguration::Si_O)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),6), W_ij.at(+AtomConfiguration::O_O)*UnitConverter::energyToEv(1.0)*pow(UnitConverter::lengthToAngstroms(1.0),6));
+    printf("                             Three body                                 \n");
+    printf("         Bijk [eV]    theta_0 [deg]    Cijk    ksi [Å]    r0 [Å]          \n");
+    printf("O-Si-O   %.3f        %.2f           %.2f    %.2f       %.2f               \n", UnitConverter::energyToEv(B_ijk.at(+AtomConfiguration::O_Si_O)), UnitConverter::radiansToDegrees(acos(cosThetaZero.at(+AtomConfiguration::O_Si_O))), C_ijk.at(+AtomConfiguration::O_Si_O), UnitConverter::lengthToAngstroms(ksi.at(+AtomConfiguration::O_Si_O)), UnitConverter::lengthToAngstroms(r0.at(+AtomConfiguration::O_Si_O)));
+    printf("Si-O-Si  %.3f       %.2f           %.2f    %.2f       %.2f               \n", UnitConverter::energyToEv(B_ijk.at(+AtomConfiguration::Si_O_Si)), UnitConverter::radiansToDegrees(acos(cosThetaZero.at(+AtomConfiguration::Si_O_Si))), C_ijk.at(+AtomConfiguration::Si_O_Si), UnitConverter::lengthToAngstroms(ksi.at(+AtomConfiguration::Si_O_Si)), UnitConverter::lengthToAngstroms(r0.at(+AtomConfiguration::Si_O_Si)));
+
+}
+
 void USCSIO2Potential::initialize() {
-    int highestAtomicNumber = 14;
+    int highestAtomicNumber = +AtomTypes::Silicon;
     int numberOfAtomicNumbers = highestAtomicNumber+1;
     UnitConverter uc;
 
@@ -156,7 +189,7 @@ void USCSIO2Potential::initialize() {
 
     B_ijk.resize(+AtomConfiguration::NumberOfConfigurations,0);
     cosThetaZero.resize(+AtomConfiguration::NumberOfConfigurations,0);
-    r_0.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    r0.resize(+AtomConfiguration::NumberOfConfigurations,0);
     ksi.resize(+AtomConfiguration::NumberOfConfigurations,0);
     C_ijk.resize(+AtomConfiguration::NumberOfConfigurations,0);
     eta_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
@@ -164,13 +197,17 @@ void USCSIO2Potential::initialize() {
     D_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
     W_ij.resize(+AtomConfiguration::NumberOfConfigurations,0);
     cutoffDistances.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    r1s.resize(+AtomConfiguration::NumberOfConfigurations,0);
+    r4s.resize(+AtomConfiguration::NumberOfConfigurations,0);
     oneOverR1s.resize(+AtomConfiguration::NumberOfConfigurations,0);
     oneOverR4s.resize(+AtomConfiguration::NumberOfConfigurations,0);
-    Z_i.resize(highestAtomicNumber,0);
+    Z_i.resize(numberOfAtomicNumbers,0);
 
     // ALL THESE VALUES ARE FROM TABLE 1 IN [1]
-    oneOverR1s.at(+AtomConfiguration::Si_O) = 1.0/uc.lengthFromAngstroms(4.43);
-    oneOverR4s.at(+AtomConfiguration::Si_O) = 1.0/uc.lengthFromAngstroms(2.5);
+    r1s.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(4.43);
+    r4s.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(2.5);
+    oneOverR1s.at(+AtomConfiguration::Si_O) = 1.0/r1s.at(+AtomConfiguration::Si_O);
+    oneOverR4s.at(+AtomConfiguration::Si_O) = 1.0/r4s.at(+AtomConfiguration::Si_O);
 
     Z_i.at(+AtomTypes::Silicon) = 1.2; // Given in atomic units
     Z_i.at(+AtomTypes::Oxygen) = -0.6; // Given in atomic units
@@ -182,9 +219,10 @@ void USCSIO2Potential::initialize() {
     cutoffDistances.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(5.5);
     cutoffDistances.at(+AtomConfiguration::Si_Si) = uc.lengthFromAngstroms(5.5);
     cutoffDistances.at(+AtomConfiguration::O_O) = uc.lengthFromAngstroms(5.5);
+    cutoffDistancesSquared = cutoffDistances;
 
-    for(unsigned long i=0; i<cutoffDistances.size(); i++) {
-        cutoffDistancesSquared.at(i) = cutoffDistances.at(i)*cutoffDistances.at(i);
+    for(double &cutoffDistanceSquared : cutoffDistancesSquared) {
+        cutoffDistanceSquared = cutoffDistanceSquared*cutoffDistanceSquared;
     }
 
     D_ij.at(+AtomConfiguration::Si_O) = 3.456*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4.0);
@@ -201,8 +239,8 @@ void USCSIO2Potential::initialize() {
     cosThetaZero.at(+AtomConfiguration::O_Si_O) = cos(uc.degreesToRadians(109.47));
     cosThetaZero.at(+AtomConfiguration::Si_O_Si) = cos(uc.degreesToRadians(141.0));
 
-    r_0.at(+AtomConfiguration::O_Si_O) = uc.lengthFromAngstroms(2.60);
-    r_0.at(+AtomConfiguration::Si_O_Si) = uc.lengthFromAngstroms(2.60);
+    r0.at(+AtomConfiguration::O_Si_O) = uc.lengthFromAngstroms(2.60);
+    r0.at(+AtomConfiguration::Si_O_Si) = uc.lengthFromAngstroms(2.60);
 
     ksi.at(+AtomConfiguration::O_Si_O) = uc.lengthFromAngstroms(1.0);
     ksi.at(+AtomConfiguration::Si_O_Si) = uc.lengthFromAngstroms(1.0);
@@ -237,5 +275,5 @@ USCSIO2Potential::USCSIO2Potential()
 
     m_iteratorDefault.setTwoParticleAction(std::bind(&USCSIO2Potential::twoParticleAction, this, _1, _2));
     m_iteratorDefault.setThreeParticleAction(std::bind(&USCSIO2Potential::threeParticleAction, this, _1, _2, _3));
-
+    initialize();
 }

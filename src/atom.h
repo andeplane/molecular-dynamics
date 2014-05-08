@@ -46,6 +46,11 @@ public:
     void setId(unsigned long  id);
     bool ghost() const;
     void setGhost(bool ghost);
+
+    inline void setPosition(const vector<double> &pos) {
+        setPosition(pos.at(0), pos.at(1), pos.at(2));
+    }
+
     inline void setPosition(const double x, const double y, const double z) {
         position[0] = x;
         position[1] = y;
