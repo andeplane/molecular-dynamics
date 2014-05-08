@@ -25,6 +25,7 @@ AtomType *AtomType::atomTypeFromAtomicNumber(int atomicNumber) {
 AtomType *AtomType::atomTypeFromAtomType(AtomTypes atomType) {
     return AtomType::atomTypeFromAtomicNumber(int(atomType));
 }
+
 string AtomType::name() const
 {
     return m_name;

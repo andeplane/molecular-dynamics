@@ -1,69 +1,79 @@
 #pragma once
+#include <string>
+
+enum class Units {SIUnits = 0, AtomicUnits};
 
 class UnitConverter
 {
 public:
-    double m0;
-    double q0;
-    double hbar0;
-    double electricConstant0;
-    double a0;
-    double a0_angstrom;
-    double E0;
-    double E0ev;
-    double kb;
-    double t0;
-    double F0;
-    double T0;
-    double P0;
-    double v0;
-    double visc0;
-    double diff0;
+    static double m0;
+    static double q0;
+    static double hbar0;
+    static double electricConstant0;
+    static double a0;
+    static double a0_angstrom;
+    static double E0;
+    static double E0ev;
+    static double kb;
+    static double t0;
+    static double F0;
+    static double T0;
+    static double P0;
+    static double v0;
+    static double visc0;
+    static double diff0;
+    static std::string currentUnits;
 
-    UnitConverter();
+    static void makeSureInitialized();
+    static void initialize(Units type);
+    static bool initialized;
 
-    double pressureToSI(double P);
-    double pressureFromSI(double P);
+    static double pressureToSI(double P);
+    static double pressureFromSI(double P);
 
-    double temperatureToSI(double T);
-    double temperatureFromSI(double T);
+    static double temperatureToSI(double T);
+    static double temperatureFromSI(double T);
 
-    double massToSI(double m);
-    double massFromSI(double m);
+    static double massToSI(double m);
+    static double massFromSI(double m);
 
-    double lengthToSI(double L);
-    double lengthFromSI(double L);
+    static double lengthToSI(double L);
+    static double lengthFromSI(double L);
 
-    double lengthToAngstroms(double L);
-    double lengthFromAngstroms(double L);
+    static double lengthToAngstroms(double L);
+    static double lengthFromAngstroms(double L);
 
-    double forceToSI(double F);
-    double forceFromSI(double F);
+    static double forceToSI(double F);
+    static double forceFromSI(double F);
 
-    double energyToSI(double E);
-    double energyFromSI(double E);
+    static double energyToSI(double E);
+    static double energyFromSI(double E);
 
-    double timeToSI(double t);
-    double timeFromSI(double t);
+    static double timeToSI(double t);
+    static double timeFromSI(double t);
 
-    double velocityToSI(double v);
-    double velocityFromSI(double v);
+    static double velocityToSI(double v);
+    static double velocityFromSI(double v);
 
-    double viscosityToSI(double v);
-    double viscosityFromSI(double v);
+    static double viscosityToSI(double v);
+    static double viscosityFromSI(double v);
 
-    double diffusionToSI(double d);
-    double diffusionFromSI(double d);
+    static double diffusionToSI(double d);
+    static double diffusionFromSI(double d);
 
-    double energyToEv(double E);
-    double energyFromEv(double E);
+    static double energyToEv(double E);
+    static double energyFromEv(double E);
 
-    double degreesToRadians(double v);
-    double radiansToDegrees(double v);
-    double chargeToSI(double m);
-    double chargeFromSI(double m);
-    double hbarToSI(double hbar);
-    double hbarFromSI(double hbar);
-    double electricConstantToSI(double electricConstant);
-    double electricConstantFromSI(double electricConstant);
+    static double degreesToRadians(double v);
+    static double radiansToDegrees(double v);
+
+    static double chargeToSI(double m);
+    static double chargeFromSI(double m);
+
+    static double hbarToSI(double hbar);
+    static double hbarFromSI(double hbar);
+
+    static double electricConstantToSI(double electricConstant);
+    static double electricConstantFromSI(double electricConstant);
+    static void initializeAtomicUnits();
 };
