@@ -1,7 +1,8 @@
 #include <vector>
 using std::vector;
 #include <UnitTest++.h>
-#include <potentials/lennardjonespotential.h>
+#include <potentials/potentials.h>
+#include <includes.h>
 
 void lennardJones(Atom &atom1, Atom &atom2, vector<double> &forceVector, double cutoffDistance) {
     forceVector.resize(3,0);
@@ -91,4 +92,79 @@ SUITE(Forces) {
         potential.twoParticleAction(&atom1, &atom2);
         CHECK_ARRAY_CLOSE(forceVector,atom1.force,3,1e-10);
     }
+
+    TEST(USCSiO2) {
+        Atom silicon1(AtomType::atomTypeFromAtomType(AtomTypes::Silicon));
+        Atom silicon2(AtomType::atomTypeFromAtomType(AtomTypes::Silicon));
+        Atom oxygen1(AtomType::atomTypeFromAtomType(AtomTypes::Oxygen));
+        Atom oxygen2(AtomType::atomTypeFromAtomType(AtomTypes::Oxygen));
+        vector<Atom*> atoms;
+        atoms.push_back(&silicon1);
+        atoms.push_back(&silicon2);
+        atoms.push_back(&oxygen1);
+        atoms.push_back(&oxygen2);
+
+        USCSIO2Potential potential;
+        double rMin = 2;
+        double rMax = 6;
+        int nPoints = 1000;
+        double deltaR = (rMax - rMin)/(nPoints - 1);
+
+        vector<double> distances(nPoints);
+        vector<double> SiSiForces(nPoints);
+        vector<double> SiOForces(nPoints);
+        vector<double> OOForces(nPoints);
+        for(int i=0; i<nPoints; i++) {
+            double x = rMin + i*deltaR;
+            distances.at(i) = x;
+
+            // O-O
+            for(Atom *atom : atoms) atom->resetForce();
+            oxygen2.setPosition(UnitConverter::lengthFromAngstroms(x), 0, 0);
+            potential.twoParticleAction(&oxygen1, &oxygen2);
+            OOForces.at(i) = oxygen1.force[0];
+
+            // Si-Si
+            for(Atom *atom : atoms) atom->resetForce();
+            silicon2.setPosition(UnitConverter::lengthFromAngstroms(x), 0, 0);
+            potential.twoParticleAction(&silicon1, &silicon2);
+            SiSiForces.at(i) = silicon1.force[0];
+
+            // Si-O
+            for(Atom *atom : atoms) atom->resetForce();
+            oxygen2.setPosition(UnitConverter::lengthFromAngstroms(x), 0, 0);
+            potential.twoParticleAction(&silicon1, &oxygen2);
+            SiOForces.at(i) = silicon1.force[0];
+        }
+
+        cout << "r_MD = [";
+        for(int i=0; i<distances.size(); i++) {
+            double r = distances.at(i);
+            if(i==distances.size()-1) cout << r << "];" << endl;
+            else cout << r << ", ";
+        }
+
+        cout << "F_Si_Si_MD = [";
+        for(int i=0; i<SiSiForces.size(); i++) {
+            double F = SiSiForces.at(i);
+            if(i==SiSiForces.size()-1) cout << F << "];" << endl;
+            else cout << F << ", ";
+        }
+
+        cout << "F_Si_O_MD = [";
+        for(int i=0; i<SiOForces.size(); i++) {
+            double F = SiOForces.at(i);
+            if(i==SiOForces.size()-1) cout << F << "];" << endl;
+            else cout << F << ", ";
+        }
+
+        cout << "F_O_O_MD = [";
+        for(int i=0; i<OOForces.size(); i++) {
+            double F = OOForces.at(i);
+            if(i==OOForces.size()-1) cout << F << "];" << endl;
+            else cout << F << ", ";
+        }
+    }
+
+
 }

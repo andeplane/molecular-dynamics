@@ -52,7 +52,8 @@ void UnitConverter::initializeAtomicUnits() {
     UnitConverter::P0 = E0/(a0*a0*a0);
     UnitConverter::visc0 = P0*t0;
     UnitConverter::diff0 = a0*a0/t0;
-    UnitConverter::E0ev = UnitConverter::energyFromSI(1.60217657e-19);
+
+    UnitConverter::E0ev = 1.0/UnitConverter::energyFromSI(1.60217657e-19);
 
 }
 
@@ -85,6 +86,9 @@ double UnitConverter::electricConstantFromSI(double electricConstant) {UnitConve
 double UnitConverter::lengthToSI(double L) {UnitConverter::makeSureInitialized(); return UnitConverter::a0*L; }
 double UnitConverter::lengthFromSI(double L) {UnitConverter::makeSureInitialized(); return L/UnitConverter::a0; }
 
+double UnitConverter::lengthToAngstroms(double L) {UnitConverter::makeSureInitialized(); return UnitConverter::a0*L*1e10; }
+double UnitConverter::lengthFromAngstroms(double L) {UnitConverter::makeSureInitialized(); return L/(UnitConverter::a0*1e10); }
+
 vector<double> UnitConverter::lengthToSI(const vector<double> position)
 {
     return {UnitConverter::lengthToSI(position.at(0)), UnitConverter::lengthToSI(position.at(1)), UnitConverter::lengthToSI(position.at(2))};
@@ -104,9 +108,6 @@ vector<double> UnitConverter::lengthFromAngstroms(const vector<double> position)
 {
     return {UnitConverter::lengthFromAngstroms(position.at(0)), UnitConverter::lengthFromAngstroms(position.at(1)), UnitConverter::lengthFromAngstroms(position.at(2))};
 }
-
-double UnitConverter::lengthToAngstroms(double L) {UnitConverter::makeSureInitialized(); return UnitConverter::a0*L*1e10; }
-double UnitConverter::lengthFromAngstroms(double L) {UnitConverter::makeSureInitialized(); return L/(UnitConverter::a0*1e10); }
 
 double UnitConverter::forceToSI(double F) {UnitConverter::makeSureInitialized(); return UnitConverter::F0*F; }
 double UnitConverter::forceFromSI(double F) {UnitConverter::makeSureInitialized(); return F/UnitConverter::F0; }

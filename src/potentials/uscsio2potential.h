@@ -27,6 +27,7 @@ int operator + (AtomConfiguration val);
 class USCSIO2Potential : public Potential
 {
 private:
+    friend std::ostream& operator<<(std::ostream&stream, const USCSIO2Potential&atom);
     AtomIteratorDefault m_iteratorDefault;
     // Two particle coefficients
     double m_maxCutoffDistance;
@@ -54,18 +55,7 @@ private:
     vector<int> m_atomicNumberMap;
     vector<vector<vector<int> > > m_configurationMap;
     void initialize();
-    inline void sortAtoms(Atom *atom1, Atom *atom2, Atom *atom3, int atomConfiguration) {
-        // We expect atom2 to be the "special" atom in the configuration
-        if(atomConfiguration == +AtomConfiguration::O_Si_O) {
-            if(atom2->type()->atomicNumber() == +AtomTypes::Silicon) return;
-            else if(atom1->type()->atomicNumber() == +AtomTypes::Silicon) std::swap(atom2,atom1);
-            else std::swap(atom2,atom3);
-        } else {
-            if(atom2->type()->atomicNumber() == +AtomTypes::Oxygen) return;
-            else if(atom1->type()->atomicNumber() == +AtomTypes::Oxygen) std::swap(atom2,atom1);
-            else std::swap(atom2,atom3);
-        }
-    }
+    void sortAtoms(Atom *&atom1, Atom *&atom2, Atom *&atom3, int atomConfiguration);
 
 public:
     USCSIO2Potential();
@@ -73,5 +63,5 @@ public:
     void twoParticleAction(Atom *atom1, Atom *atom2);
     void threeParticleAction(Atom *atom1, Atom *atom2, Atom *atom3);
     double maxCutoffDistance() const;
-    void printCoefficients();
+    std::string coefficientString() const;
 };
