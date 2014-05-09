@@ -11,18 +11,19 @@ int main()
 {
     Random::setSeed(1);
     Simulator simulator;
-    int numberOfTimesteps = 500;
+    int numberOfTimesteps = 1000;
     double systemSize = 100;
     double delta = systemSize / 2;
     vector<double> systemLength(3,UnitConverter::lengthFromAngstroms(systemSize));
 
     simulator.initialize(0, vector<int>(3,1), systemLength);
-    simulator.setTimestep(UnitConverter::timeFromSI(2e-15));
+    simulator.setTimestep(UnitConverter::timeFromSI(1e-15));
 
     USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system().addPotential(PotentialType::USCSilica);
     cout << *potential << endl;
     FileManager fileManager;
-//    fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
+    // fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
+
     Atom &silicon = simulator.system().addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Silicon));
     silicon.setPosition(UnitConverter::lengthFromAngstroms({1.825+delta, 1.826+delta, 1.826+delta}));
 
@@ -38,8 +39,7 @@ int main()
     Atom &oxygen4 = simulator.system().addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Oxygen));
     oxygen4.setPosition(UnitConverter::lengthFromAngstroms({3.150+delta, 2.434+delta, 1.145+delta}));
 
-    // simulator.system().atomManager().atoms().resetVelocityMaxwellian(UnitConverter::temperatureFromSI(0));
-
+    simulator.system().atomManager().atoms().resetVelocityMaxwellian(UnitConverter::temperatureFromSI(0));
     simulator.system().atomManager().setGhostAtomsEnabled(false);
     cout << simulator.system() << endl;
     simulator.system().removeTotalMomentum();
@@ -55,8 +55,8 @@ int main()
 
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
+        cout << "Momentum in " << timestep << ": " << simulator.sampler().calculateTotalMomentum(simulator.system()) << endl;
         simulator.step();
-
 
 //        if(timestep%100 == 0) {
 //            cout << "Timestep " << timestep;

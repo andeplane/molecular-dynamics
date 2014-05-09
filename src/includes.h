@@ -24,8 +24,8 @@ std::ostream& operator<<(std::ostream &stream, const std::vector<T> &vec) {
 
     return stream;
 }
-#define DEBUG
 
+// #define DEBUG
 template <typename T>
 T &safeOrQuickVectorLookup(vector<T> &vec, int index) {
 #ifdef DEBUG
