@@ -13,9 +13,12 @@ int operator + (AtomConfiguration val) {
 
 void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
-    atomManager.setCutoffDistance(m_maxCutoffDistance);
+    atomManager.setCutoffDistance(m_maxTwoParticleCutoffDistance);
+    m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
     m_iteratorDefault.iterate(atomManager);
 }
+
+#define DEBUG
 
 void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
@@ -38,7 +41,7 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
         std::cout << "Error in USCSIO2Potential::twoParticleAction. Relative distance is near zero:" << std::endl;
         std::cout << *atom1 << endl;
         std::cout << *atom2 << endl;
-        return;
+        exit(1);
     }
 #endif
     double r = sqrt(r2);
@@ -179,23 +182,17 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double Fyk = dVijk_dRij*dRij_dYij*dYij_yk + dVijk_dRik*dRik_dYik*dYik_yk + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yk + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yk;
     double Fzk = dVijk_dRij*dRij_dZij*dZij_zk + dVijk_dRik*dRik_dZik*dZik_zk + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zk + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zk;
 
-    atomi->force[0] -= Fxi;
-    atomi->force[1] -= Fyi;
-    atomi->force[2] -= Fzi;
+    atomi->force[0] += Fxi;
+    atomi->force[1] += Fyi;
+    atomi->force[2] += Fzi;
 
-    atomj->force[0] -= Fxj;
-    atomj->force[1] -= Fyj;
-    atomj->force[2] -= Fzj;
+    atomj->force[0] += Fxj;
+    atomj->force[1] += Fyj;
+    atomj->force[2] += Fzj;
 
-    atomk->force[0] -= Fxk;
-    atomk->force[1] -= Fyk;
-    atomk->force[2] -= Fzk;
-}
-
-
-double USCSIO2Potential::maxCutoffDistance() const
-{
-    return m_maxCutoffDistance;
+    atomk->force[0] += Fxk;
+    atomk->force[1] += Fyk;
+    atomk->force[2] += Fzk;
 }
 
 std::string USCSIO2Potential::coefficientString() const
@@ -305,7 +302,9 @@ void USCSIO2Potential::initialize() {
     C_ijk.at(+AtomConfiguration::Si_O_Si) = 0;
 
     // Remember the maximum cutoff distance. This will be used to generate the cells before two particle forces
-    m_maxCutoffDistance = *std::max_element(cutoffDistances.begin(), cutoffDistances.end());
+    m_maxTwoParticleCutoffDistance = *std::max_element(cutoffDistances.begin(), cutoffDistances.end());
+    m_maxThreeParticleCutoffDistance = *std::max_element(r0.begin(), r0.end());
+
     m_configurationMap.resize(numberOfAtomicNumbers,vector<vector<int> >(numberOfAtomicNumbers, vector<int>(numberOfAtomicNumbers,0)));
     // Two particle configurations
     m_configurationMap.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen).at(+AtomTypes::NoAtom) = +AtomConfiguration::O_O;

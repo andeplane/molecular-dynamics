@@ -30,7 +30,8 @@ private:
     friend std::ostream& operator<<(std::ostream&stream, const USCSIO2Potential&atom);
     AtomIteratorDefault m_iteratorDefault;
     // Two particle coefficients
-    double m_maxCutoffDistance;
+    double m_maxTwoParticleCutoffDistance;
+    double m_maxThreeParticleCutoffDistance;
     coeff_cutoff_distance cutoffDistances;
     coeff_cutoff_distance cutoffDistancesSquared;
     coeff_eta_ij eta_ij;
@@ -62,6 +63,5 @@ public:
     virtual void calculateForces(AtomManager &atomManager);
     void twoParticleAction(Atom *atom1, Atom *atom2);
     void threeParticleAction(Atom *atom1, Atom *atom2, Atom *atom3);
-    double maxCutoffDistance() const;
     std::string coefficientString() const;
 };
