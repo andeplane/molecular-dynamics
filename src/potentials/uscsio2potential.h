@@ -3,7 +3,7 @@
 using std::vector;
 
 #include <potentials/potential.h>
-#include <atomiterators/atomiteratordefault.h>
+#include <atomiterators/atomiterators.h>
 typedef vector<double> coeff_B_ijk;
 typedef vector<double> coeff_theta_zero;
 typedef vector<double> coeff_r0;
@@ -28,7 +28,8 @@ class USCSIO2Potential : public Potential
 {
 private:
     friend std::ostream& operator<<(std::ostream&stream, const USCSIO2Potential&atom);
-    AtomIteratorDefault m_iteratorDefault;
+    // AtomIteratorDefault m_iteratorDefault;
+    AtomIteratorAllPairs m_iteratorDefault;
     // Two particle coefficients
     double m_maxTwoParticleCutoffDistance;
     double m_maxThreeParticleCutoffDistance;

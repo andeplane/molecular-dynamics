@@ -48,7 +48,9 @@ void VelocityVerlet::firstKick(System &system, const double &timestep) {
 
 void VelocityVerlet::integrate(System &system, const double &timestep)
 {
+    StatisticsSampler sampler;
     if(m_firstStep) firstKick(system, timestep);
+
     halfKick(system, timestep);
     move(system, timestep);
     system.topology().MPIMove(system);

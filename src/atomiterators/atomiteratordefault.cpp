@@ -99,30 +99,24 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
         vector<atomUniqueId> &neighbors = atom1->neighbors();
         if(neighbors.size() < 2) return; // No three particle contribution here
 
-        unsigned long atom1OriginalUniqueId = atom1->originalUniqueId();
+        atomUniqueId atom1UniqueId = atom1->uniqueId();
         // cout << "Singlet: " << "(" << atom1OriginalUniqueId << (atom1->ghost() ? "*" : "") << ")  --- unique id (" << atom1->uniqueId() << (atom1->ghost() ? "*" : "") << ")" << endl;
 
         for(unsigned long neighborIndex1 = 0; neighborIndex1<neighbors.size()-1; neighborIndex1++) {
-            atomUniqueId &neighbor1UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex1);
-            Atom *atom2 = &atomManager.getAtomByUniqueId(neighbor1UniqueId);
+            atomUniqueId &atom2UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex1);
+            Atom *atom2 = &atomManager.getAtomByUniqueId(atom2UniqueId);
 
-            unsigned long atom2OriginalUniqueId = atom2->originalUniqueId();
             // cout << "Pair: (" << atom1OriginalUniqueId << (atom1->ghost() ? "*" : "") << "," << atom2OriginalUniqueId << (atom2->ghost() ? "*" : "") << ")" << "  --- unique ids (" << atom1->uniqueId() << (atom1->ghost() ? "*" : "") << "," << atom2->uniqueId() << (atom2->ghost() ? "*" : "") << ")" << endl;
-            if(atom2OriginalUniqueId < atom1OriginalUniqueId) continue; // Only accept configurations where the original atom ids are in ascending order
+            if(atom1UniqueId >= atom2UniqueId) continue; // Only accept configurations where the original atom ids are in ascending order
 
             for(unsigned long neighborIndex2 = neighborIndex1+1; neighborIndex2<neighbors.size(); neighborIndex2++) {
-                atomUniqueId &neighbor2UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex2);
-                Atom *atom3 = &atomManager.getAtomByUniqueId(neighbor2UniqueId);
+                atomUniqueId &atom3UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex2);
+                Atom *atom3 = &atomManager.getAtomByUniqueId(atom3UniqueId);
 
-                unsigned long atom3OriginalUniqueId = atom3->originalUniqueId();
                 // cout << "Triplet: (" << atom1OriginalUniqueId << (atom1->ghost() ? "*" : "") << "," << atom2OriginalUniqueId << (atom2->ghost() ? "*" : "") << "," << atom3OriginalUniqueId << (atom3->ghost() ? "*" : "") << ")  --- unique ids (" << atom1->uniqueId() << (atom1->ghost() ? "*" : "") << "," << atom2->uniqueId() << (atom2->ghost() ? "*" : "") << ", " << atom3->uniqueId() << (atom3->ghost() ? "*" : "") << ")" << endl;
-                if(atom3OriginalUniqueId < atom2OriginalUniqueId) continue;  // Only accept configurations where the original atom ids are in ascending order
+                if(atom2UniqueId >= atom3UniqueId) continue;  // Only accept configurations where the original atom ids are in ascending order
                 // cout << "Executing three particle action with ";
                 // cout << " triplet: (" << atom1OriginalUniqueId << (atom1->ghost() ? "*" : "") << "," << atom2OriginalUniqueId << (atom2->ghost() ? "*" : "") << "," << atom3OriginalUniqueId << (atom3->ghost() ? "*" : "") << ")  --- unique ids (" << atom1->uniqueId() << (atom1->ghost() ? "*" : "") << "," << atom2->uniqueId() << (atom2->ghost() ? "*" : "") << ", " << atom3->uniqueId() << (atom3->ghost() ? "*" : "") << ")" << endl;
-
-//                cout << *atom1 << endl;
-//                cout << *atom2 << endl;
-//                cout << *atom3 << endl;
                 if(atom1->ghost() && atom2->ghost() && atom3->ghost()) continue;
 
                 m_threeParticleAction(atom1,atom2,atom3);
@@ -130,9 +124,9 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
         }
     };
 
-//    atomManager.atoms().iterate(threeParticleLooper);
-//    atomManager.ghostAtoms().iterate(threeParticleLooper);
-//    return;
+    atomManager.atoms().iterate(threeParticleLooper);
+    atomManager.ghostAtoms().iterate(threeParticleLooper);
+    return;
 
     atomManager.atoms().iterate([&](Atom &atom1) {
         atomManager.atoms().iterate([&](Atom &atom2) {

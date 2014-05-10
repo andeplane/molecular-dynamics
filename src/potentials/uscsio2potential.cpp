@@ -14,7 +14,8 @@ int operator + (AtomConfiguration val) {
 void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
     atomManager.setCutoffDistance(m_maxTwoParticleCutoffDistance);
-    m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
+    // m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
+    m_iteratorDefault.setLoopThroughGhosts(true);
     m_iteratorDefault.iterate(atomManager);
 }
 
@@ -48,7 +49,6 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     double oneOverR = 1.0/r;
     double oneOverR2 = 1.0/r2;
     double oneOverR3 = oneOverR2*oneOverR;
-
     double oneOverR5 = oneOverR2*oneOverR3;
     double oneOverR6 = oneOverR3*oneOverR3;
 
@@ -105,6 +105,8 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double rik = sqrt(xik*xik + yik*yik + zik*zik);
 
     if(rij > r0.at(atomConfiguration) || rik > r0.at(atomConfiguration)) return;
+
+    // cout << "Triplet: (" << atomi->originalUniqueId() << (atomi->ghost() ? "*" : "") << "," << atomj->originalUniqueId() << (atomj->ghost() ? "*" : "") << "," << atomk->originalUniqueId() << (atomk->ghost() ? "*" : "") << ")  --- unique ids (" << atomi->uniqueId() << "," << atomj->uniqueId()<< ", " << atomk->uniqueId()<< ")" << endl;
     double rijDotRik = xij*xik + yij*yik + zij*zik;
 
     double oneOverRij = 1.0/rij;
@@ -327,7 +329,6 @@ USCSIO2Potential::USCSIO2Potential()
 {
     setName("USC SiO2");
     using namespace std::placeholders;
-
     m_iteratorDefault.setTwoParticleAction(std::bind(&USCSIO2Potential::twoParticleAction, this, _1, _2));
     m_iteratorDefault.setThreeParticleAction(std::bind(&USCSIO2Potential::threeParticleAction, this, _1, _2, _3));
     initialize();
