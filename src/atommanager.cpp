@@ -222,6 +222,16 @@ void AtomManager::updateCellList() {
 
 }
 
+void AtomManager::applyPeriodicBoundaryConditions(vector<double> systemLength)
+{
+    m_atoms.iterate([&](Atom &atom) {
+        double x = fmod(atom.position[0] + 100*systemLength.at(0),systemLength.at(0));
+        double y = fmod(atom.position[1] + 100*systemLength.at(1),systemLength.at(1));
+        double z = fmod(atom.position[2] + 100*systemLength.at(2),systemLength.at(2));
+        atom.setPosition(x,y,z);
+    });
+}
+
 std::ostream& operator<<(std::ostream &stream, AtomManager &atomManager) {
     return stream << "Atom manager: " << std::endl << "Atoms: " << atomManager.atoms() << endl << "Ghost atoms: " << atomManager.ghostAtoms() << endl;
     // return stream << "Atom manager: " << std::endl << endl << "Atoms: " << atomManager.atoms();

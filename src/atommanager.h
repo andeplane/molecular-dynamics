@@ -34,6 +34,7 @@ public:
     void removeAllAtoms();
     void removeGhostAtoms();
     void updateCellList();
+    void applyPeriodicBoundaryConditions(vector<double> systemLength);
 
     CellData &cellData();
     void setCutoffDistance(double cutoffDistance);
