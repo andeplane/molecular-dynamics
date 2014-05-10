@@ -6,7 +6,8 @@ CONFIG += c++11
 Debug: QMAKE_CFLAGS += -DDEBUG
 
 SOURCES += main.cpp \
-    LennardJones.cpp
+    LennardJones.cpp \
+    USCSilica.cpp
 
 INCLUDEPATH += /repos/UnitTest++/src
 INCLUDEPATH += $$PWD/../src
