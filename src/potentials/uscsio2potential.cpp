@@ -6,6 +6,7 @@
 #include <unitconverter.h>
 #include <cmath>
 #include <includes.h>
+using CompPhys::Utils::at;
 
 int operator + (AtomConfiguration val) {
     return static_cast<int>(val);
@@ -15,7 +16,6 @@ void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
     atomManager.setCutoffDistance(m_maxTwoParticleCutoffDistance);
     m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
-    // m_iteratorDefault.setLoopThroughGhosts(true);
     m_iteratorDefault.iterate(atomManager);
 }
 
@@ -25,7 +25,7 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
     int atomicNumber1 = atom1->type()->atomicNumber();
     int atomicNumber2 = atom2->type()->atomicNumber();
-    int atomConfiguration = m_configurationMap.at(atomicNumber1).at(atomicNumber2).at(+AtomTypes::NoAtom);
+    int atomConfiguration = at(at(at(m_configurationMap,atomicNumber1),atomicNumber2),+AtomTypes::NoAtom);
 
     if(atomConfiguration == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
 
@@ -35,7 +35,7 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 
     double r2 = dx*dx + dy*dy + dz*dz;
 
-    if(r2 > cutoffDistancesSquared.at(atomConfiguration)) return;
+    if(r2 > at(cutoffDistancesSquared,atomConfiguration)) return;
 
 #ifdef DEBUG
     if(r2 < 1e-5) {
@@ -52,11 +52,11 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     double oneOverR5 = oneOverR2*oneOverR3;
     double oneOverR6 = oneOverR3*oneOverR3;
 
-    double force = H_ij.at(atomConfiguration)*eta_ij.at(atomConfiguration)*pow(r, -eta_ij.at(atomConfiguration) - 2)
-                    + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR3*exp(-r*oneOverR1s.at(atomConfiguration))
-                    + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR2*exp(-r*oneOverR1s.at(atomConfiguration))*oneOverR1s.at(atomConfiguration)
-                    - D_ij.at(atomConfiguration)*0.5*4*oneOverR6*exp(-r*oneOverR4s.at(atomConfiguration))
-                    - D_ij.at(atomConfiguration)*0.5*oneOverR5*exp(-r*oneOverR4s.at(atomConfiguration))*oneOverR4s.at(atomConfiguration);
+    double force = at(H_ij,atomConfiguration)*at(eta_ij,atomConfiguration)*pow(r, -at(eta_ij,atomConfiguration) - 2)
+                    + at(Z_i,atomicNumber1)*at(Z_i,atomicNumber2)*oneOverR3*exp(-r*at(oneOverR1s,atomConfiguration))
+                    + at(Z_i,atomicNumber1)*at(Z_i,atomicNumber2)*oneOverR2*exp(-r*at(oneOverR1s,atomConfiguration))*at(oneOverR1s,atomConfiguration)
+                    - at(D_ij,atomConfiguration)*0.5*4*oneOverR6*exp(-r*at(oneOverR4s,atomConfiguration))
+                    - at(D_ij,atomConfiguration)*0.5*oneOverR5*exp(-r*at(oneOverR4s,atomConfiguration))*at(oneOverR4s,atomConfiguration);
 
     atom1->force[0] += force*dx;
     atom1->force[1] += force*dy;
@@ -85,7 +85,7 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     int atomicNumber1 = atomi->type()->atomicNumber();
     int atomicNumber2 = atomj->type()->atomicNumber();
     int atomicNumber3 = atomk->type()->atomicNumber();
-    int atomConfiguration = m_configurationMap.at(atomicNumber1).at(atomicNumber2).at(atomicNumber3);
+    int atomConfiguration = at(at(at(m_configurationMap,atomicNumber1),atomicNumber2),atomicNumber3);
     if(atomConfiguration == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
     sortAtoms(atomj, atomi, atomk, atomConfiguration);
     atomicNumber1 = atomi->type()->atomicNumber();
@@ -104,27 +104,27 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double rij = sqrt(xij*xij + yij*yij + zij*zij);
     double rik = sqrt(xik*xik + yik*yik + zik*zik);
 
-    if(rij > r0.at(atomConfiguration) || rik > r0.at(atomConfiguration)) return;
+    if(rij > at(r0,atomConfiguration) || rik > at(r0,atomConfiguration)) return;
 
     // cout << "Triplet: (" << atomi->originalUniqueId() << (atomi->ghost() ? "*" : "") << "," << atomj->originalUniqueId() << (atomj->ghost() ? "*" : "") << "," << atomk->originalUniqueId() << (atomk->ghost() ? "*" : "") << ")  --- unique ids (" << atomi->uniqueId() << "," << atomj->uniqueId()<< ", " << atomk->uniqueId()<< ")" << endl;
     double rijDotRik = xij*xik + yij*yik + zij*zik;
 
     double oneOverRij = 1.0/rij;
     double oneOverRik = 1.0/rik;
-    double oneOverRijMinusRzero = 1.0/(rij - r0.at(atomConfiguration));
-    double oneOverRikMinusRzero = 1.0/(rik - r0.at(atomConfiguration));
+    double oneOverRijMinusRzero = 1.0/(rij - at(r0,atomConfiguration));
+    double oneOverRikMinusRzero = 1.0/(rik - at(r0,atomConfiguration));
     double cosThetaIJK = rijDotRik*oneOverRij*oneOverRik;
-    double cosThetaIJKMinusCosThetaZero = cosThetaIJK - cosThetaZero.at(atomConfiguration);
+    double cosThetaIJKMinusCosThetaZero = cosThetaIJK - at(cosThetaZero,atomConfiguration);
     double oneOverCosThetaIJKMinusCosThetaZero = 1.0/cosThetaIJKMinusCosThetaZero;
 
-    double Vijk = B_ijk.at(atomConfiguration)
-                  *exp(ksi.at(atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
+    double Vijk = at(B_ijk,atomConfiguration)
+                  *exp(at(ksi,atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
                   *pow(cosThetaIJKMinusCosThetaZero, 2);
 
     // Potential derivatives
     double dVijk_dCosThetaijk = Vijk*2*oneOverCosThetaIJKMinusCosThetaZero;
-    double dVijk_dRij = -Vijk*ksi.at(atomConfiguration)*pow(oneOverRijMinusRzero, 2);
-    double dVijk_dRik = -Vijk*ksi.at(atomConfiguration)*pow(oneOverRikMinusRzero, 2);
+    double dVijk_dRij = -Vijk*at(ksi,atomConfiguration)*pow(oneOverRijMinusRzero, 2);
+    double dVijk_dRik = -Vijk*at(ksi,atomConfiguration)*pow(oneOverRikMinusRzero, 2);
 
     // Theta derivatives
     // X

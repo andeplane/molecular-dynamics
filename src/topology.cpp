@@ -8,6 +8,10 @@
 #include <cmath>
 #include <atommanager.h>
 #include <unitconverter.h>
+#include <utils/utils.h>
+
+using CompPhys::Utils::at;
+
 Topology::Topology() :
     m_isInitialized(false)
 {
@@ -160,20 +164,20 @@ void Topology::MPIMove(System &system) {
 
             if (!atom.removed()) { /* Don't scan moved-out atoms */
                 if(atomDidChangeNode(atom,dimension,false)) {
-                    m_moveQueue.at(nodeLower).push_back(atom.uniqueId());
+                    at(m_moveQueue,nodeLower).push_back(atom.uniqueId());
                 } else if (atomDidChangeNode(atom, dimension, true)) {
-                    m_moveQueue.at(nodeHigher).push_back(atom.uniqueId());
+                    at(m_moveQueue,nodeHigher).push_back(atom.uniqueId());
                 }
             }
         });
 
         for (int higher=0; higher<=1; higher++) {
             int localNodeID=2*dimension+higher;
-            int numberToSend = m_moveQueue.at(localNodeID).size();
+            int numberToSend = at(m_moveQueue,localNodeID).size();
             int numberToReceive = numberToSend;
 
             int i = 0;
-            for (unsigned long uniqueId : m_moveQueue.at(localNodeID)) {
+            for (unsigned long uniqueId : at(m_moveQueue,localNodeID)) {
                 Atom &atom = system.atomManager().getAtomByUniqueId(uniqueId);
 
                 /* Shift the coordinate origin */
@@ -235,7 +239,7 @@ void Topology::copyGhostAtomsWithMPI(AtomManager &atomManager)
             for(int higher=0; higher<=1; higher++) {
                 int localNodeID = 2*dimension + higher;
                 if(atomShouldBeCopied(atom,dimension,higher,cutoffDistance)) {
-                    m_moveQueue.at(localNodeID).push_back(atom.uniqueId());
+                    at(m_moveQueue,localNodeID).push_back(atom.uniqueId());
                 }
             }
         });
@@ -244,7 +248,7 @@ void Topology::copyGhostAtomsWithMPI(AtomManager &atomManager)
             for(int higher=0; higher<=1; higher++) {
                 int localNodeID = 2*dimension + higher;
                 if(atomShouldBeCopied(atom,dimension,higher,cutoffDistance)) {
-                    m_moveQueue.at(localNodeID).push_back(atom.uniqueId());
+                    at(m_moveQueue,localNodeID).push_back(atom.uniqueId());
                 }
             }
         });
@@ -252,13 +256,13 @@ void Topology::copyGhostAtomsWithMPI(AtomManager &atomManager)
         /* Loop through higher and lower node in this dimension */
         for(int higher=0;higher<=1;higher++) {
             int localNodeID = 2*dimension+higher;
-            int numberToSend = m_moveQueue.at(localNodeID).size();
+            int numberToSend = at(m_moveQueue,localNodeID).size();
             int numberToRecieve = numberToSend;
 
             int i = 0;
             int numberOfValuesToCopy = 6;
 
-            for (unsigned long uniqueId : m_moveQueue.at(localNodeID)) {
+            for (unsigned long uniqueId : at(m_moveQueue,localNodeID)) {
                 Atom &atom = atomManager.getAtomByUniqueId(uniqueId);
                 m_mpiSendBuffer[numberOfValuesToCopy*i+0] = atom.position[0]-m_shiftVector[localNodeID][0];
                 m_mpiSendBuffer[numberOfValuesToCopy*i+1] = atom.position[1]-m_shiftVector[localNodeID][1];

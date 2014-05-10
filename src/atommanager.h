@@ -1,5 +1,4 @@
 #pragma once
-#include <math/vector.h>
 #include <map>
 using std::map; using std::pair;
 

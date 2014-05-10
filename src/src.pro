@@ -33,7 +33,7 @@ HEADERS += \
     atomiterators/atomiteratorallpairs.h \
     potentials/uscsio2potential.h \
     filemanager/mts0io.h \
-    math/vector.h
+    utils/utils.h
 
 SOURCES += \
     atom.cpp \
@@ -59,4 +59,4 @@ SOURCES += \
     atomiterators/atomiteratorallpairs.cpp \
     potentials/uscsio2potential.cpp \
     filemanager/mts0io.cpp \
-    math/vector.cpp
+    utils/utils.cpp

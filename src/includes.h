@@ -13,6 +13,7 @@
 #include <atomiterators/atomiterators.h>
 #include <unitconverter.h>
 #include <vector>
+#include <utils/utils.h>
 
 template<typename T>
 std::ostream& operator<<(std::ostream &stream, const std::vector<T> &vec) {

@@ -1,13 +1,12 @@
 #pragma once
 #include <atom.h>
 #include <iostream>
-#include <math/vector.h>
 using std::cout; using std::endl;
 
 class Cell;
 struct CellData {
     bool initialized;
-    CompPhys::vector<Cell> cells;
+    vector<Cell> cells;
     int numberOfCellsWithoutGhostCells[3];
     int numberOfCellsWithGhostCells[3];
     double cellLength[3];

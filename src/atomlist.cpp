@@ -2,6 +2,7 @@
 #include <utility>
 #include <iostream>
 #include <includes.h>
+using CompPhys::Utils::at;
 
 AtomList::AtomList(int initialAtomCount) :
     m_atomsDirty(false),
@@ -30,7 +31,7 @@ Atom &AtomList::getAtomByUniqueId(unsigned long uniqueId) {
     if(!containsAtomWithUniqueId(uniqueId)) {
         throw std::range_error("The atom is not in this list");
     }
-    return m_atoms.at(m_indexMap[uniqueId]);
+    return at(m_atoms,m_indexMap[uniqueId]);
 }
 
 void AtomList::rebuildIndexMap() {
@@ -77,7 +78,7 @@ void AtomList::iterate(function<void (Atom &atom)> action)
 {
     m_isIterating = true;
     for(unsigned long atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
-        Atom &atom = m_atoms.at(atomIndex);
+        Atom &atom = at(m_atoms,atomIndex);
         action(atom);
     }
     m_isIterating = false;
@@ -88,7 +89,7 @@ void AtomList::iterate(function<void (Atom &atom, const int &atomIndex)> action)
 {
     m_isIterating = true;
     for(unsigned long atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
-        Atom &atom = m_atoms.at(atomIndex);
+        Atom &atom = at(m_atoms,atomIndex);
         action(atom, atomIndex);
     }
     m_isIterating = false;
@@ -110,7 +111,7 @@ void AtomList::cleanupList() {
     vector<Atom>::iterator lastElementIterator = --m_atoms.end();
 
     for(int atomIndex=0; atomIndex<numberOfAtoms; atomIndex++) {
-        Atom &atom = m_atoms.at(atomIndex);
+        Atom &atom = at(m_atoms,atomIndex);
         if(atom.removed()) {
             Atom &lastAtomInList = *lastElementIterator;
             std::swap(atom,lastAtomInList);   // Swap this moved element and the back element

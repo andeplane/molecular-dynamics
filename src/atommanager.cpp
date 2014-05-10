@@ -6,6 +6,7 @@
 #include <includes.h>
 
 using std::cerr; using std::endl; using std::cout;
+using CompPhys::Utils::at;
 
 AtomManager::~AtomManager()
 {
@@ -209,14 +210,14 @@ void AtomManager::updateCellList() {
     CellData &cellData = m_cellData;
     atoms().iterate([&](Atom &atom) {
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
-        Cell &cell = cellData.cells.at(cellIndex);
+        Cell &cell = at(cellData.cells,cellIndex);
         cell.addAtom(&atom);
     });
 
     ghostAtoms().iterate([&](Atom &atom) {
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
 
-        Cell &cell = cellData.cells.at(cellIndex);
+        Cell &cell = at(cellData.cells,cellIndex);
         cell.addAtom(&atom);
     });
 
