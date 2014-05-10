@@ -26,12 +26,12 @@ std::ostream& operator<<(std::ostream &stream, const std::vector<T> &vec) {
     return stream;
 }
 
-// #define DEBUG
-template <typename T>
-T &safeOrQuickVectorLookup(vector<T> &vec, int index) {
-#ifdef DEBUG
-    return vec.at(index);
-#else
-    return vec[index];
-#endif
-}
+//// #define DEBUG
+//template <typename T>
+//T &safeOrQuickVectorLookup(vector<T> &vec, int index) {
+//#ifdef DEBUG
+//    return vec.at(index);
+//#else
+//    return vec[index];
+//#endif
+//}

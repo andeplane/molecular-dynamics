@@ -43,16 +43,9 @@ void VelocityVerlet::firstKick(System &system, const double &timestep) {
     halfKick(system,timestep);
 }
 
-#include <statisticssampler.h>
-#include <includes.h>
-
 void VelocityVerlet::integrate(System &system, const double &timestep)
 {
-    StatisticsSampler sampler;
-//    cout << "Momentum before first kick: " << sampler.calculateTotalMomentum(system) << endl;
     if(m_firstStep) firstKick(system, timestep);
-//    cout << "Momentum after first kick: " << sampler.calculateTotalMomentum(system) << endl;
-//    exit(1);
     halfKick(system, timestep);
     move(system, timestep);
     system.topology().MPIMove(system);

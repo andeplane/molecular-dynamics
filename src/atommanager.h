@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
+#include <math/vector.h>
 #include <map>
-using std::vector; using std::map; using std::pair;
+using std::map; using std::pair;
 
 #include <atomlist.h>
 #include <cell.h>

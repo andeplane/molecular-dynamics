@@ -209,14 +209,14 @@ void AtomManager::updateCellList() {
     CellData &cellData = m_cellData;
     atoms().iterate([&](Atom &atom) {
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
-        Cell &cell = safeOrQuickVectorLookup(cellData.cells, cellIndex);
+        Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
     });
 
     ghostAtoms().iterate([&](Atom &atom) {
         int cellIndex = Cell::cellIndexForAtom(atom, cellData);
 
-        Cell &cell = safeOrQuickVectorLookup(cellData.cells, cellIndex);
+        Cell &cell = cellData.cells.at(cellIndex);
         cell.addAtom(&atom);
     });
 

@@ -41,12 +41,10 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
     vector<Cell> &cells = cellData.cells;
     double maximumNeighborDistanceSquared = m_maximumNeighborDistance*m_maximumNeighborDistance;
 
-    cout << "Starting to iterate..." << endl;
-
     for(int cellX=0; cellX<cellData.numberOfCellsWithGhostCells[0]; cellX++) {
         for(int cellY=0; cellY<cellData.numberOfCellsWithGhostCells[1]; cellY++) {
             for(int cellZ=0; cellZ<cellData.numberOfCellsWithGhostCells[2]; cellZ++) {
-                Cell &cell1 = safeOrQuickVectorLookup(cells,Cell::cellIndexFromIJK(cellX, cellY, cellZ, cellData));
+                Cell &cell1 = cells.at(Cell::cellIndexFromIJK(cellX, cellY, cellZ, cellData));
 
                 for(int cell2X=cellX-1; cell2X<=cellX+1; cell2X++) {
                     for(int cell2Y=cellY-1; cell2Y<=cellY+1; cell2Y++) {
@@ -55,7 +53,7 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                             int cell2XPeriodic = (cell2X + cellData.numberOfCellsWithGhostCells[0]) % cellData.numberOfCellsWithGhostCells[0];
                             int cell2YPeriodic = (cell2Y + cellData.numberOfCellsWithGhostCells[1]) % cellData.numberOfCellsWithGhostCells[1];
                             int cell2ZPeriodic = (cell2Z + cellData.numberOfCellsWithGhostCells[2]) % cellData.numberOfCellsWithGhostCells[2];
-                            Cell &cell2 = safeOrQuickVectorLookup(cells,Cell::cellIndexFromIJK(cell2XPeriodic, cell2YPeriodic, cell2ZPeriodic, cellData));
+                            Cell &cell2 = cells.at(Cell::cellIndexFromIJK(cell2XPeriodic, cell2YPeriodic, cell2ZPeriodic, cellData));
 
                             for(Atom *atom1 : cell1.atoms()) {
                                 for(Atom *atom2 : cell2.atoms()) {
@@ -93,12 +91,12 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
 
         atomUniqueId atom1UniqueId = atom1->uniqueId();
         for(unsigned long neighborIndex1 = 0; neighborIndex1<neighbors.size(); neighborIndex1++) {
-            atomUniqueId &atom2UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex1);
+            atomUniqueId &atom2UniqueId = neighbors.at(neighborIndex1);
             Atom *atom2 = &atomManager.getAtomByUniqueId(atom2UniqueId);
             if(atom1UniqueId >= atom2UniqueId) continue; // Only accept configurations where the unique atom ids are in ascending order
 
             for(unsigned long neighborIndex2 = 0; neighborIndex2<neighbors.size(); neighborIndex2++) {
-                atomUniqueId &atom3UniqueId = safeOrQuickVectorLookup(neighbors, neighborIndex2);
+                atomUniqueId &atom3UniqueId = neighbors.at(neighborIndex2);
                 Atom *atom3 = &atomManager.getAtomByUniqueId(atom3UniqueId);
 
                 if(atom2UniqueId >= atom3UniqueId) continue;  // Only accept configurations where the unique atom ids are in ascending order
@@ -109,8 +107,6 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
         }
     };
 
-    cout << "Looping through atoms..." << endl;
     atomManager.atoms().iterate(threeParticleLooper);
-    cout << "Looping through ghost atoms..." << endl;
     atomManager.ghostAtoms().iterate(threeParticleLooper);
 }
