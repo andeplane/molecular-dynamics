@@ -14,8 +14,8 @@ int operator + (AtomConfiguration val) {
 void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
     atomManager.setCutoffDistance(m_maxTwoParticleCutoffDistance);
-    // m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
-    m_iteratorDefault.setLoopThroughGhosts(true);
+    m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
+    // m_iteratorDefault.setLoopThroughGhosts(true);
     m_iteratorDefault.iterate(atomManager);
 }
 
