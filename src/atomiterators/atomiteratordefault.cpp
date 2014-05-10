@@ -65,8 +65,8 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                                         double dr2 = dx*dx + dy*dy + dz*dz;
 
                                         if(dr2 < maximumNeighborDistanceSquared) {
-                                            atom1->addNeighbor(*atom2);
-                                            atom2->addNeighbor(*atom1);
+                                            atom1->addNeighbor(atom2);
+                                            atom2->addNeighbor(atom1);
                                         }
                                     }
 
@@ -87,18 +87,16 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
     // Three particle loop
     auto threeParticleLooper = [&](Atom &atom) {
         Atom *atom1 = &atom;
-        vector<atomUniqueId> &neighbors = atom1->neighbors();
+        vector<Atom *> &neighbors = atom1->neighbors();
         if(neighbors.size() < 2) return; // No three particle contribution here
 
         atomUniqueId atom1UniqueId = atom1->uniqueId();
-        for(unsigned long neighborIndex1 = 0; neighborIndex1<neighbors.size(); neighborIndex1++) {
-            atomUniqueId &atom2UniqueId = at(neighbors,neighborIndex1);
-            Atom *atom2 = &atomManager.getAtomByUniqueId(atom2UniqueId);
+        for(Atom *atom2 : neighbors) {
+            unsigned long atom2UniqueId = atom2->uniqueId();
             if(atom1UniqueId >= atom2UniqueId) continue; // Only accept configurations where the unique atom ids are in ascending order
 
-            for(unsigned long neighborIndex2 = 0; neighborIndex2<neighbors.size(); neighborIndex2++) {
-                atomUniqueId &atom3UniqueId = at(neighbors,neighborIndex2);
-                Atom *atom3 = &atomManager.getAtomByUniqueId(atom3UniqueId);
+            for(Atom *atom3 : neighbors) {
+                unsigned long atom3UniqueId = atom3->uniqueId();
 
                 if(atom2UniqueId >= atom3UniqueId) continue;  // Only accept configurations where the unique atom ids are in ascending order
                 if(atom1->ghost() && atom2->ghost() && atom3->ghost()) continue;

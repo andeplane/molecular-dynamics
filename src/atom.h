@@ -23,7 +23,7 @@ private:
     bool m_ghost;
     vector<function<void()>> m_onRemoved;
     vector<function<void()>> m_onMoved;
-    vector<unsigned long> m_neighbors;
+    vector<Atom *> m_neighbors;
 public:
     double position[3];
     double initial_position[3];
@@ -38,13 +38,18 @@ public:
     void kick(const double &timestep, const double oneOverMass);
     void resetVelocityMaxwellian(double temperature);
 
-    AtomType *type() const;
+    inline AtomType *type() const {
+        return m_type;
+    }
+
     void setType(AtomType *type);
     bool removed() const;
     void setRemoved(bool removed);
     unsigned long  id() const;
     void setId(unsigned long  id);
-    bool ghost() const;
+    inline bool ghost() const {
+        return m_ghost;
+    }
     void setGhost(bool ghost);
 
     inline void setPosition(const vector<double> &pos) {
@@ -81,9 +86,16 @@ public:
 
     void addOnMoved(const function<void ()> &value);
     void addOnRemoved(const function<void ()> &value);
-    atomUniqueId  uniqueId() const;
+    inline atomUniqueId  uniqueId() const {
+        return m_uniqueId;
+    }
     atomUniqueId originalUniqueId() const;
     void setOriginalUniqueId(atomUniqueId originalUniqueId);
-    vector<atomUniqueId> &neighbors();
-    void addNeighbor(Atom &atom);
+    inline vector<Atom *> &neighbors() {
+        return m_neighbors;
+    }
+
+    inline void addNeighbor(Atom *atom) {
+        m_neighbors.push_back(atom);
+    }
 };

@@ -1,3 +1,4 @@
+include(../defaults.pri)
 TEMPLATE = lib
 CONFIG += console
 CONFIG -= app_bundle
@@ -60,3 +61,10 @@ SOURCES += \
     potentials/uscsio2potential.cpp \
     filemanager/mts0io.cpp \
     utils/utils.cpp
+
+icpc {
+    QMAKE_LFLAGS += -staticlib
+    QMAKE_LFLAGS_SONAME -= -Wl,-soname,
+}
+
+message($$QMAKE_LFLAGS_SONAME)

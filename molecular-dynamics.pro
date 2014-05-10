@@ -1,6 +1,8 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
+CONFIG += icpc
+
 SUBDIRS += \
     src \
     tests \

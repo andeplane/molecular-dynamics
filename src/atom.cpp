@@ -26,12 +26,6 @@ void Atom::resetVelocityMaxwellian(double temperature)
     velocity[2] = Random::nextGauss(0, standardDeviation);
 }
 
-
-atomUniqueId  Atom::uniqueId() const
-{
-    return m_uniqueId;
-}
-
 atomUniqueId Atom::originalUniqueId() const
 {
     return m_originalUniqueId;
@@ -40,15 +34,6 @@ atomUniqueId Atom::originalUniqueId() const
 void Atom::setOriginalUniqueId(atomUniqueId originalUniqueId)
 {
     m_originalUniqueId = originalUniqueId;
-}
-
-vector<atomUniqueId> &Atom::neighbors()
-{
-    return m_neighbors;
-}
-
-void Atom::addNeighbor(Atom &atom) {
-    m_neighbors.push_back(atom.uniqueId());
 }
 
 Atom::Atom() :
@@ -82,19 +67,9 @@ void Atom::setId(unsigned long id)
     m_id = id;
 }
 
-bool Atom::ghost() const
-{
-    return m_ghost;
-}
-
 void Atom::setGhost(bool ghost)
 {
     m_ghost = ghost;
-}
-
-AtomType *Atom::type() const
-{
-    return m_type;
 }
 
 void Atom::setType(AtomType *type)

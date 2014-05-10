@@ -21,7 +21,9 @@ typedef vector<double> coeff_oneOverR4s;
 typedef vector<double> coeff_cutoff_distance;
 
 enum class AtomConfiguration {NotUsed = 0, Si_O=1, Si_Si=2, O_O=3, O_Si_O=4, Si_O_Si=5, NumberOfConfigurations=6};
-int operator + (AtomConfiguration val);
+inline int operator + (AtomConfiguration val) {
+    return static_cast<int>(val);
+}
 
 
 class USCSIO2Potential : public Potential
@@ -56,7 +58,18 @@ private:
     vector<int> m_atomicNumberMap;
     vector<vector<vector<int> > > m_configurationMap;
     void initialize();
-    void sortAtoms(Atom *&atom1, Atom *&atom2, Atom *&atom3, int atomConfiguration);
+    inline void sortAtoms(Atom *&atom1, Atom *&atom2, Atom *&atom3, int atomConfiguration) {
+        // We expect atom2 to be the "special" atom in the configuration
+        if(atomConfiguration == +AtomConfiguration::O_Si_O) {
+            if(atom2->type()->atomicNumber() == +AtomTypes::Silicon) return;
+            else if(atom1->type()->atomicNumber() == +AtomTypes::Silicon) std::swap(atom2,atom1);
+            else std::swap(atom2,atom3);
+        } else {
+            if(atom2->type()->atomicNumber() == +AtomTypes::Oxygen) return;
+            else if(atom1->type()->atomicNumber() == +AtomTypes::Oxygen) std::swap(atom2,atom1);
+            else std::swap(atom2,atom3);
+        }
+    }
 
 public:
     USCSIO2Potential();

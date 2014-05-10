@@ -1,9 +1,9 @@
+include(../defaults.pri)
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
-Debug: QMAKE_CFLAGS += -DDEBUG
 
 SOURCES += \
     main.cpp \
@@ -18,7 +18,12 @@ INCLUDEPATH += $$PWD/../src
 LIBS += -L/repos/UnitTest++/ -L../src/
 LIBS += -lUnitTest++ -lmolecular-dynamics
 
-copydata.commands = cp -f $$OUT_PWD/../src/*.dylib $$OUT_PWD/
+icpc {
+    copydata.commands = cp -f $$OUT_PWD/../src/*.so* $$OUT_PWD/
+} else {
+    copydata.commands = cp -f $$OUT_PWD/../src/*.dylib $$OUT_PWD/
+}
+
 first.depends = $(first) copydata
 export(first.depends)
 export(copydata.commands)

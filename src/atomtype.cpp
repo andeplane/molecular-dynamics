@@ -3,9 +3,6 @@
 
 bool AtomType::isInitialized = false;
 vector<AtomType*> AtomType::atomTypes;
-int operator + (AtomTypes val) {
-    return static_cast<int>(val);
-}
 
 AtomType::AtomType(int atomicNumber, double mass, string name, string symbol) :
     m_atomicNumber(atomicNumber),
@@ -36,11 +33,6 @@ string AtomType::symbol() const
     return m_symbol;
 }
 
-double AtomType::massInverse() const
-{
-    return m_massInverse;
-}
-
 void AtomType::initialize()
 {
     AtomType::atomTypes.push_back(new AtomType(0,1822.88841781, "ERROR - ATOM NOT IN USE", "ER"));
@@ -63,14 +55,4 @@ void AtomType::initialize()
     AtomType::atomTypes.push_back(new AtomType(17,64626.8630765, "Chlorine", "Cl"));
     AtomType::atomTypes.push_back(new AtomType(18,72820.7465145, "Argon", "Ar"));
     AtomType::isInitialized = true;
-}
-
-int AtomType::atomicNumber() const
-{
-    return m_atomicNumber;
-}
-
-double AtomType::mass() const
-{
-    return m_mass;
 }

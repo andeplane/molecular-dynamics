@@ -8,10 +8,6 @@
 #include <includes.h>
 using CompPhys::Utils::at;
 
-int operator + (AtomConfiguration val) {
-    return static_cast<int>(val);
-}
-
 void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
     atomManager.setCutoffDistance(m_maxTwoParticleCutoffDistance);
@@ -65,19 +61,6 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     atom2->force[0] -= force*dx;
     atom2->force[1] -= force*dy;
     atom2->force[2] -= force*dz;
-}
-
-void USCSIO2Potential::sortAtoms(Atom *&atom1, Atom *&atom2, Atom *&atom3, int atomConfiguration) {
-    // We expect atom2 to be the "special" atom in the configuration
-    if(atomConfiguration == +AtomConfiguration::O_Si_O) {
-        if(atom2->type()->atomicNumber() == +AtomTypes::Silicon) return;
-        else if(atom1->type()->atomicNumber() == +AtomTypes::Silicon) std::swap(atom2,atom1);
-        else std::swap(atom2,atom3);
-    } else {
-        if(atom2->type()->atomicNumber() == +AtomTypes::Oxygen) return;
-        else if(atom1->type()->atomicNumber() == +AtomTypes::Oxygen) std::swap(atom2,atom1);
-        else std::swap(atom2,atom3);
-    }
 }
 
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)

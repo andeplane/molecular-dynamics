@@ -121,7 +121,6 @@ Atom *AtomManager::getAtomByOriginalUniqueId(unsigned long originalUniqueId) {
 }
 
 Atom &AtomManager::getAtomByUniqueId(unsigned long uniqueId) {
-
     if(m_atoms.containsAtomWithUniqueId(uniqueId)) return m_atoms.getAtomByUniqueId(uniqueId);
     else return m_ghostAtoms.getAtomByUniqueId(uniqueId);
 }

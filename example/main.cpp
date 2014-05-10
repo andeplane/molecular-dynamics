@@ -11,7 +11,7 @@ int main()
 {
     Random::setSeed(1);
     Simulator simulator;
-    int numberOfTimesteps = 5;
+    int numberOfTimesteps = 1000;
 
     simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({100, 100, 100}));
     simulator.setTimestep(UnitConverter::timeFromSI(1e-15));
@@ -27,21 +27,15 @@ int main()
     cout << simulator.system() << endl;
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
-
-        if(timestep % 10 == 0) {
-            // cout << timestep << "..";
-            cout << timestep << " momentum: " << simulator.sampler().calculateTotalMomentum(simulator.system()) << endl;
-        }
-
-        fflush(stdout);
+        if(timestep % 100 == 0) cout << timestep << endl;
 
         simulator.step();
     }
     cout << "Momentum at end: " << simulator.sampler().calculateTotalMomentum(simulator.system()) << endl;
     cout << "Successfully computed " << numberOfTimesteps << " timesteps." << endl;
 
-    fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
-    fileManager.finalize();
+//    fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
+//    fileManager.finalize();
     return 0;
 }
 
