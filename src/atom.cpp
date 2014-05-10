@@ -1,6 +1,7 @@
 #include <atom.h>
 #include <string>
 #include <random.h>
+#include <unitconverter.h>
 
 unsigned long  Atom::numberOfCreatedAtoms = 0;
 
@@ -138,8 +139,9 @@ void Atom::resetForce() {
     force[2] = 0;
 }
 
+
 std::ostream& operator<<(std::ostream &stream, const Atom &atom) {
-    if(!atom.m_ghost) return stream << "Atom (unique id " << atom.uniqueId() << ", original unique id " << atom.originalUniqueId() << ") of type '" << atom.type()->name() << "' with id " << atom.id() << " r" << atom.uniqueId() << "=[" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << "]  v" << atom.uniqueId() << "=[" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << "]  f" << atom.uniqueId() << "=[" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << "]";
-    else return stream << "Ghost atom (unique id " << atom.uniqueId() << ", original unique id " << atom.originalUniqueId() << ") of type '" << atom.type()->name() << "' with id " << atom.id() << " r" << atom.uniqueId() << "=[" << atom.position[0] << ", " << atom.position[1] << ", " << atom.position[2] << "]  v" << atom.uniqueId() << "=[" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << "]  f" << atom.uniqueId() << "=[" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << "]";
+    if(!atom.m_ghost) return stream << "Atom (unique id " << atom.uniqueId() << ", original unique id " << atom.originalUniqueId() << ") of type '" << atom.type()->name() << "' with id " << atom.id() << " r" << atom.uniqueId() << "=[" << UnitConverter::lengthToAngstroms(atom.position[0]) << ", " << UnitConverter::lengthToAngstroms(atom.position[1]) << ", " << UnitConverter::lengthToAngstroms(atom.position[2]) << "]  v" << atom.uniqueId() << "=[" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << "]  f" << atom.uniqueId() << "=[" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << "]";
+    else return stream << "Ghost atom (unique id " << atom.uniqueId() << ", original unique id " << atom.originalUniqueId() << ") of type '" << atom.type()->name() << "' with id " << atom.id() << " r" << atom.uniqueId() << "=[" << UnitConverter::lengthToAngstroms(atom.position[0]) << ", " << UnitConverter::lengthToAngstroms(atom.position[1]) << ", " << UnitConverter::lengthToAngstroms(atom.position[2]) << "]  v" << atom.uniqueId() << "=[" << atom.velocity[0] << ", " << atom.velocity[1] << ", " << atom.velocity[2] << "]  f" << atom.uniqueId() << "=[" << atom.force[0] << ", " << atom.force[1] << ", " << atom.force[2] << "]";
 
 }

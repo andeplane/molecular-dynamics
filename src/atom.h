@@ -61,10 +61,22 @@ public:
         m_neighbors.clear(); // This is not valid anymore
     }
 
+    inline void setVelocity(vector<double> vel) {
+        setVelocity(vel.at(0), vel.at(1), vel.at(2));
+    }
+
     inline void setVelocity(const double x, const double y, const double z) {
         velocity[0] = x;
         velocity[1] = y;
         velocity[2] = z;
+    }
+
+    inline void addVelocity(vector<double> vel) {
+        addVelocity(vel.at(0), vel.at(1), vel.at(2));
+    }
+
+    inline void addVelocity(const double x, const double y, const double z) {
+        setVelocity(velocity[0]+x, velocity[1]+y, velocity[2]+z);
     }
 
     void addOnMoved(const function<void ()> &value);
