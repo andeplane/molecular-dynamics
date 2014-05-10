@@ -33,3 +33,20 @@ void Generator::generateFCC(System &system, double unitCellLength, vector<int> n
 
     system.atomManager().atoms().resetVelocityMaxwellian(temperature);
 }
+
+void Generator::addSiO4Molecule(System &system, vector<double> SiPosition, double temperature, double tetrahedronScaling)
+{
+    double deltaX = SiPosition.at(0);
+    double deltaY = SiPosition.at(1);
+    double deltaZ = SiPosition.at(2);
+    double D = tetrahedronScaling;
+    system.addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Silicon),{deltaX, deltaY, deltaZ});
+    system.addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Oxygen), {D/sqrt(3)  + deltaX, D/sqrt(3)  + deltaY, D/sqrt(3)  + deltaZ});
+    system.addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Oxygen), {-D/sqrt(3) + deltaX, -D/sqrt(3) + deltaY, D/sqrt(3)  + deltaZ});
+    system.addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Oxygen), {D/sqrt(3)  + deltaX, -D/sqrt(3) + deltaY, -D/sqrt(3) + deltaZ});
+    system.addAtom(AtomType::atomTypeFromAtomType(AtomTypes::Oxygen), {-D/sqrt(3) + deltaX, D/sqrt(3)  + deltaY, -D/sqrt(3) + deltaZ});
+    system.atomManager().applyPeriodicBoundaryConditions(system.systemLength());
+
+    system.atomManager().atoms().resetVelocityMaxwellian(temperature);
+}
+
