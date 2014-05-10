@@ -5,7 +5,8 @@
 
 AtomList::AtomList(int initialAtomCount) :
     m_atomsDirty(false),
-    m_onAtomMoved(0)
+    m_onAtomMoved(0),
+    m_isIterating(false)
 {
     m_atoms.reserve(initialAtomCount);
 }
@@ -32,12 +33,23 @@ Atom &AtomList::getAtomByUniqueId(unsigned long uniqueId) {
     return safeOrQuickVectorLookup(m_atoms,m_indexMap[uniqueId]);
 }
 
+void AtomList::rebuildIndexMap() {
+    m_indexMap.clear();
+    iterate([&](Atom &atom, const int &index) {
+        m_indexMap[atom.uniqueId()] = index;
+    });
+}
+
 Atom &AtomList::addAtom(AtomType *atomType)
 {
-    m_atoms.push_back(Atom(atomType));
-    Atom &atom = m_atoms.back();
+    vector<Atom> *list = &m_atoms;
+    if(m_isIterating) list = &m_tempAtoms;
+
+    list->push_back(Atom(atomType));
+    Atom &atom = list->back();
     unsigned long indexOfThisAtom = m_atoms.size()-1;
-    m_indexMap.insert(pair<unsigned long, unsigned long>(atom.uniqueId(),indexOfThisAtom));
+    m_indexMap[atom.uniqueId()] = indexOfThisAtom;
+    // m_indexMap.insert(pair<unsigned long, unsigned long>(atom.uniqueId(),indexOfThisAtom));
 
     atom.setType(atomType);
     atom.addOnRemoved([&]() {
@@ -54,20 +66,33 @@ void AtomList::removeAllAtoms()
     m_atoms.clear();
 }
 
+void AtomList::moveTempAtomsToList() {
+    if(m_tempAtoms.size() == 0) return;
+    m_atoms.insert(m_atoms.end(), m_tempAtoms.begin(), m_tempAtoms.end());
+    m_tempAtoms.clear();
+    rebuildIndexMap();
+}
+
 void AtomList::iterate(function<void (Atom &atom)> action)
 {
+    m_isIterating = true;
     for(unsigned long atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
         Atom &atom = safeOrQuickVectorLookup(m_atoms,atomIndex);
         action(atom);
     }
+    m_isIterating = false;
+    moveTempAtomsToList();
 }
 
 void AtomList::iterate(function<void (Atom &atom, const int &atomIndex)> action)
 {
+    m_isIterating = true;
     for(unsigned long atomIndex=0; atomIndex<m_atoms.size(); atomIndex++) {
         Atom &atom = safeOrQuickVectorLookup(m_atoms,atomIndex);
         action(atom, atomIndex);
     }
+    m_isIterating = false;
+    moveTempAtomsToList();
 }
 
 const vector<Atom> &AtomList::atoms()

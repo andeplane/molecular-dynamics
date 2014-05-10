@@ -14,7 +14,11 @@ private:
     bool m_atomsDirty;
     function<void()> m_onAtomMoved;
     function<void()> m_onAtomRemoved;
+    bool m_isIterating;
+    vector<Atom> m_tempAtoms; // If we add atoms while looping
     unordered_map<unsigned long, unsigned long> m_indexMap;
+    void rebuildIndexMap();
+    void moveTempAtomsToList();
 public:
     AtomList(int initialAtomCount = 1000);
     ~AtomList();
