@@ -43,10 +43,12 @@ void VelocityVerlet::firstKick(System &system, const double &timestep) {
     halfKick(system,timestep);
 }
 
+#include <statisticssampler.h>
+#include <includes.h>
+
 void VelocityVerlet::integrate(System &system, const double &timestep)
 {
     if(m_firstStep) firstKick(system, timestep);
-
     halfKick(system, timestep);
     move(system, timestep);
     system.topology().MPIMove(system);

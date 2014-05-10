@@ -1,4 +1,4 @@
-#include "topology.h"
+#include <topology.h>
 
 #include <system.h>
 #include <atom.h>
@@ -7,7 +7,7 @@
 #include <atomtype.h>
 #include <cmath>
 #include <atommanager.h>
-
+#include <unitconverter.h>
 Topology::Topology() :
     m_isInitialized(false)
 {
@@ -260,7 +260,6 @@ void Topology::copyGhostAtomsWithMPI(AtomManager &atomManager)
 
             for (unsigned long uniqueId : m_moveQueue.at(localNodeID)) {
                 Atom &atom = atomManager.getAtomByUniqueId(uniqueId);
-
                 m_mpiSendBuffer[numberOfValuesToCopy*i+0] = atom.position[0]-m_shiftVector[localNodeID][0];
                 m_mpiSendBuffer[numberOfValuesToCopy*i+1] = atom.position[1]-m_shiftVector[localNodeID][1];
                 m_mpiSendBuffer[numberOfValuesToCopy*i+2] = atom.position[2]-m_shiftVector[localNodeID][2];

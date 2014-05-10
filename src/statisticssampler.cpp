@@ -37,7 +37,6 @@ double StatisticsSampler::calculateTotalEnergy(System &system)
 vector<double> StatisticsSampler::calculateTotalMomentum(System &system)
 {
     vector<double> momentum(3,0);
-
     system.atomManager().atoms().iterate([&](Atom &atom) {
         momentum[0] += atom.velocity[0]*atom.type()->mass();
         momentum[1] += atom.velocity[1]*atom.type()->mass();
