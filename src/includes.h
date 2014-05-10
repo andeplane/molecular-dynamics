@@ -18,9 +18,10 @@ template<typename T>
 std::ostream& operator<<(std::ostream &stream, const std::vector<T> &vec) {
     stream << "[";
     for(unsigned long i=0; i<vec.size(); i++) {
-        if(i+1 == vec.size()) stream << vec[i] << "]";
+        if(i+1 == vec.size()) stream << vec[i];
         else stream << vec[i] << ", ";
     }
+    stream << "]";
 
     return stream;
 }
