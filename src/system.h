@@ -21,7 +21,7 @@ public:
     void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
 
     vector<Potential *> &potentials();
-    Atom &addAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
+    Atom &addAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom), vector<double> position = {0,0,0});
     Atom &addGhostAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
     void removeAllAtoms();
     void removeGhostAtoms();

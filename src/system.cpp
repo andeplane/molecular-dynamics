@@ -37,10 +37,12 @@ void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double
     setSystemLength(systemLength);
 }
 
-Atom &System::addAtom(AtomType *atomType)
+Atom &System::addAtom(AtomType *atomType, vector<double> position)
 {
     checkIfInitialized();
-    return m_atomManager.addAtom(atomType);
+    Atom &atom = m_atomManager.addAtom(atomType);
+    atom.setPosition(position);
+    return atom;
 }
 
 Atom &System::addGhostAtom(AtomType *atomType)
