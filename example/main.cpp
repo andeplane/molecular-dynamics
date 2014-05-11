@@ -11,7 +11,7 @@ int main()
 {
     Random::setSeed(1);
     Simulator simulator;
-    int numberOfTimesteps = 200;
+    int numberOfTimesteps = 5;
 
     simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({100, 100, 100}));
     simulator.setTimestep(UnitConverter::timeFromSI(1e-15));
@@ -26,6 +26,7 @@ int main()
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         // fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
         if(timestep % 10 == 0) cout << timestep << endl;
+        cout << timestep << endl;
 
         simulator.step();
     }
