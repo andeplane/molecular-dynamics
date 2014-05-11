@@ -1,1 +1,1 @@
-CONFIG += icpc
+#CONFIG += icpc

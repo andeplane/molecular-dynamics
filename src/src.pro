@@ -67,4 +67,4 @@ icpc {
     QMAKE_LFLAGS_SONAME -= -Wl,-soname,
 }
 
-message($$QMAKE_LFLAGS_SONAME)
+# message($$QMAKE_LFLAGS_SONAME)

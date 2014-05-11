@@ -35,7 +35,7 @@ SUITE(USCSilica) {
 
         Random::setSeed(1);
         Simulator simulator;
-        int numberOfTimesteps = 200;
+        int numberOfTimesteps = 100;
 
         simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({100, 100, 100}));
         simulator.setTimestep(UnitConverter::timeFromSI(1e-15));
