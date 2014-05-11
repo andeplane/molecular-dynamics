@@ -9,10 +9,10 @@ class Atom; class Topology;
 class AtomManager
 {
 private:
-    friend std::ostream& operator<<(std::ostream&stream, AtomManager &atomManager);
+    CellData m_cellData;
     AtomList m_atoms;
     AtomList m_ghostAtoms;
-    CellData m_cellData;
+    friend std::ostream& operator<<(std::ostream&stream, AtomManager &atomManager);
     bool m_cellStructureDirty;
     bool m_cellDataDirty;
     bool m_ghostAtomsDirty;

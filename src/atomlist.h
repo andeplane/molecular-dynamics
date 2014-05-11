@@ -9,14 +9,14 @@ using std::vector; using std::function; using std::unordered_map; using std::pai
 class AtomList
 {
 private:
-    friend std::ostream& operator<<(std::ostream&stream, AtomList&atomList);
     vector<Atom> m_atoms;
     bool m_atomsDirty;
+    unordered_map<unsigned long, unsigned long> m_indexMap;
+    bool m_isIterating;
+    friend std::ostream& operator<<(std::ostream&stream, AtomList&atomList);
     function<void()> m_onAtomMoved;
     function<void()> m_onAtomRemoved;
-    bool m_isIterating;
     vector<Atom> m_tempAtoms; // If we add atoms while looping
-    unordered_map<unsigned long, unsigned long> m_indexMap;
     void rebuildIndexMap();
     void moveTempAtomsToList();
 public:

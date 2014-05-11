@@ -11,9 +11,14 @@ class AtomType;
 
 class Atom
 {
+public:
+    double position[3];
+    double initial_position[3];
+    double velocity[3];
+    double force[3];
 private:
-    friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);
     AtomType *m_type;
+    friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);
     unsigned long  m_id;
     atomUniqueId  m_uniqueId;
     atomUniqueId  m_originalUniqueId;
@@ -24,14 +29,8 @@ private:
     vector<function<void()>> m_onMoved;
     vector<Atom *> m_neighbors;
 public:
-    double position[3];
-    double initial_position[3];
-    double velocity[3];
-    double force[3];
-
     Atom();
     Atom(AtomType *atomType);
-
     void resetForce();
     void move(const double &timestep);
     void kick(const double &timestep, const double oneOverMass);
