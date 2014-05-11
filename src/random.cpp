@@ -1,26 +1,40 @@
-#include "random.h"
+#include <random.h>
+#include <math.h>
 
-std::random_device Random::rd;
-std::mt19937 Random::e2;
-bool Random::initialized = false;
-
-void Random::initialize()
-{
-    Random::initialized = true;
-    Random::e2 = std::mt19937(Random::rd());
+long     Random::iy = 0;
+long     Random::iv[NTAB];
+long     Random::seed = -1;
+void Random::setSeed(long seed) {
+    Random::seed = seed;
 }
 
-Random::Random()
-{
+double Random::nextGauss(double mean, double standardDeviation) {
+    return standardDeviation*sqrt( -2.0*log(1.0 - nextDouble()) )
+              * cos( 6.283185307 * nextDouble() ) + mean;
 }
 
-double Random::nextGauss(const double &mean, const double &standardDeviation)
+double Random::nextDouble()
 {
-    std::normal_distribution<> normal_dist(mean, standardDeviation);
-    return normal_dist(Random::e2);
-}
-
-void Random::setSeed(int seed)
-{
-    Random::e2.seed(seed);
+   int             j;
+   long            k;
+   double          temp;
+   if (Random::seed <= 0 || !iy) {
+      if (-(Random::seed) < 1) Random::seed=1;
+      else Random::seed = -(Random::seed);
+      for(j = NTAB + 7; j >= 0; j--) {
+         k     = (Random::seed)/IQ;
+         Random::seed = IA*(Random::seed - k*IQ) - IR*k;
+         if(Random::seed < 0) Random::seed += IM;
+         if(j < NTAB) iv[j] = Random::seed;
+      }
+      iy = iv[0];
+   }
+   k     = (Random::seed)/IQ;
+   Random::seed = IA*(Random::seed - k*IQ) - IR*k;
+   if(Random::seed < 0) Random::seed += IM;
+   j     = iy/NDIV;
+   iy    = iv[j];
+   iv[j] = Random::seed;
+   if((temp=AM*iy) > RNMX) return RNMX;
+   else return temp;
 }

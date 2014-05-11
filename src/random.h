@@ -1,15 +1,23 @@
 #pragma once
-#include <random>
 
-class Random
-{
-private:
-    static std::random_device rd;
-    static std::mt19937 e2;
-    static bool initialized;
-    static void initialize();
+#define IA 16807
+#define IM 2147483647
+#define AM (1.0/IM)
+#define IQ 127773
+#define IR 2836
+#define NTAB 32
+#define NDIV (1+(IM-1)/NTAB)
+#define EPS 1.2e-7
+#define RNMX (1.0-EPS)
+
+class Random {
 public:
-    Random();
-    static double nextGauss(const double &mean, const double &standardDeviation);
-    static void setSeed(int seed);
+    static long     iy;
+    static long     iv[NTAB];
+    static long seed;
+    static double nextDouble();
+    static double nextGauss(double mean, double standardDeviation);
+    static void setSeed(long seed);
+
+    // Random(long seed);
 };
