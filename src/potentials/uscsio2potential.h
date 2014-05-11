@@ -19,6 +19,7 @@ typedef vector<double> coeff_r4s;
 typedef vector<double> coeff_oneOverR1s;
 typedef vector<double> coeff_oneOverR4s;
 typedef vector<double> coeff_cutoff_distance;
+typedef vector<vector<vector<double> > > precomputed_two_particle_forces;
 
 enum class AtomConfiguration {NotUsed = 0, Si_O=1, Si_Si=2, O_O=3, O_Si_O=4, Si_O_Si=5, NumberOfConfigurations=6};
 inline int operator + (AtomConfiguration val) {
@@ -36,11 +37,17 @@ private:
     double m_maxThreeParticleCutoffDistance;
     coeff_cutoff_distance cutoffDistances;
     coeff_cutoff_distance cutoffDistancesSquared;
+    coeff_cutoff_distance oneOverCutoffDistancesSquared;
     coeff_eta_ij eta_ij;
     coeff_H_ij H_ij;
     coeff_D_ij D_ij;
     coeff_W_ij W_ij;
     coeff_Z_i Z_i;
+
+    int m_numberOfPrecomputedTwoParticleForces;
+    precomputed_two_particle_forces m_precomputedTwoParticleForces;
+    double m_deltaR2; // Step length in precomputed table
+    double m_oneOverDeltaR2; // Step length in precomputed table
 
     coeff_r1s r1s;
     coeff_r4s r4s;
@@ -57,7 +64,9 @@ private:
 
     vector<int> m_atomicNumberMap;
     vector<vector<vector<int> > > m_configurationMap;
+    vector<int> m_activeAtomTypes;
     void initialize();
+    void calculatePrecomputedTwoParticleForces();
     inline void sortAtoms(Atom *&atom1, Atom *&atom2, Atom *&atom3, int atomConfiguration) {
         // We expect atom2 to be the "special" atom in the configuration
         if(atomConfiguration == +AtomConfiguration::O_Si_O) {
@@ -70,11 +79,12 @@ private:
             else std::swap(atom2,atom3);
         }
     }
-
 public:
     USCSIO2Potential();
     virtual void calculateForces(AtomManager &atomManager);
     void twoParticleAction(Atom *atom1, Atom *atom2);
     void threeParticleAction(Atom *atom1, Atom *atom2, Atom *atom3);
     std::string coefficientString() const;
+    int numberOfPrecomputedTwoParticleForces() const;
+    void setNumberOfPrecomputedTwoParticleForces(int numberOfPrecomputedTwoParticleForces);
 };

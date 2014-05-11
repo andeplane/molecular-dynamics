@@ -15,8 +15,7 @@ void USCSIO2Potential::calculateForces(AtomManager &atomManager)
     m_iteratorDefault.iterate(atomManager);
 }
 
-#define DEBUG
-
+#define PRECOMPUTED
 void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
     int atomicNumber1 = atom1->type()->atomicNumber();
@@ -28,11 +27,27 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     double dx = atom1->position[0] - atom2->position[0];
     double dy = atom1->position[1] - atom2->position[1];
     double dz = atom1->position[2] - atom2->position[2];
-
     double r2 = dx*dx + dy*dy + dz*dz;
 
-    if(r2 > at(cutoffDistancesSquared,atomConfiguration)) return;
+#ifdef PRECOMPUTED
+    int mappedAtomicNumber1 = at(m_atomicNumberMap, atomicNumber1);
+    int mappedAtomicNumber2 = at(m_atomicNumberMap, atomicNumber2);
+    int precomputedTableIndex = r2*at(oneOverCutoffDistancesSquared, atomConfiguration)*m_numberOfPrecomputedTwoParticleForces;
 
+    // This test is the same as if(r2 > cutoffDistnaceSquared)
+    if(precomputedTableIndex>=m_numberOfPrecomputedTwoParticleForces) return;
+
+    // Forces in this and the next bin to interpolate
+    vector<double> &table = at(at(m_precomputedTwoParticleForces,mappedAtomicNumber1),mappedAtomicNumber2);
+    double force0 = at(table,precomputedTableIndex);
+    double force1 = at(table,precomputedTableIndex+1);
+
+    // Linearly interpolate between these values
+    double force = force0 + (force1 - force0)*(r2 - precomputedTableIndex*m_deltaR2)*m_oneOverDeltaR2;
+
+#else
+
+    if(r2 > at(cutoffDistancesSquared,atomConfiguration)) return;
 #ifdef DEBUG
     if(r2 < 1e-5) {
         std::cout << "Error in USCSIO2Potential::twoParticleAction. Relative distance is near zero:" << std::endl;
@@ -53,6 +68,7 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
                     + at(Z_i,atomicNumber1)*at(Z_i,atomicNumber2)*oneOverR2*exp(-r*at(oneOverR1s,atomConfiguration))*at(oneOverR1s,atomConfiguration)
                     - at(D_ij,atomConfiguration)*0.5*4*oneOverR6*exp(-r*at(oneOverR4s,atomConfiguration))
                     - at(D_ij,atomConfiguration)*0.5*oneOverR5*exp(-r*at(oneOverR4s,atomConfiguration))*at(oneOverR4s,atomConfiguration);
+#endif
 
     atom1->force[0] += force*dx;
     atom1->force[1] += force*dy;
@@ -89,7 +105,6 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
 
     if(rij > at(r0,atomConfiguration) || rik > at(r0,atomConfiguration)) return;
 
-    // cout << "Triplet: (" << atomi->originalUniqueId() << (atomi->ghost() ? "*" : "") << "," << atomj->originalUniqueId() << (atomj->ghost() ? "*" : "") << "," << atomk->originalUniqueId() << (atomk->ghost() ? "*" : "") << ")  --- unique ids (" << atomi->uniqueId() << "," << atomj->uniqueId()<< ", " << atomk->uniqueId()<< ")" << endl;
     double rijDotRik = xij*xik + yij*yik + zij*zik;
 
     double oneOverRij = 1.0/rij;
@@ -200,17 +215,27 @@ std::string USCSIO2Potential::coefficientString() const
     return string(output);
 }
 
+
+int USCSIO2Potential::numberOfPrecomputedTwoParticleForces() const
+{
+    return m_numberOfPrecomputedTwoParticleForces;
+}
+
+void USCSIO2Potential::setNumberOfPrecomputedTwoParticleForces(int numberOfPrecomputedTwoParticleForces)
+{
+    m_numberOfPrecomputedTwoParticleForces = numberOfPrecomputedTwoParticleForces;
+    calculatePrecomputedTwoParticleForces();
+}
 void USCSIO2Potential::initialize() {
     int highestAtomicNumber = +AtomTypes::Silicon;
     int numberOfAtomicNumbers = highestAtomicNumber+1;
     UnitConverter uc;
 
-    vector<int> activeAtomTypes;
-    activeAtomTypes.push_back(+AtomTypes::Oxygen);
-    activeAtomTypes.push_back(+AtomTypes::Silicon);
+    m_activeAtomTypes.push_back(+AtomTypes::Oxygen);
+    m_activeAtomTypes.push_back(+AtomTypes::Silicon);
     m_atomicNumberMap.resize(numberOfAtomicNumbers,-1);
     int atomMapIndex = 0; // First used atom will be the first index
-    for(int atomType : activeAtomTypes) {
+    for(int atomType : m_activeAtomTypes) {
         m_atomicNumberMap.at(atomType) = atomMapIndex++;
     }
 
@@ -257,10 +282,17 @@ void USCSIO2Potential::initialize() {
     cutoffDistances.at(+AtomConfiguration::Si_O) = uc.lengthFromAngstroms(5.5);
     cutoffDistances.at(+AtomConfiguration::Si_Si) = uc.lengthFromAngstroms(5.5);
     cutoffDistances.at(+AtomConfiguration::O_O) = uc.lengthFromAngstroms(5.5);
-    cutoffDistancesSquared = cutoffDistances;
 
-    for(double &cutoffDistanceSquared : cutoffDistancesSquared) {
-        cutoffDistanceSquared = cutoffDistanceSquared*cutoffDistanceSquared;
+    // Copy the values and square them
+    cutoffDistancesSquared = cutoffDistances;
+    for(double &cutoffDistanceSquaredValue : cutoffDistancesSquared) {
+        cutoffDistanceSquaredValue = cutoffDistanceSquaredValue*cutoffDistanceSquaredValue;
+    }
+
+    // Copy the values and take inverse
+    oneOverCutoffDistancesSquared = cutoffDistancesSquared;
+    for(double &oneOverCutoffDistanceSquaredValue : oneOverCutoffDistancesSquared) {
+        oneOverCutoffDistanceSquaredValue = 1.0/oneOverCutoffDistanceSquaredValue;
     }
 
     D_ij.at(+AtomConfiguration::Si_O) = 3.456*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),4);
@@ -308,6 +340,49 @@ void USCSIO2Potential::initialize() {
     m_configurationMap.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen) = +AtomConfiguration::O_Si_O;
 }
 
+void USCSIO2Potential::calculatePrecomputedTwoParticleForces()
+{
+    m_precomputedTwoParticleForces.resize(m_activeAtomTypes.size(),
+                                          vector<vector<double > >(m_activeAtomTypes.size(),
+                                          vector<double >(m_numberOfPrecomputedTwoParticleForces+1,0))); // +1 because we need rom for the extra value to interpolate in the last bin
+    double rMinSquared = 0;
+    double rMaxSquared = m_maxTwoParticleCutoffDistance*m_maxTwoParticleCutoffDistance;
+    m_deltaR2 = (rMaxSquared - rMinSquared) / (m_numberOfPrecomputedTwoParticleForces-1);
+    m_oneOverDeltaR2 = 1.0/m_deltaR2;
+
+    for(int atomicNumber1 : m_activeAtomTypes) {
+        int mappedAtomicNumber1 = m_atomicNumberMap.at(atomicNumber1);
+        for(int atomicNumber2 : m_activeAtomTypes) {
+            int mappedAtomicNumber2 = m_atomicNumberMap.at(atomicNumber2);
+            for(int i=0; i<m_numberOfPrecomputedTwoParticleForces; i++) {
+                double r2 = rMinSquared + i*m_deltaR2;
+
+                int atomConfiguration = at(at(at(m_configurationMap,atomicNumber1),atomicNumber2),+AtomTypes::NoAtom);
+                if(atomConfiguration == +AtomConfiguration::NotUsed) continue; // This configuration has zero contribution to the force
+                if(r2 > at(cutoffDistancesSquared,atomConfiguration)) continue;
+
+                double r = sqrt(r2);
+                double oneOverR = 1.0/r;
+                double oneOverR2 = oneOverR*oneOverR;
+                double oneOverR3 = oneOverR2*oneOverR;
+                double oneOverR5 = oneOverR2*oneOverR3;
+                double oneOverR6 = oneOverR3*oneOverR3;
+
+                double force = at(H_ij,atomConfiguration)*at(eta_ij,atomConfiguration)*pow(r, -at(eta_ij,atomConfiguration) - 2)
+                                + at(Z_i,atomicNumber1)*at(Z_i,atomicNumber2)*oneOverR3*exp(-r*at(oneOverR1s,atomConfiguration))
+                                + at(Z_i,atomicNumber1)*at(Z_i,atomicNumber2)*oneOverR2*exp(-r*at(oneOverR1s,atomConfiguration))*at(oneOverR1s,atomConfiguration)
+                                - at(D_ij,atomConfiguration)*0.5*4*oneOverR6*exp(-r*at(oneOverR4s,atomConfiguration))
+                                - at(D_ij,atomConfiguration)*0.5*oneOverR5*exp(-r*at(oneOverR4s,atomConfiguration))*at(oneOverR4s,atomConfiguration);
+
+                // Put this value into precomputed table
+                at(at(at(m_precomputedTwoParticleForces,mappedAtomicNumber1),mappedAtomicNumber2),i) = force;
+            }
+        }
+
+    }
+
+}
+
 USCSIO2Potential::USCSIO2Potential()
 {
     setName("USC SiO2");
@@ -315,6 +390,7 @@ USCSIO2Potential::USCSIO2Potential()
     m_iteratorDefault.setTwoParticleAction(std::bind(&USCSIO2Potential::twoParticleAction, this, _1, _2));
     m_iteratorDefault.setThreeParticleAction(std::bind(&USCSIO2Potential::threeParticleAction, this, _1, _2, _3));
     initialize();
+    setNumberOfPrecomputedTwoParticleForces(8192); // Default value
 }
 
 std::ostream& operator<<(std::ostream &stream, const USCSIO2Potential &potential) {
