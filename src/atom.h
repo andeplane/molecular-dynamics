@@ -3,7 +3,6 @@
 #include <iostream>
 #include <atomtype.h>
 #include <functional>
-#include <random>
 
 using std::string; using std::function;
 typedef unsigned long atomUniqueId;

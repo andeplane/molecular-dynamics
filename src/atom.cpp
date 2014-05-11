@@ -2,7 +2,7 @@
 #include <string>
 #include <random.h>
 #include <unitconverter.h>
-
+#include <cmath>
 unsigned long  Atom::numberOfCreatedAtoms = 0;
 
 void Atom::addOnRemoved(const function<void ()> &value)
