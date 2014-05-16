@@ -10,6 +10,7 @@ using CompPhys::Utils::at;
 
 void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
+    m_potentialEnergy = 0;
     atomManager.setCutoffDistance(m_maxTwoParticleCutoffDistance);
     m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
     m_iteratorDefault.iterate(atomManager);
@@ -18,6 +19,8 @@ void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 #define PRECOMPUTED
 void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
+    return;
+
     int atomicNumber1 = atom1->type()->atomicNumber();
     int atomicNumber2 = atom2->type()->atomicNumber();
     int atomConfiguration = at(at(at(m_configurationMap,atomicNumber1),atomicNumber2),+AtomTypes::NoAtom);
@@ -45,6 +48,14 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     // Linearly interpolate between these values
     double force = force0 + (force1 - force0)*(r2 - precomputedTableIndex*m_deltaR2)*m_oneOverDeltaR2;
 
+    double r = sqrt(r2);
+    double oneOverR = 1.0/r;
+    double oneOverR2 = oneOverR*oneOverR;
+    double oneOverR3 = oneOverR2*oneOverR;
+    double oneOverR4 = oneOverR2*oneOverR2;
+    double oneOverR5 = oneOverR2*oneOverR3;
+    double oneOverR6 = oneOverR3*oneOverR3;
+
 #else
 
     if(r2 > at(cutoffDistancesSquared,atomConfiguration)) return;
@@ -60,6 +71,7 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     double oneOverR = 1.0/r;
     double oneOverR2 = 1.0/r2;
     double oneOverR3 = oneOverR2*oneOverR;
+    double oneOverR4 = oneOverR2*oneOverR2;
     double oneOverR5 = oneOverR2*oneOverR3;
     double oneOverR6 = oneOverR3*oneOverR3;
 
@@ -69,6 +81,11 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
                     - at(D_ij,atomConfiguration)*0.5*4*oneOverR6*exp(-r*at(oneOverR4s,atomConfiguration))
                     - at(D_ij,atomConfiguration)*0.5*oneOverR5*exp(-r*at(oneOverR4s,atomConfiguration))*at(oneOverR4s,atomConfiguration);
 #endif
+
+    double potentialEnergy = at(H_ij,atomConfiguration)*pow(oneOverR,at(eta_ij,atomConfiguration))
+                             + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR*exp(-r*at(oneOverR1s,atomConfiguration))
+                             - at(D_ij,atomConfiguration)*oneOverR4*exp(-r*at(oneOverR4s,atomConfiguration));
+    m_potentialEnergy += potentialEnergy;
 
     atom1->force[0] += force*dx;
     atom1->force[1] += force*dy;
@@ -118,6 +135,8 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double Vijk = at(B_ijk,atomConfiguration)
                   *exp(at(ksi,atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
                   *pow(cosThetaIJKMinusCosThetaZero, 2);
+
+    m_potentialEnergy += Vijk;
 
     // Potential derivatives
     double dVijk_dCosThetaijk = Vijk*2*oneOverCosThetaIJKMinusCosThetaZero;
@@ -226,6 +245,7 @@ void USCSIO2Potential::setNumberOfPrecomputedTwoParticleForces(int numberOfPreco
     m_numberOfPrecomputedTwoParticleForces = numberOfPrecomputedTwoParticleForces;
     calculatePrecomputedTwoParticleForces();
 }
+
 void USCSIO2Potential::initialize() {
     int highestAtomicNumber = +AtomTypes::Silicon;
     int numberOfAtomicNumbers = highestAtomicNumber+1;
