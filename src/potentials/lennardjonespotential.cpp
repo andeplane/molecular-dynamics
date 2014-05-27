@@ -111,7 +111,12 @@ void LennardJonesPotential::twoParticleAction(Atom *atom1, Atom *atom2)
         double sigmaOverDr6 = sigmaOverDr2*sigmaOverDr2*sigmaOverDr2;
         double force = (2*sigmaOverDr6-1)*sigmaOverDr6*dr2Inverse*24*m_epsilon;
 
-        m_potentialEnergy += 4*m_epsilon*sigmaOverDr6*(sigmaOverDr6 - 1) - m_potentialEnergyCorrection;
+        int numberOfGhosts = atom1->ghost() + atom2->ghost();
+        if(numberOfGhosts == 0) {
+            m_potentialEnergy += 4*m_epsilon*sigmaOverDr6*(sigmaOverDr6 - 1) - m_potentialEnergyCorrection;
+        } else {
+            m_potentialEnergy += 0.5*(4*m_epsilon*sigmaOverDr6*(sigmaOverDr6 - 1) - m_potentialEnergyCorrection);
+        }
 
         atom1->force[0] += force*dr[0];
         atom1->force[1] += force*dr[1];

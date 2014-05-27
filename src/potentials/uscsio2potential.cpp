@@ -19,8 +19,6 @@ void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 #define PRECOMPUTED
 void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
-    return;
-
     int atomicNumber1 = atom1->type()->atomicNumber();
     int atomicNumber2 = atom2->type()->atomicNumber();
     int atomConfiguration = at(at(at(m_configurationMap,atomicNumber1),atomicNumber2),+AtomTypes::NoAtom);
@@ -84,8 +82,15 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 
     double potentialEnergy = at(H_ij,atomConfiguration)*pow(oneOverR,at(eta_ij,atomConfiguration))
                              + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR*exp(-r*at(oneOverR1s,atomConfiguration))
-                             - at(D_ij,atomConfiguration)*oneOverR4*exp(-r*at(oneOverR4s,atomConfiguration));
-    m_potentialEnergy += potentialEnergy;
+                             - 0.5*at(D_ij,atomConfiguration)*oneOverR4*exp(-r*at(oneOverR4s,atomConfiguration));
+    int numberOfGhosts = atom1->ghost() + atom2->ghost();
+    if(numberOfGhosts == 0) {
+        m_potentialEnergy += potentialEnergy;
+    } else {
+        // This atom pair will be counted agin with the other ghost/atom pair.
+        m_potentialEnergy += 0.5*potentialEnergy;
+    }
+
 
     atom1->force[0] += force*dx;
     atom1->force[1] += force*dy;
@@ -98,6 +103,8 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
 {
+    return;
+
     int atomicNumber1 = atomi->type()->atomicNumber();
     int atomicNumber2 = atomj->type()->atomicNumber();
     int atomicNumber3 = atomk->type()->atomicNumber();

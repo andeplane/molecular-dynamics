@@ -72,7 +72,11 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                                     }
 
                                     // Skip two particle forces between ghosts. Also skip two particle force between non ghosts unless atom1.uniqueId<atom2.uniqueId (the other permutation will compute forces)
-                                    if( (atom1->ghost() && atom2->ghost()) || (atom1->uniqueId() >= atom2->uniqueId() && (!atom1->ghost() && !atom2->ghost()) )) continue;
+                                    int numberOfGhosts = atom1->ghost() + atom2->ghost();
+                                    if(numberOfGhosts == 2) continue;
+                                    if(numberOfGhosts == 1 && atom1->originalUniqueId() >= atom2->originalUniqueId()) continue;
+                                    if(numberOfGhosts == 0 && atom1->uniqueId() >= atom2->uniqueId()) continue;
+
                                     m_twoParticleAction(atom1,atom2);
                                 }
                             } // Loop atoms
