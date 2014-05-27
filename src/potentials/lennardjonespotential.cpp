@@ -2,6 +2,7 @@
 #include <system.h>
 #include <functional>
 #include <vector>
+#include <unitconverter.h>
 
 unsigned long LennardJonesPotential::numberOfComputedPairs() const
 {
@@ -23,10 +24,10 @@ void LennardJonesPotential::setCalculateForcesBetweenAllPairsWithMinimumImageCon
 {
     m_calculateForcesBetweenAllPairsWithMinimumImageConvention = calculateForcesBetweenAllPairsWithMinimumImageConvention;
 }
+
 LennardJonesPotential::LennardJonesPotential() :
-    m_sigma(1),
-    m_epsilon(1),
-    m_cutoffDistance(2.5),
+    m_sigma(UnitConverter::lengthFromAngstroms(3.405)),
+    m_epsilon(UnitConverter::energyFromSI(1.65088e-21)),
     m_numberOfComputedPairs(0),
     m_numberOfComputedPairsWithinCutoffDistance(0),
     m_calculateForcesBetweenAllPairsWithMinimumImageConvention(false),
@@ -37,6 +38,7 @@ LennardJonesPotential::LennardJonesPotential() :
 
     m_iteratorAllPairs.setTwoParticleAction(std::bind(&LennardJonesPotential::twoParticleActionMinimumImageConvention, this, _1, _2));
     m_iteratorDefault.setTwoParticleAction(std::bind(&LennardJonesPotential::twoParticleAction, this, _1, _2));
+    setCutoffDistance(2.5*UnitConverter::lengthFromAngstroms(3.405));
 }
 
 void LennardJonesPotential::twoParticleActionMinimumImageConvention(Atom *atom1, Atom *atom2) {
