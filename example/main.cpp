@@ -11,19 +11,23 @@ int main()
 {
     Random::setSeed(1);
     Simulator simulator;
-    int numberOfTimesteps = 1000;
+    int numberOfTimesteps = 100;
 
-    simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({100, 100, 100}));
+    simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({10, 10, 10}));
     simulator.setTimestep(UnitConverter::timeFromSI(1e-15));
 
-    // USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system().addPotential(PotentialType::USCSilica);
-    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
-    Generator::generateFCC(simulator.system(), UnitConverter::lengthFromAngstroms(5.26), {5,5,5});
+    USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system().addPotential(PotentialType::USCSilica);
+//    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
+//    Generator::generateFCC(simulator.system(), UnitConverter::lengthFromAngstroms(5.26), {10,10,10});
 
     FileManager fileManager;
     // fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
-    // simulator.system().atomManager().atoms().resetVelocityMaxwellian();
-    // Generator::addSiO4Molecule(simulator.system(), {0, 0, 0});
+    // Generator::addSiO4Molecule(simulator.system(), {5, 5, 5});
+    Generator::generateBetaCrystabolite(simulator.system(),{5,5,5});
+
+//    simulator.system().atomManager().atoms().iterate([](Atom &atom) {
+//        atom.addVelocity(5e-3, 0, 0);
+//    });
 
     simulator.system().removeTotalMomentum();
 

@@ -49,3 +49,47 @@ void Generator::addSiO4Molecule(System &system, vector<double> SiPosition, doubl
     system.atomManager().atoms().resetVelocityMaxwellian(temperature);
 }
 
+void Generator::generateBetaCrystabolite(System &system, vector<int> numberOfUnitCells, double temperature) {
+    /*----------------------------------------------------------------------c
+      Data for real beta-crystobalite SiO2
+        NPU=24, NUA=8, and NUB=16
+        Cubic unit cell A0 = B0 = C0 = 7.16 A = 13.5304 a.u.
+        (R.W.G. Wyckoff, Crystal Structures, Vol. 1, P.318)
+    c----------------------------------------------------------------------*/
+    const int numberOfAtomsPerUnitCell = 24;
+    const int numberOfSiliconPerUnitCell = 8;
+    const int numberOfOxygenPerUnitCell = 16;
+
+    double a0[3]={13.5304, 13.5304, 13.5304}; // In atomic units
+    double pix[numberOfAtomsPerUnitCell][3]={
+         {.255,.255,.255},{.755,.245,.745},{.245,.745,.755},{.745,.755,.245},
+         {.992,.992,.992},{.492,.508,.008},{.508,.008,.492},{.008,.492,.508},
+         {.125,.125,.125},{.625,.375,.875},{.375,.875,.625},{.875,.625,.375},
+         {.660,.660,.060},{.160,.840,.940},{.160,.440,.340},{.560,.840,.340},
+         {.660,.060,.660},{.340,.160,.440},{.340,.560,.840},{.940,.160,.840},
+         {.060,.660,.660},{.840,.340,.560},{.840,.940,.160},{.440,.340,.160}};
+
+    for (int j=0; j<numberOfAtomsPerUnitCell; j++) {
+        bool atomIsSilicon = j < numberOfSiliconPerUnitCell;
+        bool atomIsOxygen = !atomIsSilicon;
+
+        AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::Silicon);
+        if(atomIsOxygen) atomType = AtomType::atomTypeFromAtomType(AtomTypes::Oxygen);
+
+        for (int nZ=0; nZ<numberOfUnitCells[2]; nZ++) {
+            for (int nY=0; nY<numberOfUnitCells[1]; nY++) {
+                for (int nX=0; nX<numberOfUnitCells[0]; nX++) {
+                    double x = (nX+pix[j][0])*a0[0];
+                    double y = (nY+pix[j][1])*a0[1];
+                    double z = (nZ+pix[j][2])*a0[2];
+                    Atom &atom = system.addAtom(atomType, {x,y,z});
+                }
+            }
+        }
+    }
+
+    vector<double> systemLength = {numberOfUnitCells[0]*a0[0], numberOfUnitCells[1]*a0[1], numberOfUnitCells[2]*a0[2]};
+    system.setSystemLength(systemLength);
+
+    system.atomManager().atoms().resetVelocityMaxwellian(temperature);
+}

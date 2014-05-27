@@ -62,7 +62,9 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
 
                             for(Atom *atom1 : cell1.atoms()) {
                                 for(Atom *atom2 : cell2.atoms()) {
-                                    if(m_createNeighborList && atom1->uniqueId() < atom2->uniqueId()) {
+                                    if(atom1->uniqueId() >= atom2->uniqueId()) continue; // All pairs appears twice, choose the other one
+
+                                    if(m_createNeighborList) {
                                         double dx = atom1->position[0] - atom2->position[0];
                                         double dy = atom1->position[1] - atom2->position[1];
                                         double dz = atom1->position[2] - atom2->position[2];
@@ -74,10 +76,7 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                                         }
                                     }
 
-                                    // Skip two particle forces between ghosts. Also skip two particle force between non ghosts unless atom1.uniqueId<atom2.uniqueId (the other permutation will compute forces)
-                                    int numberOfGhosts = atom1->ghost() + atom2->ghost();
-                                    if(numberOfGhosts == 2) continue; // Skip ghost pairs
-                                    if(atom1->uniqueId() >= atom2->uniqueId()) continue;
+                                    if(atom1->ghost() && atom2->ghost()) continue; // Skip ghost pairs
 
                                     m_twoParticleAction(atom1,atom2);
                                 }

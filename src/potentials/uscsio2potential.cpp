@@ -11,12 +11,12 @@ using CompPhys::Utils::at;
 void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
     m_potentialEnergy = 0;
-    atomManager.setCutoffDistance(m_maxTwoParticleCutoffDistance);
+    atomManager.setCutoffDistance(2*m_maxTwoParticleCutoffDistance);
     m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
     m_iteratorDefault.iterate(atomManager);
 }
 
-#define PRECOMPUTED
+// #define PRECOMPUTED
 void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 {
     int atomicNumber1 = atom1->type()->atomicNumber();
@@ -82,12 +82,8 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
                              + Z_i.at(atomicNumber1)*Z_i.at(atomicNumber2)*oneOverR*exp(-r*at(oneOverR1s,atomConfiguration))
                              - 0.5*at(D_ij,atomConfiguration)*oneOverR4*exp(-r*at(oneOverR4s,atomConfiguration));
     int numberOfGhosts = atom1->ghost() + atom2->ghost();
-    if(numberOfGhosts == 0) {
-        m_potentialEnergy += potentialEnergy;
-    } else {
-        // This atom pair will be counted agin with the other ghost/atom pair.
-        m_potentialEnergy += 0.5*potentialEnergy;
-    }
+
+    m_potentialEnergy += 0.5*potentialEnergy*(2-numberOfGhosts);
 
 
     atom1->force[0] += force*dx;
@@ -101,6 +97,8 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
 {
+    return;
+
     int atomicNumber1 = atomi->type()->atomicNumber();
     int atomicNumber2 = atomj->type()->atomicNumber();
     int atomicNumber3 = atomk->type()->atomicNumber();
@@ -140,9 +138,7 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
                   *pow(cosThetaIJKMinusCosThetaZero, 2);
 
     int numberOfGhosts = atomi->ghost() + atomj->ghost() + atomk->ghost();
-    if(numberOfGhosts == 0) m_potentialEnergy += Vijk;
-    if(numberOfGhosts == 1) m_potentialEnergy += Vijk*0.5;
-    if(numberOfGhosts == 2) m_potentialEnergy += Vijk*0.5;
+    m_potentialEnergy += 0.3333333333*Vijk*(3-numberOfGhosts);
 
     // Potential derivatives
     double dVijk_dCosThetaijk = Vijk*2*oneOverCosThetaIJKMinusCosThetaZero;
@@ -364,6 +360,8 @@ void USCSIO2Potential::initialize() {
     m_configurationMap.at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon) = +AtomConfiguration::O_Si_O;
     m_configurationMap.at(+AtomTypes::Oxygen).at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen) = +AtomConfiguration::O_Si_O;
     m_configurationMap.at(+AtomTypes::Silicon).at(+AtomTypes::Oxygen).at(+AtomTypes::Oxygen) = +AtomConfiguration::O_Si_O;
+
+
 }
 
 void USCSIO2Potential::calculatePrecomputedTwoParticleForces()
