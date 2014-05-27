@@ -2,6 +2,8 @@
 #include <topology.h>
 #include <atom.h>
 #include <filemanager/mts0io.h>
+#include <system.h>
+#include <unitconverter.h>
 
 FileManager::FileManager() :
     m_movieFile(NULL)
@@ -65,6 +67,7 @@ void FileManager::loadMts0(string mts0Directory, vector<int> numberOfCPUs, Syste
 {
     Mts0IO reader(numberOfCPUs);
     reader.loadMts0(mts0Directory, system);
+    system.atomManager().atoms().resetVelocityMaxwellian(UnitConverter::temperatureFromSI(300));
 }
 
 void FileManager::loadState(string stateFolder, vector<Atom> &atoms) {
