@@ -12,8 +12,9 @@ void USCSIO2Potential::calculateForces(AtomManager &atomManager)
 {
     m_potentialEnergy = 0;
     atomManager.setCutoffDistance(2*m_maxTwoParticleCutoffDistance);
-    m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
-    m_iteratorDefault.iterate(atomManager);
+//    m_iteratorDefault.setMaximumNeighborDistance(2*m_maxThreeParticleCutoffDistance);
+//    m_iteratorDefault.iterate(atomManager);
+    m_iteratorAllPairs.iterate(atomManager);
 }
 
 // #define PRECOMPUTED
@@ -97,8 +98,6 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
 {
-    return;
-
     int atomicNumber1 = atomi->type()->atomicNumber();
     int atomicNumber2 = atomj->type()->atomicNumber();
     int atomicNumber3 = atomk->type()->atomicNumber();
@@ -191,17 +190,17 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double dZik_zj = 0;
     double dZij_zk = 0;
 
-    double Fxi = dVijk_dRij*dRij_dXij*dXij_xi + dVijk_dRik*dRik_dXik*dXik_xi + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xi + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xi;
-    double Fyi = dVijk_dRij*dRij_dYij*dYij_yi + dVijk_dRik*dRik_dYik*dYik_yi + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yi + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yi;
-    double Fzi = dVijk_dRij*dRij_dZij*dZij_zi + dVijk_dRik*dRik_dZik*dZik_zi + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zi + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zi;
+    double Fxi = -(dVijk_dRij*dRij_dXij*dXij_xi + dVijk_dRik*dRik_dXik*dXik_xi + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xi + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xi);
+    double Fyi = -(dVijk_dRij*dRij_dYij*dYij_yi + dVijk_dRik*dRik_dYik*dYik_yi + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yi + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yi);
+    double Fzi = -(dVijk_dRij*dRij_dZij*dZij_zi + dVijk_dRik*dRik_dZik*dZik_zi + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zi + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zi);
 
-    double Fxj = dVijk_dRij*dRij_dXij*dXij_xj + dVijk_dRik*dRik_dXik*dXik_xj + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xj + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xj;
-    double Fyj = dVijk_dRij*dRij_dYij*dYij_yj + dVijk_dRik*dRik_dYik*dYik_yj + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yj + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yj;
-    double Fzj = dVijk_dRij*dRij_dZij*dZij_zj + dVijk_dRik*dRik_dZik*dZik_zj + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zj + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zj;
+    double Fxj = -(dVijk_dRij*dRij_dXij*dXij_xj + dVijk_dRik*dRik_dXik*dXik_xj + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xj + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xj);
+    double Fyj = -(dVijk_dRij*dRij_dYij*dYij_yj + dVijk_dRik*dRik_dYik*dYik_yj + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yj + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yj);
+    double Fzj = -(dVijk_dRij*dRij_dZij*dZij_zj + dVijk_dRik*dRik_dZik*dZik_zj + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zj + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zj);
 
-    double Fxk = dVijk_dRij*dRij_dXij*dXij_xk + dVijk_dRik*dRik_dXik*dXik_xk + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xk + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xk;
-    double Fyk = dVijk_dRij*dRij_dYij*dYij_yk + dVijk_dRik*dRik_dYik*dYik_yk + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yk + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yk;
-    double Fzk = dVijk_dRij*dRij_dZij*dZij_zk + dVijk_dRik*dRik_dZik*dZik_zk + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zk + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zk;
+    double Fxk = -(dVijk_dRij*dRij_dXij*dXij_xk + dVijk_dRik*dRik_dXik*dXik_xk + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xk + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xk);
+    double Fyk = -(dVijk_dRij*dRij_dYij*dYij_yk + dVijk_dRik*dRik_dYik*dYik_yk + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yk + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yk);
+    double Fzk = -(dVijk_dRij*dRij_dZij*dZij_zk + dVijk_dRik*dRik_dZik*dZik_zk + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zk + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zk);
 
     atomi->force[0] += Fxi;
     atomi->force[1] += Fyi;
@@ -413,6 +412,10 @@ USCSIO2Potential::USCSIO2Potential()
     using namespace std::placeholders;
     m_iteratorDefault.setTwoParticleAction(std::bind(&USCSIO2Potential::twoParticleAction, this, _1, _2));
     m_iteratorDefault.setThreeParticleAction(std::bind(&USCSIO2Potential::threeParticleAction, this, _1, _2, _3));
+
+    m_iteratorAllPairs.setTwoParticleAction(std::bind(&USCSIO2Potential::twoParticleAction, this, _1, _2));
+    m_iteratorAllPairs.setThreeParticleAction(std::bind(&USCSIO2Potential::threeParticleAction, this, _1, _2, _3));
+
     initialize();
     setNumberOfPrecomputedTwoParticleForces(8192); // Default value
 }

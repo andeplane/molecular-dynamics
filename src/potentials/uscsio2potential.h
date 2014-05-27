@@ -33,6 +33,7 @@ class USCSIO2Potential : public Potential
 private:
     friend std::ostream& operator<<(std::ostream&stream, const USCSIO2Potential&atom);
     AtomIteratorDefault m_iteratorDefault;
+    AtomIteratorAllPairs m_iteratorAllPairs;
     // Two particle coefficients
     double m_maxTwoParticleCutoffDistance;
     double m_maxThreeParticleCutoffDistance;
