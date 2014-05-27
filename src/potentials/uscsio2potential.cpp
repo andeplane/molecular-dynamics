@@ -51,8 +51,6 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     double oneOverR2 = oneOverR*oneOverR;
     double oneOverR3 = oneOverR2*oneOverR;
     double oneOverR4 = oneOverR2*oneOverR2;
-    double oneOverR5 = oneOverR2*oneOverR3;
-    double oneOverR6 = oneOverR3*oneOverR3;
 
 #else
 
@@ -67,7 +65,7 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 #endif
     double r = sqrt(r2);
     double oneOverR = 1.0/r;
-    double oneOverR2 = 1.0/r2;
+    double oneOverR2 = oneOverR*oneOverR;
     double oneOverR3 = oneOverR2*oneOverR;
     double oneOverR4 = oneOverR2*oneOverR2;
     double oneOverR5 = oneOverR2*oneOverR3;
@@ -103,8 +101,6 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
 
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
 {
-    return;
-
     int atomicNumber1 = atomi->type()->atomicNumber();
     int atomicNumber2 = atomj->type()->atomicNumber();
     int atomicNumber3 = atomk->type()->atomicNumber();
@@ -143,7 +139,10 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
                   *exp(at(ksi,atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
                   *pow(cosThetaIJKMinusCosThetaZero, 2);
 
-    m_potentialEnergy += Vijk;
+    int numberOfGhosts = atomi->ghost() + atomj->ghost() + atomk->ghost();
+    if(numberOfGhosts == 0) m_potentialEnergy += Vijk;
+    if(numberOfGhosts == 1) m_potentialEnergy += Vijk*0.5;
+    if(numberOfGhosts == 2) m_potentialEnergy += Vijk*0.5;
 
     // Potential derivatives
     double dVijk_dCosThetaijk = Vijk*2*oneOverCosThetaIJKMinusCosThetaZero;
