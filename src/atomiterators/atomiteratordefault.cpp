@@ -51,10 +51,13 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
                 // Loop over all neighboring cells, but skip neighbor cells if they need periodic coordinate shift (atoms are too far away anyway)
                 for(int cell2X=cellX-1; cell2X<=cellX+1; cell2X++) {
                     if(cell2X < 0 || cell2X >= cellData.numberOfCellsWithGhostCells[0]) continue;
+
                     for(int cell2Y=cellY-1; cell2Y<=cellY+1; cell2Y++) {
                         if(cell2Y < 0 || cell2Y >= cellData.numberOfCellsWithGhostCells[1]) continue;
+
                         for(int cell2Z=cellZ-1; cell2Z<=cellZ+1; cell2Z++) {
                             if(cell2Z < 0 || cell2Z >= cellData.numberOfCellsWithGhostCells[2]) continue;
+
                             Cell &cell2 = at(cells,Cell::cellIndexFromIJK(cell2X, cell2Y, cell2Z, cellData));
 
                             for(Atom *atom1 : cell1.atoms()) {
@@ -73,9 +76,8 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
 
                                     // Skip two particle forces between ghosts. Also skip two particle force between non ghosts unless atom1.uniqueId<atom2.uniqueId (the other permutation will compute forces)
                                     int numberOfGhosts = atom1->ghost() + atom2->ghost();
-                                    if(numberOfGhosts == 2) continue;
-                                    if(numberOfGhosts == 1 && atom1->originalUniqueId() >= atom2->originalUniqueId()) continue;
-                                    if(numberOfGhosts == 0 && atom1->uniqueId() >= atom2->uniqueId()) continue;
+                                    if(numberOfGhosts == 2) continue; // Skip ghost pairs
+                                    if(atom1->uniqueId() >= atom2->uniqueId()) continue;
 
                                     m_twoParticleAction(atom1,atom2);
                                 }
