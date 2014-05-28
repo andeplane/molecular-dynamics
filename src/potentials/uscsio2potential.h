@@ -21,6 +21,7 @@ typedef vector<double> coeff_oneOverR4s;
 typedef vector<double> coeff_cutoff_distance;
 typedef vector<double> potential_energy_at_cutoff;
 typedef vector<vector<vector<double> > > precomputed_two_particle_forces;
+typedef vector<vector<vector<double> > > precomputed_two_particle_potential;
 
 enum class AtomConfiguration {NotUsed = 0, Si_O=1, Si_Si=2, O_O=3, O_Si_O=4, Si_O_Si=5, NumberOfConfigurations=6};
 inline int operator + (AtomConfiguration val) {
@@ -48,6 +49,8 @@ private:
 
     int m_numberOfPrecomputedTwoParticleForces;
     precomputed_two_particle_forces m_precomputedTwoParticleForces;
+    precomputed_two_particle_potential m_precomputedTwoParticlePotential;
+
     potential_energy_at_cutoff m_potentialEnergyAtCutoff; // To correct for cutoff distance
     double m_deltaR2; // Step length in precomputed table
     double m_oneOverDeltaR2; // Step length in precomputed table

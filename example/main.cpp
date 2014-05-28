@@ -23,17 +23,23 @@ int main()
     FileManager fileManager;
     // fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
     // Generator::addSiO4Molecule(simulator.system(), {25, 25, 25});
-    Generator::generateBetaCrystabolite(simulator.system(),{1,1,1});
-    simulator.system().setSystemLength({100, 100, 100});
+    simulator.system().addAtom(AtomType::atomTypeFromAtomicNumber(8), UnitConverter::lengthFromAngstroms({20,0,0}));
+    simulator.system().addAtom(AtomType::atomTypeFromAtomicNumber(8), UnitConverter::lengthFromAngstroms({22,0,0}));
+    simulator.system().addAtom(AtomType::atomTypeFromAtomicNumber(8), UnitConverter::lengthFromAngstroms({6,0,0}));
+    simulator.system().addAtom(AtomType::atomTypeFromAtomicNumber(8), UnitConverter::lengthFromAngstroms({9,0,0}));
+    simulator.system().addAtom(AtomType::atomTypeFromAtomicNumber(8), UnitConverter::lengthFromAngstroms({12,0,0}));
+    // Generator::generateBetaCrystabolite(simulator.system(),{5,5,5});
+    // simulator.system().setSystemLength({100, 100, 100});
 
-//    simulator.system().atomManager().atoms().iterate([](Atom &atom) {
+    simulator.system().atomManager().atoms().iterate([](Atom &atom) {
 //        double x = atom.position[0];
 //        double y = atom.position[1];
 //        double z = atom.position[2];
 //        atom.setPosition(x+10,y+10,z+10);
-//    });
+        // atom.addVelocity( {1e-3, 2.2e-3, 0} );
+    });
 
-    simulator.system().removeTotalMomentum();
+    // simulator.system().removeTotalMomentum();
 
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
