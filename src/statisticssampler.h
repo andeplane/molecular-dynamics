@@ -11,4 +11,5 @@ public:
     double calculatePotentialEnergy(System &system);
     double calculateTotalEnergy(System &system);
     vector<double> calculateTotalMomentum(System &system);
+    double calculateTemperature(System &system);
 };

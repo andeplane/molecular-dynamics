@@ -67,7 +67,7 @@ void FileManager::loadMts0(string mts0Directory, vector<int> numberOfCPUs, Syste
 {
     Mts0IO reader(numberOfCPUs);
     reader.loadMts0(mts0Directory, system);
-    system.atomManager().atoms().resetVelocityMaxwellian(UnitConverter::temperatureFromSI(300));
+    system.atomManager().atoms().resetVelocityMaxwellian(UnitConverter::temperatureFromSI(0));
 }
 
 void FileManager::loadState(string stateFolder, vector<Atom> &atoms) {

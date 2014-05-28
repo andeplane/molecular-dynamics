@@ -100,9 +100,35 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     atom2->force[2] -= force*dz*oneOverR;
 }
 
+double dVdXij(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
+   return -B*ksi*xij*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2)), 2)*sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(-2*xij*(xij*xik + yij*yik + zij*zik)/(pow(pow(xij, 2) + pow(yij, 2) + pow(zij, 2), 3.0L/2.0L)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + 2*xik/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+}
+
+double dVdYij(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
+   return -B*ksi*yij*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2)), 2)*sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(-2*yij*(xij*xik + yij*yik + zij*zik)/(pow(pow(xij, 2) + pow(yij, 2) + pow(zij, 2), 3.0L/2.0L)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + 2*yik/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+}
+
+double dVdZij(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
+   return -B*ksi*zij*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2)), 2)*sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(-2*zij*(xij*xik + yij*yik + zij*zik)/(pow(pow(xij, 2) + pow(yij, 2) + pow(zij, 2), 3.0L/2.0L)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + 2*zik/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+}
+
+double dVdXik(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
+   return -B*ksi*xik*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2)), 2)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(2*xij/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) - 2*xik*(xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*pow(pow(xik, 2) + pow(yik, 2) + pow(zik, 2), 3.0L/2.0L)))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+}
+
+double dVdYik(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
+   return -B*ksi*yik*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2)), 2)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(2*yij/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) - 2*yik*(xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*pow(pow(xik, 2) + pow(yik, 2) + pow(zik, 2), 3.0L/2.0L)))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+}
+
+double dVdZik(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
+
+   return -B*ksi*zik*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2)), 2)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(2*zij/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) - 2*zik*(xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*pow(pow(xik, 2) + pow(yik, 2) + pow(zik, 2), 3.0L/2.0L)))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+
+}
+
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
 {
-    return;
+    // return;
     int atomicNumber1 = atomi->type()->atomicNumber();
     int atomicNumber2 = atomj->type()->atomicNumber();
     int atomicNumber3 = atomk->type()->atomicNumber();
@@ -135,7 +161,6 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double oneOverRikMinusRzero = 1.0/(rik - at(r0,atomConfiguration));
     double cosThetaIJK = rijDotRik*oneOverRij*oneOverRik;
     double cosThetaIJKMinusCosThetaZero = cosThetaIJK - at(cosThetaZero,atomConfiguration);
-    double oneOverCosThetaIJKMinusCosThetaZero = 1.0/cosThetaIJKMinusCosThetaZero;
 
     double Vijk = at(B_ijk,atomConfiguration)
                   *exp(at(ksi,atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
@@ -144,81 +169,25 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     int numberOfGhosts = atomi->ghost() + atomj->ghost() + atomk->ghost();
     m_potentialEnergy += 0.3333333333*Vijk*(3-numberOfGhosts);
 
-    // Potential derivatives
-    double dVijk_dCosThetaijk = Vijk*2*oneOverCosThetaIJKMinusCosThetaZero;
-    double dVijk_dRij = -Vijk*at(ksi,atomConfiguration)*pow(oneOverRijMinusRzero, 2);
-    double dVijk_dRik = -Vijk*at(ksi,atomConfiguration)*pow(oneOverRikMinusRzero, 2);
+    double dVdXij2 = dVdXij(B_ijk.at(atomConfiguration), cosThetaZero.at(atomConfiguration), ksi.at(atomConfiguration), r0.at(atomConfiguration), xij, xik, yij, yik, zij, zik);
+    double dVdYij2 = dVdYij(B_ijk.at(atomConfiguration), cosThetaZero.at(atomConfiguration), ksi.at(atomConfiguration), r0.at(atomConfiguration), xij, xik, yij, yik, zij, zik);
+    double dVdZij2 = dVdZij(B_ijk.at(atomConfiguration), cosThetaZero.at(atomConfiguration), ksi.at(atomConfiguration), r0.at(atomConfiguration), xij, xik, yij, yik, zij, zik);
 
-    // Theta derivatives
-    // X
-    double dCosThetaijk_dXij = oneOverRij*oneOverRik*(xik + xij*rijDotRik*oneOverRij*oneOverRij);
-    double dCosThetaijk_dXik = oneOverRij*oneOverRik*(xij + xik*rijDotRik*oneOverRik*oneOverRik);
-    // Y
-    double dCosThetaijk_dYij = oneOverRij*oneOverRik*(yik + yij*rijDotRik*oneOverRij*oneOverRij);
-    double dCosThetaijk_dYik = oneOverRij*oneOverRik*(yij + yik*rijDotRik*oneOverRik*oneOverRik);
-    // Z
-    double dCosThetaijk_dZij = oneOverRij*oneOverRik*(zik + zij*rijDotRik*oneOverRij*oneOverRij);
-    double dCosThetaijk_dZik = oneOverRij*oneOverRik*(zij + zik*rijDotRik*oneOverRik*oneOverRik);
+    double dVdXik2 = dVdXik(B_ijk.at(atomConfiguration), cosThetaZero.at(atomConfiguration), ksi.at(atomConfiguration), r0.at(atomConfiguration), xij, xik, yij, yik, zij, zik);
+    double dVdYik2 = dVdYik(B_ijk.at(atomConfiguration), cosThetaZero.at(atomConfiguration), ksi.at(atomConfiguration), r0.at(atomConfiguration), xij, xik, yij, yik, zij, zik);
+    double dVdZik2 = dVdZik(B_ijk.at(atomConfiguration), cosThetaZero.at(atomConfiguration), ksi.at(atomConfiguration), r0.at(atomConfiguration), xij, xik, yij, yik, zij, zik);
 
-    // RijRikDerivatives
-    // X
-    double dRij_dXij = xij*oneOverRij;
-    double dRik_dXik = xik*oneOverRik;
-    // Y
-    double dRij_dYij = yij*oneOverRij;
-    double dRik_dYik = yik*oneOverRik;
-    // Z
-    double dRij_dZij = zij*oneOverRij;
-    double dRik_dZik = zik*oneOverRik;
+    atomi->force[0] -= dVdXij2 + dVdXik2;
+    atomi->force[1] -= dVdYij2 + dVdYik2;
+    atomi->force[2] -= dVdZij2 + dVdZik2;
 
-    // XijXikDerivatives
-    // X
-    double dXij_xi = 1;
-    double dXik_xi = 1;
-    double dXij_xj = -1;
-    double dXik_xk = -1;
-    double dXik_xj = 0;
-    double dXij_xk = 0;
+    atomj->force[0] += dVdXij2;
+    atomj->force[1] += dVdYij2;
+    atomj->force[2] += dVdZij2;
 
-    // Y
-    double dYij_yi = 1;
-    double dYik_yi = 1;
-    double dYij_yj = -1;
-    double dYik_yk = -1;
-    double dYik_yj = 0;
-    double dYij_yk = 0;
-
-    // Z
-    double dZij_zi = 1;
-    double dZik_zi = 1;
-    double dZij_zj = -1;
-    double dZik_zk = -1;
-    double dZik_zj = 0;
-    double dZij_zk = 0;
-
-    double Fxi = -(dVijk_dRij*dRij_dXij*dXij_xi + dVijk_dRik*dRik_dXik*dXik_xi + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xi + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xi);
-    double Fyi = -(dVijk_dRij*dRij_dYij*dYij_yi + dVijk_dRik*dRik_dYik*dYik_yi + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yi + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yi);
-    double Fzi = -(dVijk_dRij*dRij_dZij*dZij_zi + dVijk_dRik*dRik_dZik*dZik_zi + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zi + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zi);
-
-    double Fxj = -(dVijk_dRij*dRij_dXij*dXij_xj + dVijk_dRik*dRik_dXik*dXik_xj + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xj + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xj);
-    double Fyj = -(dVijk_dRij*dRij_dYij*dYij_yj + dVijk_dRik*dRik_dYik*dYik_yj + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yj + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yj);
-    double Fzj = -(dVijk_dRij*dRij_dZij*dZij_zj + dVijk_dRik*dRik_dZik*dZik_zj + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zj + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zj);
-
-    double Fxk = -(dVijk_dRij*dRij_dXij*dXij_xk + dVijk_dRik*dRik_dXik*dXik_xk + dVijk_dCosThetaijk*dCosThetaijk_dXij*dXij_xk + dVijk_dCosThetaijk*dCosThetaijk_dXik*dXik_xk);
-    double Fyk = -(dVijk_dRij*dRij_dYij*dYij_yk + dVijk_dRik*dRik_dYik*dYik_yk + dVijk_dCosThetaijk*dCosThetaijk_dYij*dYij_yk + dVijk_dCosThetaijk*dCosThetaijk_dYik*dYik_yk);
-    double Fzk = -(dVijk_dRij*dRij_dZij*dZij_zk + dVijk_dRik*dRik_dZik*dZik_zk + dVijk_dCosThetaijk*dCosThetaijk_dZij*dZij_zk + dVijk_dCosThetaijk*dCosThetaijk_dZik*dZik_zk);
-
-    atomi->force[0] += Fxi;
-    atomi->force[1] += Fyi;
-    atomi->force[2] += Fzi;
-
-    atomj->force[0] += Fxj;
-    atomj->force[1] += Fyj;
-    atomj->force[2] += Fzj;
-
-    atomk->force[0] += Fxk;
-    atomk->force[1] += Fyk;
-    atomk->force[2] += Fzk;
+    atomk->force[0] += dVdXik2;
+    atomk->force[1] += dVdYik2;
+    atomk->force[2] += dVdZik2;
 }
 
 std::string USCSIO2Potential::coefficientString() const

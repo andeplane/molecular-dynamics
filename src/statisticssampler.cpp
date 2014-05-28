@@ -29,6 +29,15 @@ double StatisticsSampler::calculatePotentialEnergy(System &system)
     return potentialEnergy;
 }
 
+double StatisticsSampler::calculateTemperature(System &system)
+{
+    double kineticEnergy = calculateKineticEnergy(system);
+
+    double temperature = 2.0/(3*system.numberOfAtoms())*kineticEnergy;
+
+    return temperature;
+}
+
 double StatisticsSampler::calculateTotalEnergy(System &system)
 {
     return calculatePotentialEnergy(system) + calculateKineticEnergy(system);
