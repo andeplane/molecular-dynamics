@@ -14,6 +14,7 @@ typedef vector<double> coeff_H_ij;
 typedef vector<double> coeff_D_ij;
 typedef vector<double> coeff_W_ij;
 typedef vector<double> coeff_Z_i;
+typedef vector<double> coeff_alpha_i;
 typedef vector<double> coeff_r1s;
 typedef vector<double> coeff_r4s;
 typedef vector<double> coeff_oneOverR1s;
@@ -46,6 +47,7 @@ private:
     coeff_D_ij D_ij;
     coeff_W_ij W_ij;
     coeff_Z_i Z_i;
+    coeff_alpha_i alpha_i;
 
     int m_numberOfPrecomputedTwoParticleForces;
     precomputed_two_particle_forces m_precomputedTwoParticleForces;
