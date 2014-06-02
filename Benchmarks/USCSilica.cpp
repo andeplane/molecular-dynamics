@@ -35,25 +35,29 @@ SUITE(USCSilica) {
 
         Random::setSeed(1);
         Simulator simulator;
-        int numberOfTimesteps = 100;
+        int numberOfTimesteps = 1000;
 
         simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({100, 100, 100}));
-        simulator.setTimestep(UnitConverter::timeFromSI(1e-15));
+        simulator.setTimestep(UnitConverter::timeFromSI(2e-15));
 
         USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system().addPotential(PotentialType::USCSilica);
-
-        FileManager fileManager;
-        fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
-
+        Generator::generateBetaCrystabolite(simulator.system(), {5,5,5}, UnitConverter::temperatureFromSI(300));
         simulator.system().removeTotalMomentum();
 
         for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
-            // fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
-            if(timestep % 10 == 0) cout << timestep << endl;
-
             simulator.step();
+            if(timestep % 100 == 0) {
+                double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
+                // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());
+                double energyEv = UnitConverter::energyToEv(energy);
+                double energyEvPerParticle = energyEv / simulator.system().numberOfAtoms();
+
+                double temperature = simulator.sampler().calculateTemperature(simulator.system());
+                double temperatureSI = UnitConverter::temperatureToSI(temperature);
+
+                cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
+            }
         }
-        cout << "Momentum at end: " << simulator.sampler().calculateTotalMomentum(simulator.system()) << endl;
         cout << "Successfully computed " << numberOfTimesteps << " timesteps." << endl;
     }
 }
