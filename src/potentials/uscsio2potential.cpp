@@ -67,30 +67,6 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     atom2->force[2] -= force*dz*oneOverR;
 }
 
-inline double dVdXij(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double xij, double xik) {
-   return -B*(cosTheta - costheta0)*(ksi*rij*rik*xij*(cosTheta - costheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*xij - rij*xik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
-}
-
-inline double dVdYij(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double yij, double yik) {
-   return -B*(cosTheta - costheta0)*(ksi*rij*rik*yij*(cosTheta - costheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*yij - rij*yik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
-}
-
-inline double dVdZij(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double zij, double zik) {
-   return -B*(cosTheta - costheta0)*(ksi*rij*rik*zij*(cosTheta - costheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*zij - rij*zik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
-}
-
-inline double dVdXik(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double xij, double xik) {
-   return -B*(cosTheta - costheta0)*(ksi*rij*rik*xik*(cosTheta - costheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*xik - rik*xij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
-}
-
-inline double dVdYik(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double yij, double yik) {
-   return -B*(cosTheta - costheta0)*(ksi*rij*rik*yik*(cosTheta - costheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*yik - rik*yij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
-}
-
-inline double dVdZik(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double zij, double zik) {
-   return -B*(cosTheta - costheta0)*(ksi*rij*rik*zik*(cosTheta - costheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*zik - rik*zij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
-}
-
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
 {
     int atomicNumber1 = atomi->type()->atomicNumber();
@@ -112,49 +88,49 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
 
     double rij = sqrt(xij*xij + yij*yij + zij*zij);
     double rik = sqrt(xik*xik + yik*yik + zik*zik);
+    double r0 = at(this->r0, atomConfiguration);
 
-    if(rij > at(r0,atomConfiguration) || rik > at(r0,atomConfiguration)) return;
+    if(rij > r0 || rik > r0) return;
+
+    double B = at(this->B_ijk,atomConfiguration);
+    double cosTheta0 = at(this->cosThetaZero, atomConfiguration);
+    double ksi = at(this->ksi, atomConfiguration);
+
 
     double rijDotRik = xij*xik + yij*yik + zij*zik;
-
     double oneOverRij = 1.0/rij;
     double oneOverRik = 1.0/rik;
-    double oneOverRijMinusRzero = 1.0/(rij - at(r0,atomConfiguration));
-    double oneOverRikMinusRzero = 1.0/(rik - at(r0,atomConfiguration));
+    double oneOverRijMinusRzero = 1.0/(rij - r0);
+    double oneOverRikMinusRzero = 1.0/(rik - r0);
     double cosTheta = rijDotRik*oneOverRij*oneOverRik;
-    double cosThetaMinusCosThetaZero = cosTheta - at(cosThetaZero,atomConfiguration);
+    double cosThetaMinusCosThetaZero = cosTheta - cosTheta0;
 
-    double Vijk = at(B_ijk,atomConfiguration)
-                  *exp(at(ksi,atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
+    double Vijk = B*exp(ksi*(oneOverRijMinusRzero + oneOverRikMinusRzero))
                   *pow(cosThetaMinusCosThetaZero, 2);
 
     int numberOfGhosts = atomi->ghost() + atomj->ghost() + atomk->ghost();
     m_potentialEnergy += 0.3333333333*Vijk*(3-numberOfGhosts);
 
-    double B_ijk = at(this->B_ijk,atomConfiguration);
-    double cosTheta0 = at(this->cosThetaZero, atomConfiguration);
-    double ksi = at(this->ksi, atomConfiguration);
-    double r0 = at(this->r0, atomConfiguration);
+    // These expressions are from molecular-dynamics/python/threeParticleForce.py
+    double dVdXij = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*xij*(cosTheta - cosTheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*xij - rij*xik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
+    double dVdYij = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*yij*(cosTheta - cosTheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*yij - rij*yik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
+    double dVdZij = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*zij*(cosTheta - cosTheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*zij - rij*zik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
 
-    double dVdXij2 = dVdXij(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, xij, xik);
-    double dVdYij2 = dVdYij(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, yij, yik);
-    double dVdZij2 = dVdZij(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, zij, zik);
+    double dVdXik = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*xik*(cosTheta - cosTheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*xik - rik*xij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
+    double dVdYik = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*yik*(cosTheta - cosTheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*yik - rik*yij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
+    double dVdZik = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*zik*(cosTheta - cosTheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*zik - rik*zij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
 
-    double dVdXik2 = dVdXik(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, xij, xik);
-    double dVdYik2 = dVdYik(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, yij, yik);
-    double dVdZik2 = dVdZik(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, zij, zik);
+    atomi->force[0] -= dVdXij + dVdXik;
+    atomi->force[1] -= dVdYij + dVdYik;
+    atomi->force[2] -= dVdZij + dVdZik;
 
-    atomi->force[0] -= dVdXij2 + dVdXik2;
-    atomi->force[1] -= dVdYij2 + dVdYik2;
-    atomi->force[2] -= dVdZij2 + dVdZik2;
+    atomj->force[0] += dVdXij;
+    atomj->force[1] += dVdYij;
+    atomj->force[2] += dVdZij;
 
-    atomj->force[0] += dVdXij2;
-    atomj->force[1] += dVdYij2;
-    atomj->force[2] += dVdZij2;
-
-    atomk->force[0] += dVdXik2;
-    atomk->force[1] += dVdYik2;
-    atomk->force[2] += dVdZik2;
+    atomk->force[0] += dVdXik;
+    atomk->force[1] += dVdYik;
+    atomk->force[2] += dVdZik;
 }
 
 std::string USCSIO2Potential::coefficientString() const
@@ -261,9 +237,9 @@ void USCSIO2Potential::initialize() {
         oneOverCutoffDistanceSquaredValue = 1.0/oneOverCutoffDistanceSquaredValue;
     }
 
-    D_ij.at(+AtomConfiguration::Si_O) = 3.456*pow(uc.lengthFromAngstroms(1.0),3);
+    D_ij.at(+AtomConfiguration::Si_O) = 3.456*pow(uc.lengthFromAngstroms(1.0),3); // Wrong units in the paper
     D_ij.at(+AtomConfiguration::Si_Si) = 0.0;
-    D_ij.at(+AtomConfiguration::O_O) = 1.728*   pow(uc.lengthFromAngstroms(1.0),3);
+    D_ij.at(+AtomConfiguration::O_O) = 1.728*   pow(uc.lengthFromAngstroms(1.0),3); // Wrong units in the paper
 
     H_ij.at(+AtomConfiguration::Si_O) = 78.3143*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomConfiguration::Si_O));
     H_ij.at(+AtomConfiguration::Si_Si) = 0.39246*uc.energyFromEv(1.0)*pow(uc.lengthFromAngstroms(1.0),eta_ij.at(+AtomConfiguration::Si_Si));
@@ -329,10 +305,8 @@ void USCSIO2Potential::calculatePrecomputedTwoParticleForces()
             int atomConfiguration = at(at(at(m_configurationMap,atomicNumber1),atomicNumber2),+AtomTypes::NoAtom);
             if(atomConfiguration == +AtomConfiguration::NotUsed) continue; // This configuration has zero contribution to the force
 
+            // Wrong units in the paper, using these values instead.
             double Dij = at(alpha_i,atomicNumber1)*at(Z_i,atomicNumber2)*at(Z_i,atomicNumber2) + at(alpha_i,atomicNumber2)*at(Z_i,atomicNumber1)*at(Z_i,atomicNumber1);
-//            cout << "D_ij (new paper: " << at(D_ij, atomConfiguration) << endl;
-//            cout << "Dij (old paper: " << Dij << endl;
-//            cout << "Ratio: " << Dij / at(D_ij, atomConfiguration) << endl;
 
             for(int i=0; i<m_numberOfPrecomputedTwoParticleForces; i++) {
                 double r2 = rMinSquared + i*m_deltaR2;
