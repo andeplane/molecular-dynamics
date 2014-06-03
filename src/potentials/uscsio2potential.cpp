@@ -67,33 +67,32 @@ void USCSIO2Potential::twoParticleAction(Atom *atom1, Atom *atom2)
     atom2->force[2] -= force*dz*oneOverR;
 }
 
-double dVdXij(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
-   return -B*ksi*xij*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2)), 2)*sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(-2*xij*(xij*xik + yij*yik + zij*zik)/(pow(pow(xij, 2) + pow(yij, 2) + pow(zij, 2), 3.0L/2.0L)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + 2*xik/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+inline double dVdXij(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double xij, double xik) {
+   return -B*(cosTheta - costheta0)*(ksi*rij*rik*xij*(cosTheta - costheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*xij - rij*xik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
 }
 
-double dVdYij(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
-   return -B*ksi*yij*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2)), 2)*sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(-2*yij*(xij*xik + yij*yik + zij*zik)/(pow(pow(xij, 2) + pow(yij, 2) + pow(zij, 2), 3.0L/2.0L)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + 2*yik/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+inline double dVdYij(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double yij, double yik) {
+   return -B*(cosTheta - costheta0)*(ksi*rij*rik*yij*(cosTheta - costheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*yij - rij*yik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
 }
 
-double dVdZij(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
-   return -B*ksi*zij*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2)), 2)*sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(-2*zij*(xij*xik + yij*yik + zij*zik)/(pow(pow(xij, 2) + pow(yij, 2) + pow(zij, 2), 3.0L/2.0L)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + 2*zik/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+inline double dVdZij(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double zij, double zik) {
+   return -B*(cosTheta - costheta0)*(ksi*rij*rik*zij*(cosTheta - costheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*zij - rij*zik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
 }
 
-double dVdXik(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
-   return -B*ksi*xik*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2)), 2)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(2*xij/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) - 2*xik*(xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*pow(pow(xik, 2) + pow(yik, 2) + pow(zik, 2), 3.0L/2.0L)))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+inline double dVdXik(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double xij, double xik) {
+   return -B*(cosTheta - costheta0)*(ksi*rij*rik*xik*(cosTheta - costheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*xik - rik*xij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
 }
 
-double dVdYik(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
-   return -B*ksi*yik*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2)), 2)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(2*yij/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) - 2*yik*(xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*pow(pow(xik, 2) + pow(yik, 2) + pow(zik, 2), 3.0L/2.0L)))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+inline double dVdYik(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double yij, double yik) {
+   return -B*(cosTheta - costheta0)*(ksi*rij*rik*yik*(cosTheta - costheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*yik - rik*yij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
 }
 
-double dVdZik(double B, double costheta0, double ksi, double r0, double xij, double xik, double yij, double yik, double zij, double zik) {
-   return -B*ksi*zik*pow(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))), 2)*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))))/(pow(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2)), 2)*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + B*(-costheta0 + (xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))))*(2*zij/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) - 2*zik*(xij*xik + yij*yik + zij*zik)/(sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))*pow(pow(xik, 2) + pow(yik, 2) + pow(zik, 2), 3.0L/2.0L)))*exp(ksi/(-r0 + sqrt(pow(xik, 2) + pow(yik, 2) + pow(zik, 2))) + ksi/(-r0 + sqrt(pow(xij, 2) + pow(yij, 2) + pow(zij, 2))));
+inline double dVdZik(double B, double cosTheta, double costheta0, double ksi, double r0, double rij, double rik, double zij, double zik) {
+   return -B*(cosTheta - costheta0)*(ksi*rij*rik*zik*(cosTheta - costheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*zik - rik*zij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
 }
 
 void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk)
 {
-    // return;
     int atomicNumber1 = atomi->type()->atomicNumber();
     int atomicNumber2 = atomj->type()->atomicNumber();
     int atomicNumber3 = atomk->type()->atomicNumber();
@@ -122,27 +121,28 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     double oneOverRik = 1.0/rik;
     double oneOverRijMinusRzero = 1.0/(rij - at(r0,atomConfiguration));
     double oneOverRikMinusRzero = 1.0/(rik - at(r0,atomConfiguration));
-    double cosThetaIJK = rijDotRik*oneOverRij*oneOverRik;
-    double cosThetaIJKMinusCosThetaZero = cosThetaIJK - at(cosThetaZero,atomConfiguration);
+    double cosTheta = rijDotRik*oneOverRij*oneOverRik;
+    double cosThetaMinusCosThetaZero = cosTheta - at(cosThetaZero,atomConfiguration);
 
     double Vijk = at(B_ijk,atomConfiguration)
                   *exp(at(ksi,atomConfiguration)*(oneOverRijMinusRzero + oneOverRikMinusRzero))
-                  *pow(cosThetaIJKMinusCosThetaZero, 2);
+                  *pow(cosThetaMinusCosThetaZero, 2);
 
     int numberOfGhosts = atomi->ghost() + atomj->ghost() + atomk->ghost();
     m_potentialEnergy += 0.3333333333*Vijk*(3-numberOfGhosts);
 
     double B_ijk = at(this->B_ijk,atomConfiguration);
-    double cosThetaZero = at(this->cosThetaZero, atomConfiguration);
+    double cosTheta0 = at(this->cosThetaZero, atomConfiguration);
     double ksi = at(this->ksi, atomConfiguration);
     double r0 = at(this->r0, atomConfiguration);
-    double dVdXij2 = dVdXij(B_ijk, cosThetaZero, ksi, r0, xij, xik, yij, yik, zij, zik);
-    double dVdYij2 = dVdYij(B_ijk, cosThetaZero, ksi, r0, xij, xik, yij, yik, zij, zik);
-    double dVdZij2 = dVdZij(B_ijk, cosThetaZero, ksi, r0, xij, xik, yij, yik, zij, zik);
 
-    double dVdXik2 = dVdXik(B_ijk, cosThetaZero, ksi, r0, xij, xik, yij, yik, zij, zik);
-    double dVdYik2 = dVdYik(B_ijk, cosThetaZero, ksi, r0, xij, xik, yij, yik, zij, zik);
-    double dVdZik2 = dVdZik(B_ijk, cosThetaZero, ksi, r0, xij, xik, yij, yik, zij, zik);
+    double dVdXij2 = dVdXij(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, xij, xik);
+    double dVdYij2 = dVdYij(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, yij, yik);
+    double dVdZij2 = dVdZij(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, zij, zik);
+
+    double dVdXik2 = dVdXik(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, xij, xik);
+    double dVdYik2 = dVdYik(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, yij, yik);
+    double dVdZik2 = dVdZik(B_ijk, cosTheta, cosTheta0, ksi, r0, rij, rik, zij, zik);
 
     atomi->force[0] -= dVdXij2 + dVdXik2;
     atomi->force[1] -= dVdYij2 + dVdYik2;
