@@ -5,9 +5,9 @@ class KineticEnergySampler : public StatisticalProperty
 {
 private:
     StatisticalValue<double> m_value;
-    System *m_system;
+    shared_ptr<System> m_system;
 public:
-    KineticEnergySampler(System *system);
+    KineticEnergySampler(shared_ptr<System> system);
     StatisticalValue<double> value();
     virtual void action();
 };

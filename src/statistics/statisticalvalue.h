@@ -24,12 +24,17 @@ public:
     {
         m_currentValue.resize(numberOfElements);
         m_sum.resize(numberOfElements);
-        m_sumSquared.reserve(numberOfElements);
+        m_sumSquared.resize(numberOfElements);
     }
 
     vector<T> currentValue()
     {
         return m_currentValue;
+    }
+
+    T currentValueScalar()
+    {
+        return m_currentValue.at(0);
     }
 
     vector<T> sum()

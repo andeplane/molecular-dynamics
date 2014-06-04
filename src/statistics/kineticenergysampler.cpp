@@ -13,11 +13,10 @@ void KineticEnergySampler::action()
     m_system->atomManager().atoms().iterate([&] (Atom &atom) {
         kineticEnergy += 0.5*atom.type()->mass()*(atom.velocity[0]*atom.velocity[0] + atom.velocity[1]*atom.velocity[1] + atom.velocity[2]*atom.velocity[2]);
     });
-
     m_value.addValue(kineticEnergy);
 }
 
-KineticEnergySampler::KineticEnergySampler(System *system) :
+KineticEnergySampler::KineticEnergySampler(shared_ptr<System> system) :
     m_system(system)
 {
 

@@ -5,6 +5,9 @@
 #include <filemanager/filemanager.h>
 #include <statisticssampler.h>
 #include <unitconverter.h>
+#include <statistics/temperaturesampler.h>
+#include <statistics/kineticenergysampler.h>
+
 using namespace std;
 
 void calculateDensity(System &system) {
@@ -39,9 +42,14 @@ int main()
     FileManager fileManager;
     // fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
     // Generator::addSiO4Molecule(simulator.system(), {25, 25, 25});
-    Generator::generateBetaCrystabolite(simulator.system(),{5,5,5},UnitConverter::temperatureFromSI(10));
+    Generator::generateBetaCrystabolite(simulator.system(),{5,5,5},UnitConverter::temperatureFromSI(300));
+    shared_ptr<System> system(&simulator.system());
+    shared_ptr<KineticEnergySampler> kineticEnergySampler(new KineticEnergySampler(system));
 
-    simulator.system().removeTotalMomentum();
+    shared_ptr<TemperatureSampler> temperatureSampler(new TemperatureSampler(kineticEnergySampler, system));
+    system->addChild(temperatureSampler);
+
+    system->removeTotalMomentum();
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
         simulator.step();

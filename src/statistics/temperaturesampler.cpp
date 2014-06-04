@@ -16,8 +16,7 @@ TemperatureSampler::TemperatureSampler(shared_ptr<KineticEnergySampler> kineticE
 
 void TemperatureSampler::action()
 {
-    m_kineticEnergySampler->action();
-    double kineticEnergy = m_kineticEnergySampler->value().currentValue().at(0);
+    double kineticEnergy = m_kineticEnergySampler->value().currentValueScalar();
     double temperature = 2.0/(3.0*m_system->numberOfAtoms())*kineticEnergy;
     m_value.addValue(temperature);
 }
