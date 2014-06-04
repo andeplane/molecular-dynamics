@@ -18,10 +18,11 @@ shared_ptr<Node> Node::getChildByIndex(decltype(m_children.size()) index)
 void Node::step()
 {
     for(shared_ptr<Node> &child : m_children) {
-        child->step();
+        if(child->stepIndex() == m_stepIndex) child->step();
     }
 
     action();
+    m_stepIndex++;
 }
 
 Node::Node()
