@@ -34,10 +34,12 @@ HEADERS += \
     potentials/uscsio2potential.h \
     filemanager/mts0io.h \
     utils/utils.h \
-    mdnode.h \
     statistics/statisticalproperty.h \
     statistics/kineticenergysampler.h \
-    statistics/statisticalvalue.h
+    statistics/statisticalvalue.h \
+    statistics/temperaturesampler.h \
+    statistics/potentialenergysampler.h \
+    node.h
 
 SOURCES += \
     atom.cpp \
@@ -63,9 +65,11 @@ SOURCES += \
     potentials/uscsio2potential.cpp \
     filemanager/mts0io.cpp \
     utils/utils.cpp \
-    mdnode.cpp \
     statistics/statisticalproperty.cpp \
-    statistics/kineticenergysampler.cpp
+    statistics/kineticenergysampler.cpp \
+    statistics/temperaturesampler.cpp \
+    statistics/potentialenergysampler.cpp \
+    node.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib

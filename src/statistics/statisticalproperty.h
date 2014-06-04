@@ -1,12 +1,10 @@
 #pragma once
-#include <mdnode.h>
+#include <node.h>
 #include <statistics/statisticalvalue.h>
 #include <system.h>
 
-class StatisticalProperty : public MDNode
+class StatisticalProperty : public Node
 {
-private:
-
 public:
     StatisticalProperty();
 };

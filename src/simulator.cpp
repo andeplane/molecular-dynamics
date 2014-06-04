@@ -15,7 +15,7 @@ Simulator::Simulator() :
     m_timestep(0.01),
     m_initialized(false)
 {
-
+    addChild(shared_ptr<System>(&m_system));
 }
 
 double Simulator::timestep() const
@@ -75,7 +75,8 @@ void Simulator::setSampler(const StatisticsSampler &sampler)
     m_sampler = sampler;
 }
 
-void Simulator::step() {
+void Simulator::action()
+{
     if(!m_initialized) {
         std::cerr << "Simulator not initialized. Remember to call simulator.initialize(...)." << std::endl;
         return;

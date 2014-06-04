@@ -2,8 +2,9 @@
 #include <system.h>
 #include <integrators/integrator.h>
 #include <statisticssampler.h>
+#include <node.h>
 
-class Simulator
+class Simulator : public Node
 {
 private:
     System m_system;
@@ -28,6 +29,5 @@ public:
     void setTime(double time);
     int timesteps() const;
     void setTimesteps(int timesteps);
-
-    void step();
+    virtual void action();
 };

@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <mdnode.h>
+#include <node.h>
 
 using std::vector;
 
@@ -9,7 +9,7 @@ using std::vector;
 #include <atom.h>
 #include <atommanager.h>
 
-class System
+class System : public Node
 {
 private:
     friend std::ostream& operator<<(std::ostream&stream, System &system);
