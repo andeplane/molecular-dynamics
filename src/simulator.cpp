@@ -1,6 +1,8 @@
-#include "simulator.h"
-#include "integrators/integrator.h"
-#include "integrators/velocityverlet.h"
+#include <simulator.h>
+#include <integrators/integrator.h>
+#include <integrators/velocityverlet.h>
+#include <unitconverter.h>
+
 #include <iostream>
 
 void Simulator::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep, Integrators integrator) {
@@ -12,7 +14,7 @@ void Simulator::initialize(int nodeIndex, vector<int> numNodesVector, vector<dou
 
 Simulator::Simulator() :
     m_integrator(NULL),
-    m_timestep(0.01),
+    m_timestep(UnitConverter::timeFromSI(2e-15)),
     m_initialized(false)
 {
     addChild(shared_ptr<System>(&m_system));
