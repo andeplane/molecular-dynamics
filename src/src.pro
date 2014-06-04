@@ -39,7 +39,8 @@ HEADERS += \
     statistics/statisticalvalue.h \
     statistics/temperaturesampler.h \
     statistics/potentialenergysampler.h \
-    node.h
+    node.h \
+    statistics/totalenergysampler.h
 
 SOURCES += \
     atom.cpp \
@@ -69,7 +70,8 @@ SOURCES += \
     statistics/kineticenergysampler.cpp \
     statistics/temperaturesampler.cpp \
     statistics/potentialenergysampler.cpp \
-    node.cpp
+    node.cpp \
+    statistics/totalenergysampler.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib

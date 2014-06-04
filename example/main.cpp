@@ -7,7 +7,8 @@
 #include <unitconverter.h>
 #include <statistics/temperaturesampler.h>
 #include <statistics/kineticenergysampler.h>
-
+#include <statistics/potentialenergysampler.h>
+#include <statistics/totalenergysampler.h>
 using namespace std;
 
 void calculateDensity(System &system) {
@@ -45,9 +46,13 @@ int main()
     Generator::generateBetaCrystabolite(simulator.system(),{5,5,5},UnitConverter::temperatureFromSI(300));
     shared_ptr<System> system(&simulator.system());
     shared_ptr<KineticEnergySampler> kineticEnergySampler(new KineticEnergySampler(system));
+    shared_ptr<PotentialEnergySampler> potentialEnergySampler(new PotentialEnergySampler(system));
 
+    shared_ptr<TotalEnergySampler> totalEnergySampler(new TotalEnergySampler(kineticEnergySampler, potentialEnergySampler));
     shared_ptr<TemperatureSampler> temperatureSampler(new TemperatureSampler(kineticEnergySampler, system));
+
     system->addChild(temperatureSampler);
+    system->addChild(totalEnergySampler);
 
     system->removeTotalMomentum();
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
