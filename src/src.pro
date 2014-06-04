@@ -11,7 +11,6 @@ HEADERS += \
     filemanager/filemanager.h \
     generator.h \
     simulator.h \
-    statisticalproperty.h \
     statisticssampler.h \
     system.h \
     topology.h \
@@ -34,14 +33,17 @@ HEADERS += \
     atomiterators/atomiteratorallpairs.h \
     potentials/uscsio2potential.h \
     filemanager/mts0io.h \
-    utils/utils.h
+    utils/utils.h \
+    mdnode.h \
+    statistics/statisticalproperty.h \
+    statistics/kineticenergysampler.h \
+    statistics/statisticalvalue.h
 
 SOURCES += \
     atom.cpp \
     filemanager/filemanager.cpp \
     generator.cpp \
     simulator.cpp \
-    statisticalproperty.cpp \
     statisticssampler.cpp \
     system.cpp \
     topology.cpp \
@@ -60,7 +62,10 @@ SOURCES += \
     atomiterators/atomiteratorallpairs.cpp \
     potentials/uscsio2potential.cpp \
     filemanager/mts0io.cpp \
-    utils/utils.cpp
+    utils/utils.cpp \
+    mdnode.cpp \
+    statistics/statisticalproperty.cpp \
+    statistics/kineticenergysampler.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib

@@ -1,5 +1,6 @@
-#include "statisticalproperty.h"
+#include <statistics/statisticalproperty.h>
 
 StatisticalProperty::StatisticalProperty()
 {
+
 }

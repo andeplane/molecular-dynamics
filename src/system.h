@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <mdnode.h>
+
 using std::vector;
 
 #include <potentials/potentials.h>
