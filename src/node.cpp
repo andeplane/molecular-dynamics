@@ -1,4 +1,5 @@
 #include <node.h>
+#include <iostream>
 
 vector<shared_ptr<Node> > Node::children()
 {
@@ -25,7 +26,19 @@ void Node::step()
     m_stepIndex++;
 }
 
-Node::Node()
+int Node::frequency() const
+{
+    return m_frequency;
+}
+
+void Node::setFrequency(int frequency)
+{
+    m_frequency = frequency;
+}
+
+Node::Node() :
+    m_stepIndex(0),
+    m_frequency(1)
 {
 
 }
