@@ -54,6 +54,9 @@ int main()
     system->addChild(temperatureSampler);
     system->addChild(totalEnergySampler);
 
+    auto list = system->getChildrenOfClass<KineticEnergySampler>(true);
+    cout << list.size() << endl;
+
     system->removeTotalMomentum();
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
