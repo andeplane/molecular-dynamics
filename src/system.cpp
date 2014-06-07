@@ -37,7 +37,7 @@ void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double
     setSystemLength(systemLength);
 }
 
-Atom &System::addAtom(AtomType *atomType, vector<double> position)
+Atom &System::addAtom(shared_ptr<AtomType> atomType, vector<double> position)
 {
     checkIfInitialized();
     Atom &atom = m_atomManager.addAtom(atomType);
@@ -45,7 +45,7 @@ Atom &System::addAtom(AtomType *atomType, vector<double> position)
     return atom;
 }
 
-Atom &System::addGhostAtom(AtomType *atomType)
+Atom &System::addGhostAtom(shared_ptr<AtomType> atomType)
 {
     checkIfInitialized();
     return m_atomManager.addGhostAtom(atomType);

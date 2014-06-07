@@ -50,7 +50,7 @@ int AtomManager::numberOfGhostAtoms()
     return ghostAtoms().numberOfAtoms();
 }
 
-Atom &AtomManager::addAtom(AtomType *atomType)
+Atom &AtomManager::addAtom(shared_ptr<AtomType> atomType)
 {
     Atom &atom = m_atoms.addAtom(atomType);
     atom.addOnRemoved([&]() {
@@ -60,7 +60,7 @@ Atom &AtomManager::addAtom(AtomType *atomType)
     return atom;
 }
 
-Atom &AtomManager::addGhostAtom(AtomType *atomType)
+Atom &AtomManager::addGhostAtom(shared_ptr<AtomType> atomType)
 {
     Atom &atom = m_ghostAtoms.addAtom(atomType);
     atom.setGhost(true);

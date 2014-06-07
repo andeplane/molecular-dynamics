@@ -9,9 +9,13 @@ private:
     shared_ptr<AtomType> m_atomType1;
     shared_ptr<AtomType> m_atomType2;
     shared_ptr<System> m_system;
-    StatisticalValue<double> m_value;
+    StatisticalValue<int> m_value;
+    int m_numberOfBins;
     shared_ptr<NeighborList> m_neighborList;
 public:
-    PairCorrelationSampler(shared_ptr<AtomType> atomType1, shared_ptr<AtomType> atomType2, shared_ptr<System> system, double maxDistance);
+    PairCorrelationSampler(shared_ptr<AtomType> atomType1, shared_ptr<AtomType> atomType2, shared_ptr<System> system, double maxDistance, int numberOfBins);
     virtual void action();
+    double maxDistance();
+    int numberOfBins() const;
+    void setNumberOfBins(int numberOfBins);
 };

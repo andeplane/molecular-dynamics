@@ -23,7 +23,7 @@ public:
     AtomList(int initialAtomCount = 1000);
     ~AtomList();
     int numberOfAtoms();
-    Atom &addAtom(AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
+    Atom &addAtom(shared_ptr<AtomType> atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
     void removeAllAtoms();
     void iterate(function<void(Atom &, const int &)> action);
     void iterate(function<void(Atom &)> action);

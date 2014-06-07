@@ -12,7 +12,7 @@ class NeighborList : public Node
 {
 private:
     shared_ptr<System> m_system;
-    unordered_map<atomUniqueId, shared_ptr<Atom>> m_list;
+    unordered_map<atomUniqueId, vector<shared_ptr<Atom>>> m_list;
     double m_maxDistance;
 
 public:
@@ -20,6 +20,5 @@ public:
     double maxDistance() const;
     void setMaxDistance(double maxDistance);
     virtual void action();
-    unordered_map<atomUniqueId, shared_ptr<Atom> > list() const;
-    void setList(const unordered_map<atomUniqueId, shared_ptr<Atom> > &list);
+    unordered_map<atomUniqueId, vector<shared_ptr<Atom> > > list() const;
 };

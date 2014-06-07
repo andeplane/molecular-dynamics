@@ -3,8 +3,9 @@
 #include <iostream>
 #include <atomtype.h>
 #include <functional>
+#include <memory>
 
-using std::string; using std::function;
+using std::shared_ptr; using std::string; using std::function;
 typedef unsigned long atomUniqueId;
 
 class AtomType;
@@ -17,7 +18,7 @@ public:
     double velocity[3];
     double force[3];
 private:
-    AtomType *m_type;
+    shared_ptr<AtomType> m_type;
     friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);
     unsigned long  m_id;
     atomUniqueId  m_uniqueId;
@@ -30,17 +31,17 @@ private:
     vector<Atom *> m_neighbors;
 public:
     Atom();
-    Atom(AtomType *atomType);
+    Atom(shared_ptr<AtomType> atomType);
     void resetForce();
     void move(const double &timestep);
     void kick(const double &timestep, const double oneOverMass);
     void resetVelocityMaxwellian(double temperature);
 
-    inline AtomType *type() const {
+    inline shared_ptr<AtomType> type() const {
         return m_type;
     }
 
-    void setType(AtomType *type);
+    void setType(shared_ptr<AtomType> type);
     bool removed() const;
     void setRemoved(bool removed);
     unsigned long  id() const;

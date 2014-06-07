@@ -2,7 +2,7 @@
 #include <atom.h>
 #include <system.h>
 
-void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, AtomType *atomType, double temperature)
+void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, shared_ptr<AtomType> atomType, double temperature)
 {
     system.removeAllAtoms();
 
@@ -73,7 +73,7 @@ void Generator::generateBetaCrystabolite(System &system, vector<int> numberOfUni
         bool atomIsSilicon = j < numberOfSiliconPerUnitCell;
         bool atomIsOxygen = !atomIsSilicon;
 
-        AtomType *atomType = AtomType::atomTypeFromAtomType(AtomTypes::Silicon);
+        shared_ptr<AtomType> atomType = AtomType::atomTypeFromAtomType(AtomTypes::Silicon);
         if(atomIsOxygen) atomType = AtomType::atomTypeFromAtomType(AtomTypes::Oxygen);
 
         for (int nZ=0; nZ<numberOfUnitCells[2]; nZ++) {

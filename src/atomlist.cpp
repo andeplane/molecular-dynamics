@@ -41,7 +41,7 @@ void AtomList::rebuildIndexMap() {
     });
 }
 
-Atom &AtomList::addAtom(AtomType *atomType)
+Atom &AtomList::addAtom(shared_ptr<AtomType> atomType)
 {
     vector<Atom> *list = &m_atoms;
     if(m_isIterating) list = &m_tempAtoms;

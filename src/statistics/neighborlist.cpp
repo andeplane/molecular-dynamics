@@ -48,8 +48,9 @@ void NeighborList::action()
                         for(int dz = -1; dz<= 1; dz++) {
                             auto &atomsInCell2 = cells.at(cellIndexX+dx).at(cellIndexY+dy).at(cellIndexZ+dz);
                             for(auto atom1 : atomsInCell1) {
+                                auto &neighborsOfThisAtom = m_list[atom1->uniqueId()];
                                 for(auto atom2 : atomsInCell2) {
-                                    m_list.insert({atom1->uniqueId(), atom2});
+                                    neighborsOfThisAtom.push_back(atom2);
                                 }
                             }
                         }
@@ -60,14 +61,9 @@ void NeighborList::action()
     }
 }
 
-unordered_map<atomUniqueId, shared_ptr<Atom> > NeighborList::list() const
+unordered_map<atomUniqueId, vector<shared_ptr<Atom>>> NeighborList::list() const
 {
     return m_list;
-}
-
-void NeighborList::setList(const unordered_map<atomUniqueId, shared_ptr<Atom> > &list)
-{
-    m_list = list;
 }
 
 NeighborList::NeighborList(shared_ptr<System> system, double maxDistance) :

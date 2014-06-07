@@ -42,7 +42,7 @@ Atom::Atom() :
     
 }
 
-Atom::Atom(AtomType *type) :
+Atom::Atom(shared_ptr<AtomType> type) :
     m_type(type),
     m_id(Atom::numberOfCreatedAtoms++),
     m_uniqueId(m_id),
@@ -72,7 +72,7 @@ void Atom::setGhost(bool ghost)
     m_ghost = ghost;
 }
 
-void Atom::setType(AtomType *type)
+void Atom::setType(shared_ptr<AtomType> type)
 {
     m_type = type;
 }
