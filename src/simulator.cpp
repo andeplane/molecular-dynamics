@@ -12,13 +12,23 @@ void Simulator::initialize(int nodeIndex, vector<int> numNodesVector, vector<dou
     m_timestep = timestep;
 }
 
+
+vector<shared_ptr<Node> > Simulator::outputs() const
+{
+    return m_outputs;
+}
+
+void Simulator::addOutput(shared_ptr<Node> output)
+{
+    m_outputs.push_back(output);
+}
+
 Simulator::Simulator() :
     m_integrator(NULL),
     m_timestep(UnitConverter::timeFromSI(2e-15)),
     m_initialized(false)
 {
     m_system = shared_ptr<System>(new System());
-    addChild(m_system);
 }
 
 double Simulator::timestep() const
@@ -87,4 +97,5 @@ void Simulator::action()
     m_integrator->integrate(m_system, m_timestep);
     m_timesteps++;          // Increase timestep counter by one
     m_time+= m_timestep;    // Increase time by dt
+    for(auto output : m_outputs) { output->step(m_timesteps); }
 }

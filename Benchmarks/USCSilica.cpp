@@ -44,16 +44,16 @@ SUITE(USCSilica) {
         USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system()->addPotential(PotentialType::USCSilica);
         Generator::generateBetaCrystabolite(simulator.system(), {5,5,5}, UnitConverter::temperatureFromSI(300));
         simulator.system()->removeTotalMomentum();
-        shared_ptr<KineticEnergySampler> kineticEnergy = make_shared<KineticEnergySampler>(simulator.system());
-        shared_ptr<TemperatureSampler> temperature = make_shared<TemperatureSampler>(kineticEnergy, simulator.system());
-        shared_ptr<PotentialEnergySampler> potentialEnergy = make_shared<PotentialEnergySampler>(simulator.system());
-        shared_ptr<TotalEnergySampler> totalEnergy = make_shared<TotalEnergySampler>(kineticEnergy, potentialEnergy);
+        auto kineticEnergy = Measurements::KineticEnergySampler::create(simulator.system());
+        auto temperature = Measurements::TemperatureSampler::create(kineticEnergy, simulator.system());
+        auto potentialEnergy = Measurements::PotentialEnergySampler::create(simulator.system());
+        auto totalEnergy = Measurements::TotalEnergySampler::create(kineticEnergy, potentialEnergy);
 
-        simulator.addChild(totalEnergy);
-        simulator.addChild(temperature);
+        simulator.addOutput(totalEnergy);
+        simulator.addOutput(temperature);
 
         for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
-            simulator.step();
+            simulator.step(timestep);
             if(timestep % 100 == 0) {
                 double energyEv = UnitConverter::energyToEv(totalEnergy->value().currentValueScalar());
                 double energyEvPerParticle = energyEv / simulator.system()->numberOfAtoms();

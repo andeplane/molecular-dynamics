@@ -10,6 +10,7 @@ private:
     shared_ptr<System> m_system;
     Integrator *m_integrator;
     StatisticsSampler m_sampler;
+    vector<shared_ptr<Node>> m_outputs;
     double m_timestep;
     double m_time;
     int m_timesteps;
@@ -30,4 +31,6 @@ public:
     int timesteps() const;
     void setTimesteps(int timesteps);
     virtual void action();
+    vector<shared_ptr<Node> > outputs() const;
+    void addOutput(shared_ptr<Node> output);
 };

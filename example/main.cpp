@@ -46,13 +46,10 @@ int main()
     Generator::generateBetaCrystabolite(simulator.system(),{5,5,5},UnitConverter::temperatureFromSI(300));
     shared_ptr<System> system = simulator.system();
 
-    auto list = system->getChildrenOfClass<KineticEnergySampler>(true);
-    cout << list.size() << endl;
-
     system->removeTotalMomentum();
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         fileManager.saveMovieFrame(simulator.system()->atomManager().atoms().atoms(),simulator.system()->topology());
-        simulator.step();
+        simulator.step(timestep);
         if(timestep % 100 == 0) {
 //            double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
 //            // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());

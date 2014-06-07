@@ -11,9 +11,9 @@ private:
     weak_ptr<System> m_system;
     StatisticalValue<int> m_value;
     int m_numberOfBins;
-    shared_ptr<NeighborList> m_neighborList;
+    weak_ptr<NeighborList> m_neighborList;
 public:
-    PairCorrelationSampler(shared_ptr<AtomType> atomType1, shared_ptr<AtomType> atomType2, shared_ptr<System> system, double maxDistance, int numberOfBins);
+    PairCorrelationSampler(shared_ptr<AtomType> atomType1, shared_ptr<AtomType> atomType2, shared_ptr<System> system, shared_ptr<NeighborList> neighborList, int numberOfBins);
     virtual void action();
     double maxDistance();
     int numberOfBins() const;

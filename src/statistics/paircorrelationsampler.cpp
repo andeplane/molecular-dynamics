@@ -11,15 +11,14 @@ void PairCorrelationSampler::setNumberOfBins(int numberOfBins)
 {
     m_numberOfBins = numberOfBins;
 }
-PairCorrelationSampler::PairCorrelationSampler(shared_ptr<AtomType> atomType1, shared_ptr<AtomType> atomType2, shared_ptr<System> system, double maxDistance, int numberOfBins) :
+PairCorrelationSampler::PairCorrelationSampler(shared_ptr<AtomType> atomType1, shared_ptr<AtomType> atomType2, shared_ptr<System> system, shared_ptr<NeighborList> neighborList, int numberOfBins) :
     m_atomType1(atomType1),
     m_atomType2(atomType2),
     m_system(system),
-    m_numberOfBins(numberOfBins)
+    m_numberOfBins(numberOfBins),
+    m_neighborList(neighborList)
 {
-    m_neighborList = std::make_shared<NeighborList>(system, maxDistance);
-    // m_neighborList = shared_ptr<NeighborList>(new NeighborList(system, maxDistance));
-    addChild(m_neighborList); // Add so its action is called on step()
+    addInput(neighborList);
 }
 
 void PairCorrelationSampler::action()
@@ -30,7 +29,7 @@ void PairCorrelationSampler::action()
         if(atom.type() != m_atomType1) return;
 
         atomUniqueId uniqueId = atom.uniqueId();
-        auto &neighborsOfThisAtom = m_neighborList->list()[uniqueId];
+        auto &neighborsOfThisAtom = m_neighborList.lock()->list()[uniqueId];
         for(auto neighborAtom : neighborsOfThisAtom) {
             if(neighborAtom->type() != m_atomType2) continue;
             double dx = atom.position[0] - neighborAtom->position[0];
@@ -50,5 +49,5 @@ void PairCorrelationSampler::action()
 
 double PairCorrelationSampler::maxDistance()
 {
-    return m_neighborList->maxDistance();
+    return m_neighborList.lock()->maxDistance();
 }
