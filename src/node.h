@@ -22,4 +22,5 @@ public:
     // Action functions
     virtual void action() { }
     void step(int stepIndex);
+    int updatedAtStep() const;
 };

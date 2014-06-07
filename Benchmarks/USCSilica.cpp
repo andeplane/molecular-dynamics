@@ -13,6 +13,7 @@ using std::cout; using std::endl;
 #include <includes.h>
 #include <filemanager/filemanager.h>
 #include <statistics/statistics.h>
+#include <outputs/standardconsoleoutput.h>
 
 SUITE(USCSilica) {
     TEST(F77STATE) {
@@ -48,20 +49,18 @@ SUITE(USCSilica) {
         auto temperature = Measurements::TemperatureSampler::create(kineticEnergy, simulator.system());
         auto potentialEnergy = Measurements::PotentialEnergySampler::create(simulator.system());
         auto totalEnergy = Measurements::TotalEnergySampler::create(kineticEnergy, potentialEnergy);
-
-        simulator.addOutput(totalEnergy);
-        simulator.addOutput(temperature);
+        simulator.addOutput(StandardConsoleOutput::create(totalEnergy, temperature, simulator.system(),100));
 
         for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
             simulator.step(timestep);
-            if(timestep % 100 == 0) {
-                double energyEv = UnitConverter::energyToEv(totalEnergy->value().currentValueScalar());
-                double energyEvPerParticle = energyEv / simulator.system()->numberOfAtoms();
+//            if(timestep % 100 == 0) {
+//                double energyEv = UnitConverter::energyToEv(totalEnergy->value().currentValueScalar());
+//                double energyEvPerParticle = energyEv / simulator.system()->numberOfAtoms();
 
-                double temperatureSI = UnitConverter::temperatureToSI(temperature->value().currentValueScalar());
+//                double temperatureSI = UnitConverter::temperatureToSI(temperature->value().currentValueScalar());
 
-                cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
-            }
+//                cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
+//            }
         }
         cout << "Successfully computed " << numberOfTimesteps << " timesteps." << endl;
     }

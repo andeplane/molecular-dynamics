@@ -3,8 +3,8 @@ void Node::step(int stepIndex)
 {
     for(auto input : m_inputs) { input->step(stepIndex); }
     if(stepIndex != m_updatedAtStep) {
-        action();
         m_updatedAtStep = stepIndex;
+        action();
     }
 }
 
@@ -16,6 +16,12 @@ vector<shared_ptr<Node> > Node::inputs() const
 void Node::addInput(shared_ptr<Node> input)
 {
     m_inputs.push_back(input);
+}
+
+
+int Node::updatedAtStep() const
+{
+    return m_updatedAtStep;
 }
 
 Node::Node() :
