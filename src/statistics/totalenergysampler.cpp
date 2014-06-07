@@ -11,14 +11,14 @@ TotalEnergySampler::TotalEnergySampler(shared_ptr<KineticEnergySampler> kineticE
     m_kineticEnergySampler(kineticEnergySampler),
     m_potentialEnergySampler(potentialEnergySampler)
 {
-    addChild(kineticEnergySampler);
-    addChild(potentialEnergySampler);
+    addDependency(kineticEnergySampler);
+    addDependency(potentialEnergySampler);
 }
 
 void TotalEnergySampler::action()
 {
-    double kineticEnergy = m_kineticEnergySampler->value().currentValueScalar();
-    double potentialEnergy = m_potentialEnergySampler->value().currentValueScalar();
+    double kineticEnergy = m_kineticEnergySampler.lock()->value().currentValueScalar();
+    double potentialEnergy = m_potentialEnergySampler.lock()->value().currentValueScalar();
     double totalEnergy = kineticEnergy + potentialEnergy;
 
     m_value.addValue(totalEnergy);

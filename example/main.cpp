@@ -36,7 +36,7 @@ int main()
     simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({50, 50, 50}));
     simulator.setTimestep(UnitConverter::timeFromSI(2.0e-15));
 
-    USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system().addPotential(PotentialType::USCSilica);
+    USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system()->addPotential(PotentialType::USCSilica);
 //    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
 //    Generator::generateFCC(simulator.system(), UnitConverter::lengthFromAngstroms(5.26), {10,10,10});
 
@@ -44,37 +44,29 @@ int main()
     // fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
     // Generator::addSiO4Molecule(simulator.system(), {25, 25, 25});
     Generator::generateBetaCrystabolite(simulator.system(),{5,5,5},UnitConverter::temperatureFromSI(300));
-    shared_ptr<System> system(&simulator.system());
-    shared_ptr<KineticEnergySampler> kineticEnergySampler(new KineticEnergySampler(system));
-    shared_ptr<PotentialEnergySampler> potentialEnergySampler(new PotentialEnergySampler(system));
-
-    shared_ptr<TotalEnergySampler> totalEnergySampler(new TotalEnergySampler(kineticEnergySampler, potentialEnergySampler));
-    shared_ptr<TemperatureSampler> temperatureSampler(new TemperatureSampler(kineticEnergySampler, system));
-
-    system->addChild(temperatureSampler);
-    system->addChild(totalEnergySampler);
+    shared_ptr<System> system = simulator.system();
 
     auto list = system->getChildrenOfClass<KineticEnergySampler>(true);
     cout << list.size() << endl;
 
     system->removeTotalMomentum();
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
-        fileManager.saveMovieFrame(simulator.system().atomManager().atoms().atoms(),simulator.system().topology());
+        fileManager.saveMovieFrame(simulator.system()->atomManager().atoms().atoms(),simulator.system()->topology());
         simulator.step();
         if(timestep % 100 == 0) {
-            double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
-            // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());
-            double energyEv = UnitConverter::energyToEv(energy);
-            double energyEvPerParticle = energyEv / simulator.system().numberOfAtoms();
+//            double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
+//            // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());
+//            double energyEv = UnitConverter::energyToEv(energy);
+//            double energyEvPerParticle = energyEv / simulator.system().numberOfAtoms();
 
-            double temperature = simulator.sampler().calculateTemperature(simulator.system());
-            double temperatureSI = UnitConverter::temperatureToSI(temperature);
+//            double temperature = simulator.sampler().calculateTemperature(simulator.system());
+//            double temperatureSI = UnitConverter::temperatureToSI(temperature);
 
-            cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
+            // cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
+            cout << timestep << endl;
         }
     }
 
-    cout << "Momentum at end: " << simulator.sampler().calculateTotalMomentum(simulator.system()) << endl;
     cout << "Successfully computed " << numberOfTimesteps << " timesteps." << endl;
     return 0;
 }

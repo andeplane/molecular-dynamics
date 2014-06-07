@@ -7,7 +7,7 @@ StatisticalValue<double> PotentialEnergySampler::value()
     return m_value;
 }
 
-PotentialEnergySampler::PotentialEnergySampler(shared_ptr<System> system) :
+PotentialEnergySampler::PotentialEnergySampler(weak_ptr<System> system) :
     m_system(system)
 {
 
@@ -16,7 +16,7 @@ PotentialEnergySampler::PotentialEnergySampler(shared_ptr<System> system) :
 void PotentialEnergySampler::action()
 {
     double potentialEnergy = 0;
-    for(Potential *potential : m_system->potentials()) {
+    for(Potential *potential : m_system.lock()->potentials()) {
         potentialEnergy += potential->potentialEnergy();
     }
 

@@ -8,7 +8,7 @@ class PairCorrelationSampler : public StatisticalProperty
 private:
     shared_ptr<AtomType> m_atomType1;
     shared_ptr<AtomType> m_atomType2;
-    shared_ptr<System> m_system;
+    weak_ptr<System> m_system;
     StatisticalValue<int> m_value;
     int m_numberOfBins;
     shared_ptr<NeighborList> m_neighborList;

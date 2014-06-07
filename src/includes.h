@@ -13,7 +13,9 @@
 #include <atomiterators/atomiterators.h>
 #include <unitconverter.h>
 #include <vector>
+#include <memory>
 #include <utils/utils.h>
+using std::shared_ptr; using std::weak_ptr; using std::make_shared;
 
 template<typename T>
 std::ostream& operator<<(std::ostream &stream, const std::vector<T> &vec) {

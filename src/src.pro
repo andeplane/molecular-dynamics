@@ -42,7 +42,8 @@ HEADERS += \
     node.h \
     statistics/totalenergysampler.h \
     statistics/paircorrelationsampler.h \
-    statistics/neighborlist.h
+    statistics/neighborlist.h \
+    statistics/statistics.h
 
 SOURCES += \
     atom.cpp \

@@ -6,7 +6,7 @@
 #include <iostream>
 
 void Simulator::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep, Integrators integrator) {
-    m_system.initialize(nodeIndex, numNodesVector, systemLength);
+    m_system->initialize(nodeIndex, numNodesVector, systemLength);
     setIntegrator(integrator);
     m_initialized = true;
     m_timestep = timestep;
@@ -17,7 +17,8 @@ Simulator::Simulator() :
     m_timestep(UnitConverter::timeFromSI(2e-15)),
     m_initialized(false)
 {
-    addChild(shared_ptr<System>(&m_system));
+    m_system = shared_ptr<System>(new System());
+    addChild(m_system);
 }
 
 double Simulator::timestep() const
@@ -50,7 +51,7 @@ void Simulator::setTimesteps(int timesteps)
     m_timesteps = timesteps;
 }
 
-System &Simulator::system()
+shared_ptr<System> Simulator::system()
 {
     return m_system;
 }

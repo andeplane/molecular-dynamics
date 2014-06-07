@@ -1,6 +1,7 @@
 #include <statistics/kineticenergysampler.h>
 #include <atom.h>
 #include <atommanager.h>
+#include <system.h>
 
 StatisticalValue<double> KineticEnergySampler::value()
 {
@@ -10,13 +11,13 @@ StatisticalValue<double> KineticEnergySampler::value()
 void KineticEnergySampler::action()
 {
     double kineticEnergy = 0;
-    m_system->atomManager().atoms().iterate([&] (Atom &atom) {
+    m_system.lock()->atomManager().atoms().iterate([&] (Atom &atom) {
         kineticEnergy += 0.5*atom.type()->mass()*(atom.velocity[0]*atom.velocity[0] + atom.velocity[1]*atom.velocity[1] + atom.velocity[2]*atom.velocity[2]);
     });
     m_value.addValue(kineticEnergy);
 }
 
-KineticEnergySampler::KineticEnergySampler(shared_ptr<System> system) :
+KineticEnergySampler::KineticEnergySampler(weak_ptr<System> system) :
     m_system(system)
 {
 

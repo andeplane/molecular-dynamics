@@ -49,7 +49,7 @@ void Generator::addSiO4Molecule(System &system, vector<double> SiPosition, doubl
     system.atomManager().atoms().resetVelocityMaxwellian(temperature);
 }
 
-void Generator::generateBetaCrystabolite(System &system, vector<int> numberOfUnitCells, double temperature) {
+void Generator::generateBetaCrystabolite(shared_ptr<System> system, vector<int> numberOfUnitCells, double temperature) {
     /*----------------------------------------------------------------------c
       Data for real beta-crystobalite SiO2
         NPU=24, NUA=8, and NUB=16
@@ -82,14 +82,14 @@ void Generator::generateBetaCrystabolite(System &system, vector<int> numberOfUni
                     double x = (nX+pix[j][0])*a0[0];
                     double y = (nY+pix[j][1])*a0[1];
                     double z = (nZ+pix[j][2])*a0[2];
-                    Atom &atom = system.addAtom(atomType, {x,y,z});
+                    Atom &atom = system->addAtom(atomType, {x,y,z});
                 }
             }
         }
     }
 
     vector<double> systemLength = {numberOfUnitCells[0]*a0[0], numberOfUnitCells[1]*a0[1], numberOfUnitCells[2]*a0[2]};
-    system.setSystemLength(systemLength);
+    system->setSystemLength(systemLength);
 
-    system.atomManager().atoms().resetVelocityMaxwellian(temperature);
+    system->atomManager().atoms().resetVelocityMaxwellian(temperature);
 }

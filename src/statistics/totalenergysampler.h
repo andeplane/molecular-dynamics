@@ -7,8 +7,8 @@ class TotalEnergySampler : public StatisticalProperty
 {
 private:
     StatisticalValue<double> m_value;
-    shared_ptr<KineticEnergySampler> m_kineticEnergySampler;
-    shared_ptr<PotentialEnergySampler> m_potentialEnergySampler;
+    weak_ptr<KineticEnergySampler> m_kineticEnergySampler;
+    weak_ptr<PotentialEnergySampler> m_potentialEnergySampler;
 
 public:
     TotalEnergySampler(shared_ptr<KineticEnergySampler> kineticEnergySampler, shared_ptr<PotentialEnergySampler> potentialEnergySampler);

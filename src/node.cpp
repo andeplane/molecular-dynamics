@@ -32,14 +32,21 @@ set<shared_ptr<Node>> Node::getChildByTag(int tag, bool recursive)
     return children;
 }
 
-void Node::step()
-{
-    for(auto child : m_children) {
-        if(child->stepIndex() == m_stepIndex) child->step();
-    }
+void Node::step() {
+    step(m_stepIndex);
+}
 
-    action();
-    m_stepIndex++;
+void Node::step(int stepIndex)
+{
+    for(auto dependency : m_dependencies) { dependency.lock()->step(stepIndex); }
+    if(m_stepIndex == stepIndex) {
+        action();
+        m_stepIndex++;
+    } else return;
+
+    for(auto child : m_children) {
+      child->step(stepIndex);
+    }
 }
 
 int Node::frequency() const
@@ -58,6 +65,17 @@ int Node::tag() const {
 
 void Node::setTag(int tag) {
     m_tag = tag;
+}
+
+
+vector<weak_ptr<Node> > Node::dependencies() const
+{
+    return m_dependencies;
+}
+
+void Node::addDependency(weak_ptr<Node> dependency)
+{
+    m_dependencies.push_back(dependency);
 }
 
 Node::Node() :

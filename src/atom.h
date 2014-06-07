@@ -37,7 +37,7 @@ public:
     void kick(const double &timestep, const double oneOverMass);
     void resetVelocityMaxwellian(double temperature);
 
-    inline shared_ptr<AtomType> type() const {
+    const inline shared_ptr<AtomType> &type() const {
         return m_type;
     }
 

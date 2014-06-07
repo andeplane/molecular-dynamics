@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-using std::vector;
+#include <memory>
+using std::shared_ptr; using std::vector;
 
 class System; class Atom; class AtomManager;
 
@@ -28,7 +29,7 @@ public:
     Topology();
     ~Topology();
     void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
-    void MPIMove(System &system);         // Will move atoms between processors
+    void MPIMove(shared_ptr<System> system);         // Will move atoms between processors
     void copyGhostAtomsWithMPI(AtomManager &atomManager);
     int numNodes() const;
     int nodeIndex() const;

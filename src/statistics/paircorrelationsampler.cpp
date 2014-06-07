@@ -17,7 +17,8 @@ PairCorrelationSampler::PairCorrelationSampler(shared_ptr<AtomType> atomType1, s
     m_system(system),
     m_numberOfBins(numberOfBins)
 {
-    m_neighborList = shared_ptr<NeighborList>(new NeighborList(system, maxDistance));
+    m_neighborList = std::make_shared<NeighborList>(system, maxDistance);
+    // m_neighborList = shared_ptr<NeighborList>(new NeighborList(system, maxDistance));
     addChild(m_neighborList); // Add so its action is called on step()
 }
 
@@ -25,7 +26,7 @@ void PairCorrelationSampler::action()
 {
     vector<int> pairCorrelationFunction(m_numberOfBins, 0);
 
-    m_system->atomManager().atoms().iterate([&] (Atom &atom) {
+    m_system.lock()->atomManager().atoms().iterate([&] (Atom &atom) {
         if(atom.type() != m_atomType1) return;
 
         atomUniqueId uniqueId = atom.uniqueId();
