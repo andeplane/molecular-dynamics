@@ -20,8 +20,8 @@ Topology::Topology() :
 
 Topology::~Topology()
 {
-    m_nodeIndices.clear();
-    m_nodeLength.clear();
+    m_processorCoordinates.clear();
+    m_processorLength.clear();
     m_systemLength.clear();
     for(vector<unsigned long> vec : m_moveQueue) {
          vec.clear();
@@ -40,27 +40,27 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
     ----------------------------------------------------------------------*/
     m_mpiReceiveBuffer.resize(1e6,0);
     m_mpiSendBuffer.resize(1e6,0);
-    m_nodeIndex = nodeIndex;
-    m_nodeLength.resize(3);
+    m_processorIndex = nodeIndex;
+    m_processorLength.resize(3);
     m_systemLength.resize(3);
-    m_nodeIndices.resize(3);
+    m_processorCoordinates.resize(3);
     m_origo.resize(3);
     m_isInitialized = true;
 
     for(int a=0; a<3; a++) {
-        m_numNodesVector[a] = numNodesVector[a];
+        m_numProcessorsVector[a] = numNodesVector[a];
         m_systemLength[a] = systemLength[a];
-        m_nodeLength[a] = systemLength[a] / numNodesVector[a];
+        m_processorLength[a] = systemLength[a] / numNodesVector[a];
     }
 
-    m_numNodes = numNodesVector[0]*numNodesVector[1]*numNodesVector[2];
-    m_nodeIndices[0] = nodeIndex/(numNodesVector[1]*numNodesVector[2]);
-    m_nodeIndices[1] = (nodeIndex/numNodesVector[2]) % numNodesVector[1];
-    m_nodeIndices[2] = nodeIndex%numNodesVector[2];
+    m_numProcessors = numNodesVector[0]*numNodesVector[1]*numNodesVector[2];
+    m_processorCoordinates[0] = nodeIndex/(numNodesVector[1]*numNodesVector[2]);
+    m_processorCoordinates[1] = (nodeIndex/numNodesVector[2]) % numNodesVector[1];
+    m_processorCoordinates[2] = nodeIndex%numNodesVector[2];
 
-    m_origo[0] = m_nodeIndices[0]*m_nodeLength[0];
-    m_origo[1] = m_nodeIndices[1]*m_nodeLength[1];
-    m_origo[2] = m_nodeIndices[2]*m_nodeLength[2];
+    m_origo[0] = m_processorCoordinates[0]*m_processorLength[0];
+    m_origo[1] = m_processorCoordinates[1]*m_processorLength[1];
+    m_origo[2] = m_processorCoordinates[2]*m_processorLength[2];
 
     /* Integer vectors to specify the six neighbor nodes */
     int integerVector[6][3] = {
@@ -72,21 +72,21 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
     for (int n=0; n<6; n++) {
         /* Vector index of neighbor */
         for (int a=0; a<3; a++) {
-            k1[a] = (m_nodeIndices[a]+integerVector[n][a]+m_numNodesVector[a])%m_numNodesVector[a];
+            k1[a] = (m_processorCoordinates[a]+integerVector[n][a]+m_numProcessorsVector[a])%m_numProcessorsVector[a];
         }
 
         /* Scalar neighbor ID */
-        m_neighborNodesIndices[n] = k1[0]*m_numNodesVector[1]*m_numNodesVector[2]+k1[1]*m_numNodesVector[2]+k1[2];
+        m_neighborProcessorsIndices[n] = k1[0]*m_numProcessorsVector[1]*m_numProcessorsVector[2]+k1[1]*m_numProcessorsVector[2]+k1[2];
 
         /* Shift vector */
-        for (int a=0; a<3; a++) m_shiftVector[n][a] = m_nodeLength[a]*integerVector[n][a];
+        for (int a=0; a<3; a++) m_shiftVector[n][a] = m_processorLength[a]*integerVector[n][a];
     }
 
     /* Set up the node parity table, myparity */
     for (int a=0; a<3; a++) {
-        if (m_numNodesVector[a] == 1) {
+        if (m_numProcessorsVector[a] == 1) {
             m_parity[a] = 2;
-        } else if (m_nodeIndices[a]%2 == 0) {
+        } else if (m_processorCoordinates[a]%2 == 0) {
             m_parity[a] = 0;
         } else {
             m_parity[a] = 1;
@@ -99,12 +99,12 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
 
 int Topology::numNodes() const
 {
-    return m_numNodes;
+    return m_numProcessors;
 }
 
-int Topology::nodeIndex() const
+int Topology::processorIndex() const
 {
-    return m_nodeIndex;
+    return m_processorIndex;
 }
 
 vector<double> Topology::systemLength() const
@@ -115,19 +115,19 @@ vector<double> Topology::systemLength() const
 void Topology::setSystemLength(vector<double> systemLength)
 {
     vector<int> numNodesVector(3,0);
-    numNodesVector[0] = m_numNodesVector[0]; numNodesVector[1] = m_numNodesVector[1]; numNodesVector[2] = m_numNodesVector[2];
-    initialize(m_nodeIndex, numNodesVector,systemLength);
+    numNodesVector[0] = m_numProcessorsVector[0]; numNodesVector[1] = m_numProcessorsVector[1]; numNodesVector[2] = m_numProcessorsVector[2];
+    initialize(m_processorIndex, numNodesVector,systemLength);
     numNodesVector.clear();
 }
 
-vector<double> Topology::nodeLength() const
+vector<double> Topology::processorLength() const
 {
-    return m_nodeLength;
+    return m_processorLength;
 }
 
-vector<int> Topology::nodeIndices() const
+vector<int> Topology::processorCoordinates() const
 {
-    return m_nodeIndices;
+    return m_processorCoordinates;
 }
 
 
@@ -143,12 +143,12 @@ vector<double> Topology::origo() const
 }
 
 bool Topology::atomShouldBeCopied(Atom &atom, int &dimension, bool higher, double &cutoffDistance) {
-    if (higher) return atom.position[dimension] > m_nodeLength[dimension]-cutoffDistance;
+    if (higher) return atom.position[dimension] > m_processorLength[dimension]-cutoffDistance;
     else return atom.position[dimension] < cutoffDistance;
 }
 
 bool Topology::atomDidChangeNode(Atom &atom, int &dimension, bool higher) {
-    if (higher) return atom.position[dimension] >= m_nodeLength[dimension];
+    if (higher) return atom.position[dimension] >= m_processorLength[dimension];
     else return atom.position[dimension] < 0.0;
 }
 

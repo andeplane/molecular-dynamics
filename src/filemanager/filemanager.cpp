@@ -33,7 +33,7 @@ void FileManager::finalize()
 void FileManager::saveMovieFrame(const vector<Atom> &atoms, Topology &topology) {
     if(!isMovieFileOpen()) {
         char *filename = new char[10000];
-        sprintf(filename,"movie_files/movie%04d.bin",topology.nodeIndex());
+        sprintf(filename,"movie_files/movie%04d.bin",topology.processorIndex());
         m_movieFile = new ofstream(filename,std::ios::out | std::ios::binary);
         if(!m_movieFile->is_open()) {
             std::cout << "Could not open movie file: " << filename << ". Please check that the movie_file folder exists." << std::endl;
