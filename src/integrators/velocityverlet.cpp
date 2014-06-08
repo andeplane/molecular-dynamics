@@ -48,7 +48,7 @@ void VelocityVerlet::integrate(shared_ptr<System> system, const double &timestep
     if(m_firstStep) firstKick(system, timestep);
     halfKick(system, timestep);
     move(system, timestep);
-    system->topology().MPIMove(system);
+    system->topology().MPIMove(system->atomManager());
 
     system->atomManager().atoms().iterate([](Atom &atom) {
         atom.resetForce();

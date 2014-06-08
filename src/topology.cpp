@@ -152,13 +152,13 @@ bool Topology::atomDidChangeNode(Atom &atom, int &dimension, bool higher) {
     else return atom.position[dimension] < 0.0;
 }
 
-void Topology::MPIMove(shared_ptr<System> system) {
+void Topology::MPIMove(AtomManager &atomManager) {
     for(vector<unsigned long> &queue : m_moveQueue) {
         queue.clear();
     }
 
     for(int dimension=0;dimension<3;dimension++) {
-        system->atomManager().atoms().iterate([&](Atom &atom, const int &atomIndex) {
+        atomManager.atoms().iterate([&](Atom &atom, const int &atomIndex) {
             int nodeLower = 2*dimension;
             int nodeHigher = 2*dimension+1;
 
@@ -178,7 +178,7 @@ void Topology::MPIMove(shared_ptr<System> system) {
 
             int i = 0;
             for (unsigned long uniqueId : at(m_moveQueue,localNodeID)) {
-                Atom &atom = system->atomManager().getAtomByUniqueId(uniqueId);
+                Atom &atom = atomManager.getAtomByUniqueId(uniqueId);
 
                 /* Shift the coordinate origin */
                 m_mpiSendBuffer[12*i    + 0] = atom.position[0] - m_shiftVector[localNodeID][0];
@@ -200,7 +200,7 @@ void Topology::MPIMove(shared_ptr<System> system) {
             memcpy(&m_mpiReceiveBuffer.front(),&m_mpiSendBuffer.front(),12*numberToReceive*sizeof(double));
 
             for (i=0; i<numberToReceive; i++) {
-                Atom &atom = system->addAtom();
+                Atom &atom = atomManager.addAtom();
                 atom.position[0] = m_mpiReceiveBuffer[12*i + 0];
                 atom.position[1] = m_mpiReceiveBuffer[12*i + 1];
                 atom.position[2] = m_mpiReceiveBuffer[12*i + 2];
@@ -222,7 +222,7 @@ void Topology::MPIMove(shared_ptr<System> system) {
         }
     }
 
-    system->atomManager().atoms().cleanupList(); // Remove holes (removed atoms) by moving the last atoms
+    atomManager.atoms().cleanupList(); // Remove holes (removed atoms) by moving the last atoms
 }
 
 void Topology::copyGhostAtomsWithMPI(AtomManager &atomManager)

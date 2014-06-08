@@ -29,7 +29,7 @@ public:
     Topology();
     ~Topology();
     void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
-    void MPIMove(shared_ptr<System> system);         // Will move atoms between processors
+    void MPIMove(AtomManager &atomManager);         // Will move atoms between processors
     void copyGhostAtomsWithMPI(AtomManager &atomManager);
     int numNodes() const;
     int nodeIndex() const;
