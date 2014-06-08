@@ -31,7 +31,7 @@ Topology::~Topology()
     m_mpiReceiveBuffer.clear();
 }
 
-void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength)
+void Topology::initialize(int processorIndex, vector<int> numProcessorsVector, vector<double> systemLength)
 {
     /*----------------------------------------------------------------------
     Defines a logical network topology.  Prepares a neighbor-node ID table,
@@ -40,7 +40,7 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
     ----------------------------------------------------------------------*/
     m_mpiReceiveBuffer.resize(1e6,0);
     m_mpiSendBuffer.resize(1e6,0);
-    m_processorIndex = nodeIndex;
+    m_processorIndex = processorIndex;
     m_processorLength.resize(3);
     m_systemLength.resize(3);
     m_processorCoordinates.resize(3);
@@ -48,15 +48,15 @@ void Topology::initialize(int nodeIndex, vector<int> numNodesVector, vector<doub
     m_isInitialized = true;
 
     for(int a=0; a<3; a++) {
-        m_numProcessorsVector[a] = numNodesVector[a];
+        m_numProcessorsVector[a] = numProcessorsVector[a];
         m_systemLength[a] = systemLength[a];
-        m_processorLength[a] = systemLength[a] / numNodesVector[a];
+        m_processorLength[a] = systemLength[a] / numProcessorsVector[a];
     }
 
-    m_numProcessors = numNodesVector[0]*numNodesVector[1]*numNodesVector[2];
-    m_processorCoordinates[0] = nodeIndex/(numNodesVector[1]*numNodesVector[2]);
-    m_processorCoordinates[1] = (nodeIndex/numNodesVector[2]) % numNodesVector[1];
-    m_processorCoordinates[2] = nodeIndex%numNodesVector[2];
+    m_numProcessors = numProcessorsVector[0]*numProcessorsVector[1]*numProcessorsVector[2];
+    m_processorCoordinates[0] = processorIndex/(numProcessorsVector[1]*numProcessorsVector[2]);
+    m_processorCoordinates[1] = (processorIndex/numProcessorsVector[2]) % numProcessorsVector[1];
+    m_processorCoordinates[2] = processorIndex%numProcessorsVector[2];
 
     m_origo[0] = m_processorCoordinates[0]*m_processorLength[0];
     m_origo[1] = m_processorCoordinates[1]*m_processorLength[1];

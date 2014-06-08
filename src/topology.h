@@ -28,10 +28,10 @@ private:
 public:
     Topology();
     ~Topology();
-    void initialize(int processorIndex, vector<int> numNodesVector, vector<double> systemLength);
+    void initialize(int processorIndex, vector<int> numProcessorsVector, vector<double> systemLength);
     void MPIMove(AtomManager &atomManager);         // Will move atoms between processors
     void copyGhostAtomsWithMPI(AtomManager &atomManager);
-    int numNodes() const;
+    int numProcessors() const;
     int processorIndex() const;
     vector<double> systemLength() const;
     void setSystemLength(vector<double> systemLength);
