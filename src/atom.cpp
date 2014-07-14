@@ -26,11 +26,6 @@ void Atom::resetVelocityMaxwellian(double temperature)
     velocity[2] = Random::nextGauss(0, standardDeviation);
 }
 
-atomUniqueId Atom::originalUniqueId() const
-{
-    return m_originalUniqueId;
-}
-
 void Atom::setOriginalUniqueId(atomUniqueId originalUniqueId)
 {
     m_originalUniqueId = originalUniqueId;

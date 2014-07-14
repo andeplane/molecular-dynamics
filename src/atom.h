@@ -88,7 +88,9 @@ public:
     inline atomUniqueId  uniqueId() const {
         return m_uniqueId;
     }
-    atomUniqueId originalUniqueId() const;
+    inline atomUniqueId originalUniqueId() const {
+        return m_originalUniqueId;
+    }
     void setOriginalUniqueId(atomUniqueId originalUniqueId);
     inline vector<Atom *> &neighbors() {
         return m_neighbors;

@@ -97,7 +97,7 @@ void Topology::initialize(int processorIndex, vector<int> numProcessorsVector, v
 }
 
 
-int Topology::numNodes() const
+int Topology::numProcessors() const
 {
     return m_numProcessors;
 }
