@@ -22,7 +22,8 @@ AtomManager::AtomManager() :
     m_ghostAtomsDirty(true),
     m_topology(0),
     m_updatingGhostAtoms(false),
-    m_ghostAtomsEnabled(true)
+    m_ghostAtomsEnabled(true),
+    m_onAtomAdd(0)
 {
     m_cellData.cutoffDistance = INFINITY;
     m_cellData.initialized = false;
@@ -56,6 +57,7 @@ Atom &AtomManager::addAtom(shared_ptr<AtomType> atomType)
     atom.addOnRemoved([&]() {
         m_ghostAtomsDirty = true;
     });
+    if(m_onAtomAdd) m_onAtomAdd(atom);
 
     return atom;
 }
@@ -64,6 +66,8 @@ Atom &AtomManager::addGhostAtom(shared_ptr<AtomType> atomType)
 {
     Atom &atom = m_ghostAtoms.addAtom(atomType);
     atom.setGhost(true);
+    if(m_onAtomAdd) m_onAtomAdd(atom);
+
     return atom;
 }
 

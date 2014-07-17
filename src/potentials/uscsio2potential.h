@@ -9,11 +9,11 @@ typedef vector<double> coeff_theta_zero;
 typedef vector<double> coeff_r0;
 typedef vector<double> coeff_ksi;
 typedef vector<double> coeff_C_ijk;
-typedef vector<int> coeff_eta_ij;
-typedef vector<double> coeff_H_ij;
-typedef vector<double> coeff_D_ij;
-typedef vector<double> coeff_W_ij;
-typedef vector<double> coeff_Z_i;
+typedef vector<vector<int> > coeff_eta_ij;
+typedef vector<vector<double> > coeff_H_ij;
+typedef vector<vector<double> > coeff_D_ij;
+typedef vector<vector<double> > coeff_W_ij;
+typedef vector<vector<double> > coeff_Z_i;
 typedef vector<double> coeff_alpha_i;
 typedef vector<double> coeff_r1s;
 typedef vector<double> coeff_r4s;
@@ -21,11 +21,16 @@ typedef vector<double> coeff_oneOverR1s;
 typedef vector<double> coeff_oneOverR4s;
 typedef vector<double> coeff_cutoff_distance;
 typedef vector<double> potential_energy_at_cutoff;
-typedef vector<vector<vector<double> > > precomputed_two_particle_forces;
-typedef vector<vector<vector<double> > > precomputed_two_particle_potential;
+typedef vector<vector<vector<vector<double> > > > precomputed_two_particle_forces;
+typedef vector<vector<vector<vector<double> > > > precomputed_two_particle_potential;
 
-enum class AtomConfiguration {NotUsed = 0, Si_O=1, Si_Si=2, O_O=3, O_Si_O=4, Si_O_Si=5, NumberOfConfigurations=6};
+enum class AtomConfiguration {NotUsed = 0, Si_O=1, Si_Si=2, O_O=3, H_H=4, H_O=5, O_Si_O=6, Si_O_Si=7, H_O_H=8, O_H_O=9, Si_O_H=10, NumberOfConfigurations=11};
 inline int operator + (AtomConfiguration val) {
+    return static_cast<int>(val);
+}
+
+enum class MoleculeType {NotUsed = 0, Silica = 1, Water = 2, NumberOfConfigurations=3};
+inline int operator + (MoleculeType val) {
     return static_cast<int>(val);
 }
 

@@ -18,9 +18,11 @@ private:
     bool m_ghostAtomsDirty;
     bool m_updatingGhostAtoms;
     bool m_ghostAtomsEnabled;
+    function<void(Atom &atom)> m_onAtomAdd;
     vector<double> m_mpiSendBuffer;
     vector<double> m_mpiReceiveBuffer;
     Topology *m_topology;
+
 
     void updateCellStructure();
 public:

@@ -8,7 +8,7 @@
 using std::shared_ptr; using std::string; using std::function;
 typedef unsigned long atomUniqueId;
 
-class AtomType;
+class AtomType; class CustomAtomData;
 
 class Atom
 {
@@ -29,6 +29,8 @@ private:
     vector<function<void()>> m_onRemoved;
     vector<function<void()>> m_onMoved;
     vector<Atom *> m_neighbors;
+    vector<CustomAtomData*> m_customData;
+
 public:
     Atom();
     Atom(shared_ptr<AtomType> atomType);
