@@ -9,6 +9,8 @@
 #include <statistics/kineticenergysampler.h>
 #include <statistics/potentialenergysampler.h>
 #include <statistics/totalenergysampler.h>
+#include <outputs/standardconsoleoutput.h>
+
 using namespace std;
 
 void calculateDensity(System &system) {
@@ -45,21 +47,32 @@ int main()
     // Generator::addSiO4Molecule(simulator.system(), {25, 25, 25});
     Generator::generateBetaCrystabolite(simulator.system(),{5,5,5},UnitConverter::temperatureFromSI(300));
     shared_ptr<System> system = simulator.system();
+    auto kineticEnergy = shared_ptr<Measurements::KineticEnergySampler>(new Measurements::KineticEnergySampler(simulator.system()));
+    auto potentialEnergy = shared_ptr<Measurements::PotentialEnergySampler>(new Measurements::PotentialEnergySampler(simulator.system()));
+    auto temperature = shared_ptr<Measurements::TemperatureSampler>(new Measurements::TemperatureSampler(kineticEnergy, simulator.system()));
+    auto totalEnergy = shared_ptr<Measurements::TotalEnergySampler>(new Measurements::TotalEnergySampler(kineticEnergy, potentialEnergy));
+
+    auto standardOutput = shared_ptr<StandardConsoleOutput>(new StandardConsoleOutput(totalEnergy, temperature, simulator.system()));
+
+    simulator.addOutput(kineticEnergy);
+    simulator.addOutput(potentialEnergy);
+    simulator.addOutput(temperature);
+    simulator.addOutput(standardOutput);
 
     system->removeTotalMomentum();
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         fileManager.saveMovieFrame(simulator.system()->atomManager().atoms().atoms(),simulator.system()->topology());
         simulator.step(timestep);
         if(timestep % 100 == 0) {
-            double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
-            // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());
-            double energyEv = UnitConverter::energyToEv(energy);
-            double energyEvPerParticle = energyEv / simulator.system().get()->numberOfAtoms();
+//            double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
+//            // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());
+//            double energyEv = UnitConverter::energyToEv(energy);
+//            double energyEvPerParticle = energyEv / simulator.system().get()->numberOfAtoms();
 
-            double temperature = simulator.sampler().calculateTemperature(simulator.system());
-            double temperatureSI = UnitConverter::temperatureToSI(temperature);
+//            double temperature = simulator.sampler().calculateTemperature(simulator.system());
+//            double temperatureSI = UnitConverter::temperatureToSI(temperature);
 
-            cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
+//            cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
         }
     }
 
