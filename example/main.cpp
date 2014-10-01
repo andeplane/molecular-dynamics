@@ -37,8 +37,8 @@ int main()
     simulator.setTimestep(UnitConverter::timeFromSI(2.0e-15));
 
     USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system()->addPotential(PotentialType::USCSilica);
-//    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
-//    Generator::generateFCC(simulator.system(), UnitConverter::lengthFromAngstroms(5.26), {10,10,10});
+    //    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
+    //    Generator::generateFCC(simulator.system(), UnitConverter::lengthFromAngstroms(5.26), {10,10,10});
 
     FileManager fileManager;
     // fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
@@ -51,16 +51,15 @@ int main()
         fileManager.saveMovieFrame(simulator.system()->atomManager().atoms().atoms(),simulator.system()->topology());
         simulator.step(timestep);
         if(timestep % 100 == 0) {
-//            double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
-//            // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());
-//            double energyEv = UnitConverter::energyToEv(energy);
-//            double energyEvPerParticle = energyEv / simulator.system().numberOfAtoms();
+            double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
+            // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());
+            double energyEv = UnitConverter::energyToEv(energy);
+            double energyEvPerParticle = energyEv / simulator.system().get()->numberOfAtoms();
 
-//            double temperature = simulator.sampler().calculateTemperature(simulator.system());
-//            double temperatureSI = UnitConverter::temperatureToSI(temperature);
+            double temperature = simulator.sampler().calculateTemperature(simulator.system());
+            double temperatureSI = UnitConverter::temperatureToSI(temperature);
 
-            // cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
-            cout << timestep << endl;
+            cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
         }
     }
 

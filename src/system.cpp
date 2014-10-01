@@ -72,7 +72,7 @@ vector<double> System::systemLength()
 void System::removeTotalMomentum()
 {
     StatisticsSampler sampler;
-    vector<double> momentum = sampler.calculateTotalMomentum(*this);
+    vector<double> momentum = sampler.calculateTotalMomentum(shared_from_this());
 
     if(numberOfAtoms() > 0) {
         momentum[0] /= numberOfAtoms();
@@ -146,7 +146,9 @@ std::ostream& operator<<(std::ostream &stream, System &system) {
     for(Potential *potential : system.potentials()) {
         stream << "   " << potential->name() << endl;
     }
-    vector<double> momentum = sampler.calculateTotalMomentum(system);
+    std::shared_ptr<System> system_ptr(&system);
+
+    vector<double> momentum = sampler.calculateTotalMomentum(system_ptr);
     stream << "Total momentum: (" << momentum.at(0) << "," << momentum.at(1) << "," << momentum.at(2) << ")";
     return stream;
 }

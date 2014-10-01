@@ -9,7 +9,7 @@ using std::vector;
 #include <atom.h>
 #include <atommanager.h>
 
-class System : public Node
+class System : public Node, public std::enable_shared_from_this<System>
 {
 private:
     friend std::ostream& operator<<(std::ostream&stream, System &system);

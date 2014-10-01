@@ -44,7 +44,8 @@ HEADERS += \
     statistics/paircorrelationsampler.h \
     statistics/neighborlist.h \
     statistics/statistics.h \
-    outputs/standardconsoleoutput.h
+    outputs/standardconsoleoutput.h \
+    particles/particle.h
 
 SOURCES += \
     atom.cpp \
@@ -78,7 +79,8 @@ SOURCES += \
     statistics/totalenergysampler.cpp \
     statistics/paircorrelationsampler.cpp \
     statistics/neighborlist.cpp \
-    outputs/standardconsoleoutput.cpp
+    outputs/standardconsoleoutput.cpp \
+    particles/particle.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib
