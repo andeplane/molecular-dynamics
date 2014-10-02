@@ -46,7 +46,7 @@ void VelocityVerlet::firstKick(shared_ptr<System> system, const double &timestep
 void VelocityVerlet::integrate(shared_ptr<System> system, const double &timestep)
 {
     if(m_firstStep) firstKick(system, timestep);
-    halfKick(system, timestep);
+    else halfKick(system, timestep);
     move(system, timestep);
     system->topology().MPIMove(system->atomManager());
 
