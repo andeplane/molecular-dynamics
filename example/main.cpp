@@ -54,12 +54,12 @@ int main()
     auto potentialEnergy = Measurements::PotentialEnergySampler::create(system);
     auto temperature = Measurements::TemperatureSampler::create(kineticEnergy, system);
     auto totalEnergy = Measurements::TotalEnergySampler::create(kineticEnergy, potentialEnergy);
-    auto standardOutput = StandardConsoleOutput::create(totalEnergy, temperature, system);
-    auto berendsenThermostat = Modifiers::BerendsenThermostat::create(UnitConverter::temperatureFromSI(300), simulator.timestep(), simulator.timestep()*0.1,temperature, system);
+    auto standardOutput = StandardConsoleOutput::create(totalEnergy, temperature, system, 100);
+    auto berendsenThermostat = Modifiers::BerendsenThermostat::create(UnitConverter::temperatureFromSI(300), simulator.timestep(), simulator.timestep()*0.1, temperature, system);
 
-    simulator.addOutput(kineticEnergy);
-    simulator.addOutput(potentialEnergy);
-    simulator.addOutput(temperature);
+    //simulator.addOutput(kineticEnergy);
+    //simulator.addOutput(potentialEnergy);
+    //simulator.addOutput(temperature);
     simulator.addOutput(berendsenThermostat);
     simulator.addOutput(standardOutput);
 

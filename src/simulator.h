@@ -9,7 +9,6 @@ class Simulator : public Node
 private:
     shared_ptr<System> m_system;
     Integrator *m_integrator;
-    StatisticsSampler m_sampler;
     vector<shared_ptr<Node>> m_outputs;
     double m_timestep;
     double m_time;
@@ -22,8 +21,6 @@ public:
     void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep = 0.01, Integrators integrator = Integrators::VelocityVerlet);
     Integrator *integrator();
     void setIntegrator(Integrators integrator);
-    StatisticsSampler sampler() const;
-    void setSampler(const StatisticsSampler &sampler);
     double timestep() const;
     void setTimestep(double timestep);
     double time() const;

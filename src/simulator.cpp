@@ -78,16 +78,6 @@ void Simulator::setIntegrator(Integrators integrator)
     }
 }
 
-StatisticsSampler Simulator::sampler() const
-{
-    return m_sampler;
-}
-
-void Simulator::setSampler(const StatisticsSampler &sampler)
-{
-    m_sampler = sampler;
-}
-
 void Simulator::action()
 {
     if(!m_initialized) {

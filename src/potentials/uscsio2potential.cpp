@@ -75,6 +75,7 @@ void USCSIO2Potential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *atomk
     int atomConfiguration = at(at(at(m_configurationMap,atomicNumber1),atomicNumber2),atomicNumber3);
     if(atomConfiguration == +AtomConfiguration::NotUsed) return; // This configuration has zero contribution to the force
 
+    // We know that the atoms are in ascending order (by atomId), now sort for correct configuration (Si-Si-O -> Si-O-Si)
     sortAtoms(atomj, atomi, atomk, atomConfiguration);
 
     double xij = atomi->position[0] - atomj->position[0];
