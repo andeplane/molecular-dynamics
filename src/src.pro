@@ -49,7 +49,8 @@ HEADERS += \
     modifiers/modifier.h \
     modifiers/modifiers.h \
     modifiers/berendsenthermostat.h \
-    particles/customproperty.h
+    particles/customproperty.h \
+    utils/vec3.h
 
 SOURCES += \
     particles/atom.cpp \
@@ -87,7 +88,8 @@ SOURCES += \
     particles/particle.cpp \
     modifiers/modifier.cpp \
     modifiers/berendsenthermostat.cpp \
-    particles/customproperty.cpp
+    particles/customproperty.cpp \
+    utils/vec3.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib
