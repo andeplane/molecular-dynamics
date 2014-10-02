@@ -16,7 +16,7 @@ public:
     static long     iv[NTAB];
     static long seed;
     static double nextDouble();
-    static double nextGauss(double mean, double standardDeviation);
+    static double nextGaussian(double mean, double standardDeviation);
     static void setSeed(long seed);
 
     // Random(long seed);

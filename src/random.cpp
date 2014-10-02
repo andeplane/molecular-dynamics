@@ -8,7 +8,7 @@ void Random::setSeed(long seed) {
     Random::seed = seed;
 }
 
-double Random::nextGauss(double mean, double standardDeviation) {
+double Random::nextGaussian(double mean, double standardDeviation) {
     return standardDeviation*sqrt( -2.0*log(1.0 - nextDouble()) )
               * cos( 6.283185307 * nextDouble() ) + mean;
 }

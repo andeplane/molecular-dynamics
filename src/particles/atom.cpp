@@ -21,9 +21,9 @@ void Atom::resetVelocityMaxwellian(double temperature)
         std::cout << "Warning: Tried to reset maxwellian velocity on an atom of type NoAtom." << std::endl;
     }
     double standardDeviation = sqrt(temperature*m_type->massInverse());
-    velocity[0] = Random::nextGauss(0, standardDeviation);
-    velocity[1] = Random::nextGauss(0, standardDeviation);
-    velocity[2] = Random::nextGauss(0, standardDeviation);
+    velocity[0] = Random::nextGaussian(0, standardDeviation);
+    velocity[1] = Random::nextGaussian(0, standardDeviation);
+    velocity[2] = Random::nextGaussian(0, standardDeviation);
 }
 
 void Atom::setOriginalUniqueId(atomUniqueId originalUniqueId)
