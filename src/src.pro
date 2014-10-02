@@ -45,7 +45,10 @@ HEADERS += \
     statistics/neighborlist.h \
     statistics/statistics.h \
     outputs/standardconsoleoutput.h \
-    particles/particle.h
+    particles/particle.h \
+    modifiers/modifier.h \
+    modifiers/modifiers.h \
+    modifiers/berendsenthermostat.h
 
 SOURCES += \
     atom.cpp \
@@ -80,7 +83,9 @@ SOURCES += \
     statistics/paircorrelationsampler.cpp \
     statistics/neighborlist.cpp \
     outputs/standardconsoleoutput.cpp \
-    particles/particle.cpp
+    particles/particle.cpp \
+    modifiers/modifier.cpp \
+    modifiers/berendsenthermostat.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib

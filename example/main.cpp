@@ -10,6 +10,7 @@
 #include <statistics/potentialenergysampler.h>
 #include <statistics/totalenergysampler.h>
 #include <outputs/standardconsoleoutput.h>
+#include <modifiers/berendsenthermostat.h>
 
 using namespace std;
 
@@ -45,35 +46,27 @@ int main()
     FileManager fileManager;
     // fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
     // Generator::addSiO4Molecule(simulator.system(), {25, 25, 25});
-    Generator::generateBetaCrystabolite(simulator.system(),{5,5,5},UnitConverter::temperatureFromSI(300));
-    shared_ptr<System> system = simulator.system();
-    auto kineticEnergy = shared_ptr<Measurements::KineticEnergySampler>(new Measurements::KineticEnergySampler(simulator.system()));
-    auto potentialEnergy = shared_ptr<Measurements::PotentialEnergySampler>(new Measurements::PotentialEnergySampler(simulator.system()));
-    auto temperature = shared_ptr<Measurements::TemperatureSampler>(new Measurements::TemperatureSampler(kineticEnergy, simulator.system()));
-    auto totalEnergy = shared_ptr<Measurements::TotalEnergySampler>(new Measurements::TotalEnergySampler(kineticEnergy, potentialEnergy));
 
-    auto standardOutput = shared_ptr<StandardConsoleOutput>(new StandardConsoleOutput(totalEnergy, temperature, simulator.system()));
+    Generator::generateBetaCrystabolite(simulator.system(),{5,5,5},UnitConverter::temperatureFromSI(300));
+    auto system = simulator.system();
+
+    auto kineticEnergy = Measurements::KineticEnergySampler::create(system);
+    auto potentialEnergy = Measurements::PotentialEnergySampler::create(system);
+    auto temperature = Measurements::TemperatureSampler::create(kineticEnergy, system);
+    auto totalEnergy = Measurements::TotalEnergySampler::create(kineticEnergy, potentialEnergy);
+    auto standardOutput = StandardConsoleOutput::create(totalEnergy, temperature, system);
+    auto berendsenThermostat = Modifiers::BerendsenThermostat::create(UnitConverter::temperatureFromSI(300), simulator.timestep(), simulator.timestep()*0.1,temperature, system);
 
     simulator.addOutput(kineticEnergy);
     simulator.addOutput(potentialEnergy);
     simulator.addOutput(temperature);
+    simulator.addOutput(berendsenThermostat);
     simulator.addOutput(standardOutput);
 
     system->removeTotalMomentum();
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
         fileManager.saveMovieFrame(simulator.system()->atomManager().atoms().atoms(),simulator.system()->topology());
         simulator.step(timestep);
-        if(timestep % 100 == 0) {
-//            double energy = simulator.sampler().calculateTotalEnergy(simulator.system());
-//            // double energy = simulator.sampler().calculatePotentialEnergy(simulator.system());
-//            double energyEv = UnitConverter::energyToEv(energy);
-//            double energyEvPerParticle = energyEv / simulator.system().get()->numberOfAtoms();
-
-//            double temperature = simulator.sampler().calculateTemperature(simulator.system());
-//            double temperatureSI = UnitConverter::temperatureToSI(temperature);
-
-//            cout << timestep << ": E=" << energyEvPerParticle << " eV, T=" << temperatureSI << endl;
-        }
     }
 
     cout << "Successfully computed " << numberOfTimesteps << " timesteps." << endl;
