@@ -1,5 +1,5 @@
 #include "generator.h"
-#include <atom.h>
+#include <particles/atom.h>
 #include <system.h>
 
 void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, shared_ptr<AtomType> atomType, double temperature)

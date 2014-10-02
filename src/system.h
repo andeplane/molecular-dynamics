@@ -6,7 +6,7 @@ using std::vector;
 
 #include <potentials/potentials.h>
 #include <topology.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <atommanager.h>
 
 class System : public Node, public std::enable_shared_from_this<System>

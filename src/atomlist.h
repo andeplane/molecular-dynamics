@@ -4,7 +4,7 @@
 #include <unordered_map>
 using std::vector; using std::function; using std::unordered_map; using std::pair;
 
-#include <atom.h>
+#include <particles/atom.h>
 
 class AtomList
 {

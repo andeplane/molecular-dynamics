@@ -5,7 +5,7 @@ using std::cout; using std::endl;
 
 #include <UnitTest++.h>
 #include <cell.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <atomtype.h>
 #include <system.h>
 #include <generator.h>

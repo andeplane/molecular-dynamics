@@ -1,5 +1,5 @@
 #include <system.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <topology.h>
 #include <cmath>
 #include <potentials/potentials.h>

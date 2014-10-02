@@ -3,7 +3,7 @@
 #include <fstream>
 using std::vector; using std::ifstream;
 
-#include <atom.h>
+#include <particles/atom.h>
 class System;
 
 class Mts0IO

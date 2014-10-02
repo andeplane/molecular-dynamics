@@ -1,7 +1,7 @@
 #include <topology.h>
 
 #include <system.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <algorithm>
 #include <utility>
 #include <atomtype.h>

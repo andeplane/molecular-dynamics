@@ -1,5 +1,5 @@
 #include <modifiers/berendsenthermostat.h>
-#include <atom.h>
+#include <particles/atom.h>
 
 using namespace Modifiers;
 

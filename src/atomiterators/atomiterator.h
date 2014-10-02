@@ -5,7 +5,7 @@ using std::vector;
 using std::function;
 
 #include <atommanager.h>
-#include <atom.h>
+#include <particles/atom.h>
 
 class AtomIterator
 {

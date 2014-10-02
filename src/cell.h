@@ -1,5 +1,5 @@
 #pragma once
-#include <atom.h>
+#include <particles/atom.h>
 #include <iostream>
 using std::cout; using std::endl;
 

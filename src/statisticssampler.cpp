@@ -1,6 +1,6 @@
 #include <statisticssampler.h>
 #include <system.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <atomtype.h>
 #include <potentials/potential.h>
 

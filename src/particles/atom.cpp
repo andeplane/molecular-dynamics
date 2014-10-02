@@ -1,4 +1,4 @@
-#include <atom.h>
+#include <particles/atom.h>
 #include <string>
 #include <random.h>
 #include <unitconverter.h>

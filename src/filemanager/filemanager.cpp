@@ -1,6 +1,6 @@
 #include <filemanager/filemanager.h>
 #include <topology.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <filemanager/mts0io.h>
 #include <system.h>
 #include <unitconverter.h>

@@ -2,7 +2,7 @@
 #include <system.h>
 #include <topology.h>
 #include <potentials/potential.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <iostream>
 #include <atommanager.h>
 

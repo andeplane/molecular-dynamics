@@ -1,5 +1,5 @@
 #include <atommanager.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <iostream>
 #include <cmath>
 #include <topology.h>

@@ -7,7 +7,7 @@ CONFIG += c++11
 TARGET = molecular-dynamics
 
 HEADERS += \
-    atom.h \
+    particles/atom.h \
     filemanager/filemanager.h \
     generator.h \
     simulator.h \
@@ -48,10 +48,11 @@ HEADERS += \
     particles/particle.h \
     modifiers/modifier.h \
     modifiers/modifiers.h \
-    modifiers/berendsenthermostat.h
+    modifiers/berendsenthermostat.h \
+    particles/customproperty.h
 
 SOURCES += \
-    atom.cpp \
+    particles/atom.cpp \
     filemanager/filemanager.cpp \
     generator.cpp \
     simulator.cpp \
@@ -85,7 +86,8 @@ SOURCES += \
     outputs/standardconsoleoutput.cpp \
     particles/particle.cpp \
     modifiers/modifier.cpp \
-    modifiers/berendsenthermostat.cpp
+    modifiers/berendsenthermostat.cpp \
+    particles/customproperty.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib

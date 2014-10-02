@@ -1,5 +1,5 @@
 #include <statistics/kineticenergysampler.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <atommanager.h>
 #include <system.h>
 #include <includes.h>

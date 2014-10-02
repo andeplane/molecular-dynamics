@@ -1,5 +1,5 @@
 #include <cell.h>
-#include <atom.h>
+#include <particles/atom.h>
 
 
 int Cell::cellIndex() const

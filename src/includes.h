@@ -4,7 +4,7 @@
 #include <simulator.h>
 #include <potentials/potential.h>
 #include <integrators/integrator.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <generator.h>
 #include <atomlist.h>
 #include <atommanager.h>

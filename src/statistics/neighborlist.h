@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <node.h>
-#include <atom.h>
+#include <particles/atom.h>
 #include <unordered_map>
 using std::unordered_map;
 using std::shared_ptr;
