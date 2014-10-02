@@ -63,17 +63,17 @@ vec3 vec3::operator/(double scalar) {
             m_vec[2] / scalar);
 }
 
-void vec3::addAndMultiply(vec3 &rhs, double scalar) {
-    m_vec[0] += rhs.x()*scalar;
-    m_vec[1] += rhs.y()*scalar;
-    m_vec[2] += rhs.z()*scalar;
-}
+//void vec3::addAndMultiply(vec3 &rhs, double scalar) {
+//    m_vec[0] += rhs.x()*scalar;
+//    m_vec[1] += rhs.y()*scalar;
+//    m_vec[2] += rhs.z()*scalar;
+//}
 
-void vec3::add(vec3 &rhs) {
-    m_vec[0] += rhs.x();
-    m_vec[1] += rhs.y();
-    m_vec[2] += rhs.z();
-}
+//void vec3::add(vec3 &rhs) {
+//    m_vec[0] += rhs.x();
+//    m_vec[1] += rhs.y();
+//    m_vec[2] += rhs.z();
+//}
 
 double vec3::dot(vec3 &rhs) {
     return (m_vec[0] * rhs.x() +

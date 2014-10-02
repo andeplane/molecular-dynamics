@@ -18,8 +18,8 @@ public:
     vec3 operator-(double scalar);
     vec3 operator*(double scalar);
     vec3 operator/(double scalar);
-    void add(vec3 &rhs);
-    void addAndMultiply(vec3 &rhs, double scalar);
+    // void add(vec3 &rhs); // Possibly broken
+    // void addAndMultiply(vec3 &rhs, double scalar); // Possibly broken
     vec3 cross(vec3 &rhs);
     double dot(vec3 &rhs);
     double length();

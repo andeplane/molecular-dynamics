@@ -15,7 +15,7 @@ class Atom
 {
 public:
     vec3 position;
-    vec3 initial_position;
+    vec3 initialPosition;
     vec3 velocity;
     vec3 force;
 private:

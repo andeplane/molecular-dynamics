@@ -187,9 +187,9 @@ void Topology::MPIMove(AtomManager &atomManager) {
                 m_mpiSendBuffer[12*i+ 3 + 0] = atom.velocity[0];
                 m_mpiSendBuffer[12*i+ 3 + 1] = atom.velocity[1];
                 m_mpiSendBuffer[12*i+ 3 + 2] = atom.velocity[2];
-                m_mpiSendBuffer[12*i+ 6 + 0] = atom.initial_position[0];
-                m_mpiSendBuffer[12*i+ 6 + 1] = atom.initial_position[1];
-                m_mpiSendBuffer[12*i+ 6 + 2] = atom.initial_position[2];
+                m_mpiSendBuffer[12*i+ 6 + 0] = atom.initialPosition[0];
+                m_mpiSendBuffer[12*i+ 6 + 1] = atom.initialPosition[1];
+                m_mpiSendBuffer[12*i+ 6 + 2] = atom.initialPosition[2];
                 m_mpiSendBuffer[12*i + 9]    = (double)atom.id();
                 m_mpiSendBuffer[12*i + 10]   = (double)atom.type()->atomicNumber();
                 m_mpiSendBuffer[12*i + 11]   = (double)atom.originalUniqueId();
@@ -209,9 +209,9 @@ void Topology::MPIMove(AtomManager &atomManager) {
                 atom.velocity[1] = m_mpiReceiveBuffer[12*i + 4];
                 atom.velocity[2] = m_mpiReceiveBuffer[12*i + 5];
 
-                atom.initial_position[0] = m_mpiReceiveBuffer[12*i + 6];
-                atom.initial_position[1] = m_mpiReceiveBuffer[12*i + 7];
-                atom.initial_position[2] = m_mpiReceiveBuffer[12*i + 8];
+                atom.initialPosition[0] = m_mpiReceiveBuffer[12*i + 6];
+                atom.initialPosition[1] = m_mpiReceiveBuffer[12*i + 7];
+                atom.initialPosition[2] = m_mpiReceiveBuffer[12*i + 8];
 
                 atom.setId(m_mpiReceiveBuffer[12*i + 9]);
                 int atomicNumber = m_mpiReceiveBuffer[12*i + 10];
