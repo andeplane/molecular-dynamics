@@ -1,7 +1,10 @@
 #include <unitconverter.h>
 #include <iostream>
 #include <cmath>
+
+using CompPhys::vec3;
 using namespace std;
+
 
 double UnitConverter::m0 = 0;
 double UnitConverter::q0 = 0;
@@ -89,24 +92,34 @@ double UnitConverter::lengthFromSI(double L) {UnitConverter::makeSureInitialized
 double UnitConverter::lengthToAngstroms(double L) {UnitConverter::makeSureInitialized(); return UnitConverter::a0*L*1e10; }
 double UnitConverter::lengthFromAngstroms(double L) {UnitConverter::makeSureInitialized(); return L/(UnitConverter::a0*1e10); }
 
-vector<double> UnitConverter::lengthToSI(const vector<double> position)
+vec3 UnitConverter::lengthToSI(vec3 position)
 {
-    return {UnitConverter::lengthToSI(position.at(0)), UnitConverter::lengthToSI(position.at(1)), UnitConverter::lengthToSI(position.at(2))};
+    return vec3(UnitConverter::lengthToSI(position.x()), UnitConverter::lengthToSI(position.y()), UnitConverter::lengthToSI(position.z()));
 }
 
-vector<double> UnitConverter::lengthFromSI(const vector<double> position)
+vec3 UnitConverter::lengthFromSI(vec3 position)
 {
-    return {UnitConverter::lengthFromSI(position.at(0)), UnitConverter::lengthFromSI(position.at(1)), UnitConverter::lengthFromSI(position.at(2))};
+    return vec3(UnitConverter::lengthFromSI(position.x()), UnitConverter::lengthFromSI(position.y()), UnitConverter::lengthFromSI(position.z()));
 }
 
-vector<double> UnitConverter::lengthToAngstroms(const vector<double> position)
+vec3 UnitConverter::lengthToAngstroms(vec3 position)
 {
-    return {UnitConverter::lengthToAngstroms(position.at(0)), UnitConverter::lengthToAngstroms(position.at(1)), UnitConverter::lengthToAngstroms(position.at(2))};
+    return vec3(UnitConverter::lengthToAngstroms(position.x()), UnitConverter::lengthToAngstroms(position.y()), UnitConverter::lengthToAngstroms(position.z()));
 }
 
-vector<double> UnitConverter::lengthFromAngstroms(const vector<double> position)
+vec3 UnitConverter::lengthFromAngstroms(vec3 position)
 {
-    return {UnitConverter::lengthFromAngstroms(position.at(0)), UnitConverter::lengthFromAngstroms(position.at(1)), UnitConverter::lengthFromAngstroms(position.at(2))};
+    return vec3(UnitConverter::lengthFromAngstroms(position.x()), UnitConverter::lengthFromAngstroms(position.y()), UnitConverter::lengthFromAngstroms(position.z()));
+}
+
+vec3 UnitConverter::velocityToSI(vec3 velocity)
+{
+    return vec3(UnitConverter::velocityToSI(velocity.x()), UnitConverter::velocityToSI(velocity.y()), UnitConverter::velocityToSI(velocity.z()));
+}
+
+vec3 UnitConverter::velocityFromSI(vec3 velocity)
+{
+    return vec3(UnitConverter::velocityFromSI(velocity.x()), UnitConverter::velocityFromSI(velocity.y()), UnitConverter::velocityFromSI(velocity.z()));
 }
 
 double UnitConverter::forceToSI(double F) {UnitConverter::makeSureInitialized(); return UnitConverter::F0*F; }

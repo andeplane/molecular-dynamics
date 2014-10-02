@@ -1,5 +1,5 @@
 #include <potentials/potential.h>
-
+using CompPhys::vec3;
 
 std::string Potential::name() const
 {
@@ -11,12 +11,12 @@ void Potential::setName(const std::string &name)
     m_name = name;
 }
 
-std::vector<double> Potential::systemLength() const
+vec3 Potential::systemLength() const
 {
     return m_systemLength;
 }
 
-void Potential::setSystemLength(const std::vector<double> &systemLength)
+void Potential::setSystemLength(CompPhys::vec3 systemLength)
 {
     m_systemLength = systemLength;
 }
@@ -34,5 +34,5 @@ Potential::Potential():
     m_name("Unnamed potential"),
     m_potentialEnergy(0)
 {
-    m_systemLength.resize(3,0);
+
 }

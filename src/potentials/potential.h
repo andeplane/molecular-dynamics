@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <utils/vec3.h>
 
 class AtomManager;
 class Potential
@@ -8,15 +9,15 @@ class Potential
 private:
     std::string m_name;
 protected:
-    std::vector<double> m_systemLength;
+    CompPhys::vec3 m_systemLength;
     double m_potentialEnergy;
 public:
     Potential();
     virtual void calculateForces(AtomManager &atomManager) = 0;
     std::string name() const;
     void setName(const std::string &name);
-    std::vector<double> systemLength() const;
-    void setSystemLength(const std::vector<double> &systemLength);
+    CompPhys::vec3 systemLength() const;
+    void setSystemLength(CompPhys::vec3 systemLength);
     double potentialEnergy() const;
     void setPotentialEnergy(double potentialEnergy);
 };

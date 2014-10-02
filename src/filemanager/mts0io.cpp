@@ -12,7 +12,6 @@ Mts0IO::Mts0IO(vector<int> numberOfCPUs) :
     m_atomicNumberFromMts0AtomTypeMap[4] = +AtomTypes::Oxygen;
     m_atomicNumberFromMts0AtomTypeMap[5] = +AtomTypes::Sodium;
     m_atomicNumberFromMts0AtomTypeMap[6] = +AtomTypes::Chlorine;
-    m_systemLength.resize(3,0);
 
     if(numberOfCPUs.size()<3) {
         cout << "Error, numberOfCPUs only contains " << numberOfCPUs.size() << " elements. It needs to know how many cpu's in all three dimensions." << endl;
@@ -21,7 +20,6 @@ Mts0IO::Mts0IO(vector<int> numberOfCPUs) :
 
 Mts0IO::~Mts0IO()
 {
-    m_systemLength.clear();
     m_nodeOffset.clear();
     m_nodeOrigin.clear();
     m_nodeVectorIndex.clear();
@@ -67,9 +65,9 @@ void Mts0IO::readMts(char *filename, System &system) {
         }
     }
 
-    m_systemLength.at(0) = hMatrix[0][0][0];;
-    m_systemLength.at(1) = hMatrix[0][1][1];
-    m_systemLength.at(2) = hMatrix[0][2][2];
+    m_systemLength[0] = hMatrix[0][0][0];;
+    m_systemLength[1] = hMatrix[0][1][1];
+    m_systemLength[2] = hMatrix[0][2][2];
 
     for(int i=0;i<numberOfAtoms;i++) {
         int atomType = int(tmpAtomData[i]);

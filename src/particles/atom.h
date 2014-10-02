@@ -4,7 +4,8 @@
 #include <atomtype.h>
 #include <functional>
 #include <memory>
-
+#include <utils/vec3.h>
+using CompPhys::vec3;
 using std::shared_ptr; using std::string; using std::function;
 typedef unsigned long atomUniqueId;
 
@@ -13,10 +14,10 @@ class AtomType;
 class Atom
 {
 public:
-    double position[3];
-    double initial_position[3];
-    double velocity[3];
-    double force[3];
+    vec3 position;
+    vec3 initialPosition;
+    vec3 velocity;
+    vec3 force;
 private:
     shared_ptr<AtomType> m_type;
     friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);
@@ -70,9 +71,7 @@ public:
     }
 
     inline void setVelocity(const double x, const double y, const double z) {
-        velocity[0] = x;
-        velocity[1] = y;
-        velocity[2] = z;
+        velocity.set(x,y,z);
     }
 
     inline void addVelocity(vector<double> vel) {
@@ -80,7 +79,7 @@ public:
     }
 
     inline void addVelocity(const double x, const double y, const double z) {
-        setVelocity(velocity[0]+x, velocity[1]+y, velocity[2]+z);
+        setVelocity(velocity.x()+x, velocity.y()+y, velocity.z()+z);
     }
 
     void addOnMoved(const function<void ()> &value);

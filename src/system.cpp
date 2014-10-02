@@ -7,7 +7,9 @@
 #include <statisticssampler.h>
 #include <unitconverter.h>
 #include <includes.h>
+#include <utils/vec3.h>
 
+using CompPhys::vec3;
 using namespace std;
 
 AtomManager &System::atomManager()
@@ -27,7 +29,7 @@ System::~System()
     m_atomManager.removeAllAtoms();
 }
 
-void System::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength)
+void System::initialize(int nodeIndex, vector<int> numNodesVector, vec3 systemLength)
 {
     m_isInitialized = true;
     m_topology.initialize(nodeIndex, numNodesVector, systemLength);
@@ -64,7 +66,7 @@ int System::numberOfGhostAtoms()
     return m_atomManager.numberOfGhostAtoms();
 }
 
-vector<double> System::systemLength()
+vec3 System::systemLength() const
 {
     return m_topology.systemLength();
 }
@@ -92,7 +94,7 @@ int System::numberOfAtoms()
     return m_atomManager.numberOfAtoms();
 }
 
-void System::setSystemLength(vector<double> systemLength)
+void System::setSystemLength(vec3 systemLength)
 {
     m_topology.setSystemLength(systemLength);
     m_atomManager.setSystemLength(systemLength);
@@ -139,7 +141,8 @@ std::ostream& operator<<(std::ostream &stream, System &system) {
     StatisticsSampler sampler;
 
     stream << "System information:" << endl;
-    stream << "Length [Å]: " << UnitConverter::lengthToAngstroms(system.systemLength()) << endl;
+    vec3 systemLengthAngstroms = UnitConverter::lengthToAngstroms(system.systemLength());
+    stream << "Length [Å]: " << systemLengthAngstroms << endl;
     stream << "Number of atoms: " << system.numberOfAtoms() << endl;
     stream << "Number of ghost atoms: " << system.numberOfGhostAtoms() << endl;
     stream << "Potentials (" << system.potentials().size() << "): " << endl;

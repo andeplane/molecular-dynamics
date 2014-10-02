@@ -42,7 +42,7 @@ LennardJonesPotential::LennardJonesPotential() :
 }
 
 void LennardJonesPotential::twoParticleActionMinimumImageConvention(Atom *atom1, Atom *atom2) {
-    if(m_systemLength.at(0) == 0) {
+    if(m_systemLength.x() == 0) {
         std::cout << "Warning, calculating forces with Lennard Jones potential using minimum image convention systemLength set to zero, aborting." << std::endl;
         return;
     }

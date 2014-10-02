@@ -1,15 +1,14 @@
 #include "generator.h"
 #include <particles/atom.h>
 #include <system.h>
+#include <utils/vec3.h>
+using CompPhys::vec3;
 
 void Generator::generateFCC(System &system, double unitCellLength, vector<int> numberOfUnitCells, shared_ptr<AtomType> atomType, double temperature)
 {
     system.removeAllAtoms();
 
-    vector<double> systemLength(3,0);
-    systemLength[0] = numberOfUnitCells[0]*unitCellLength;
-    systemLength[1] = numberOfUnitCells[1]*unitCellLength;
-    systemLength[2] = numberOfUnitCells[2]*unitCellLength;
+    vec3 systemLength(numberOfUnitCells[0]*unitCellLength, numberOfUnitCells[1]*unitCellLength, numberOfUnitCells[2]*unitCellLength);
     system.setSystemLength(systemLength);
 
     double xCell[4] = {0, 0.5, 0.5, 0};
@@ -87,8 +86,7 @@ void Generator::generateBetaCrystabolite(shared_ptr<System> system, vector<int> 
             }
         }
     }
-
-    vector<double> systemLength = {numberOfUnitCells[0]*a0[0], numberOfUnitCells[1]*a0[1], numberOfUnitCells[2]*a0[2]};
+    vec3 systemLength(numberOfUnitCells[0]*a0[0], numberOfUnitCells[1]*a0[1], numberOfUnitCells[2]*a0[2]);
     system->setSystemLength(systemLength);
 
     system->atomManager().atoms().resetVelocityMaxwellian(temperature);

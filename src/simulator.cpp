@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-void Simulator::initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength, double timestep, Integrators integrator) {
+void Simulator::initialize(int nodeIndex, vector<int> numNodesVector, vec3 systemLength, double timestep, Integrators integrator) {
     m_system->initialize(nodeIndex, numNodesVector, systemLength);
     setIntegrator(integrator);
     m_initialized = true;

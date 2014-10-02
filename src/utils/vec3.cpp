@@ -4,16 +4,12 @@
 namespace CompPhys {
 vec3::vec3()
 {
-    m_vec[0] = 0;
-    m_vec[1] = 0;
-    m_vec[2] = 0;
+    setToZero();
 }
 
 vec3::vec3(double x, double y, double z)
 {
-    m_vec[0] = x;
-    m_vec[1] = y;
-    m_vec[2] = z;
+    set(x,y,z);
 }
 
 bool vec3::operator==(vec3 &rhs) {
@@ -22,50 +18,50 @@ bool vec3::operator==(vec3 &rhs) {
 
 vec3 vec3::operator+(vec3 &rhs) {
     return vec3( m_vec[0] + rhs.x(),
-                 m_vec[1] + rhs.y(),
-                 m_vec[2] + rhs.z());
+            m_vec[1] + rhs.y(),
+            m_vec[2] + rhs.z());
 }
 
 vec3 vec3::operator-(vec3 &rhs) {
     return vec3( m_vec[0] - rhs.x(),
-                 m_vec[1] - rhs.y(),
-                 m_vec[2] - rhs.z());
+            m_vec[1] - rhs.y(),
+            m_vec[2] - rhs.z());
 }
 
 vec3 vec3::operator*(vec3 &rhs) {
     return vec3( m_vec[0] * rhs.x(),
-                 m_vec[1] * rhs.y(),
-                 m_vec[2] * rhs.z());
+            m_vec[1] * rhs.y(),
+            m_vec[2] * rhs.z());
 }
 
 vec3 vec3::operator/(vec3 &rhs) {
     return vec3( m_vec[0] / rhs.x(),
-                 m_vec[1] / rhs.y(),
-                 m_vec[2] / rhs.z());
+            m_vec[1] / rhs.y(),
+            m_vec[2] / rhs.z());
 }
 
 vec3 vec3::operator+(double scalar) {
     return vec3(m_vec[0] + scalar,
-                m_vec[1] + scalar,
-                m_vec[2] + scalar);
+            m_vec[1] + scalar,
+            m_vec[2] + scalar);
 }
 
 vec3 vec3::operator-(double scalar) {
     return vec3(m_vec[0] - scalar,
-                m_vec[1] - scalar,
-                m_vec[2] - scalar);
+            m_vec[1] - scalar,
+            m_vec[2] - scalar);
 }
 
 vec3 vec3::operator*(double scalar) {
     return vec3(m_vec[0] * scalar,
-                m_vec[1] * scalar,
-                m_vec[2] * scalar);
+            m_vec[1] * scalar,
+            m_vec[2] * scalar);
 }
 
 vec3 vec3::operator/(double scalar) {
     return vec3(m_vec[0] / scalar,
-                m_vec[1] / scalar,
-                m_vec[2] / scalar);
+            m_vec[1] / scalar,
+            m_vec[2] / scalar);
 }
 
 void vec3::addAndMultiply(vec3 &rhs, double scalar) {
@@ -88,8 +84,8 @@ double vec3::dot(vec3 &rhs) {
 
 vec3 vec3::cross(vec3 &rhs) {
     return vec3( m_vec[1] * rhs.z() - m_vec[2] * rhs.y(),
-                 m_vec[2] * rhs.x() - m_vec[0] * rhs.z(),
-                 m_vec[0] * rhs.y() - m_vec[1] * rhs.x());
+            m_vec[2] * rhs.x() - m_vec[0] * rhs.z(),
+            m_vec[0] * rhs.y() - m_vec[1] * rhs.x());
 }
 
 double vec3::length() {
@@ -111,15 +107,20 @@ void vec3::normalize() {
 
 void vec3::setToZero()
 {
-    m_vec[0] = 0;
-    m_vec[1] = 0;
-    m_vec[2] = 0;
+    set(0,0,0);
 }
 
 void vec3::randomUniform(double min, double max) {
     m_vec[0] = min + Random::nextDouble()*(max - min);
     m_vec[1] = min + Random::nextDouble()*(max - min);
     m_vec[2] = min + Random::nextDouble()*(max - min);
+}
+
+void vec3::set(double x, double y, double z)
+{
+    m_vec[0] = x;
+    m_vec[1] = y;
+    m_vec[2] = z;
 }
 
 void vec3::randomGaussian(double mean, double standardDeviation) {

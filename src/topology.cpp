@@ -22,7 +22,6 @@ Topology::~Topology()
 {
     m_processorCoordinates.clear();
     m_processorLength.clear();
-    m_systemLength.clear();
     for(vector<unsigned long> vec : m_moveQueue) {
          vec.clear();
     }
@@ -31,7 +30,7 @@ Topology::~Topology()
     m_mpiReceiveBuffer.clear();
 }
 
-void Topology::initialize(int processorIndex, vector<int> numProcessorsVector, vector<double> systemLength)
+void Topology::initialize(int processorIndex, vector<int> numProcessorsVector, vec3 systemLength)
 {
     /*----------------------------------------------------------------------
     Defines a logical network topology.  Prepares a neighbor-node ID table,
@@ -42,7 +41,6 @@ void Topology::initialize(int processorIndex, vector<int> numProcessorsVector, v
     m_mpiSendBuffer.resize(1e6,0);
     m_processorIndex = processorIndex;
     m_processorLength.resize(3);
-    m_systemLength.resize(3);
     m_processorCoordinates.resize(3);
     m_origo.resize(3);
     m_isInitialized = true;
@@ -107,12 +105,12 @@ int Topology::processorIndex() const
     return m_processorIndex;
 }
 
-vector<double> Topology::systemLength() const
+vec3 Topology::systemLength() const
 {
     return m_systemLength;
 }
 
-void Topology::setSystemLength(vector<double> systemLength)
+void Topology::setSystemLength(vec3 systemLength)
 {
     vector<int> numNodesVector(3,0);
     numNodesVector[0] = m_numProcessorsVector[0]; numNodesVector[1] = m_numProcessorsVector[1]; numNodesVector[2] = m_numProcessorsVector[2];
@@ -187,9 +185,9 @@ void Topology::MPIMove(AtomManager &atomManager) {
                 m_mpiSendBuffer[12*i+ 3 + 0] = atom.velocity[0];
                 m_mpiSendBuffer[12*i+ 3 + 1] = atom.velocity[1];
                 m_mpiSendBuffer[12*i+ 3 + 2] = atom.velocity[2];
-                m_mpiSendBuffer[12*i+ 6 + 0] = atom.initial_position[0];
-                m_mpiSendBuffer[12*i+ 6 + 1] = atom.initial_position[1];
-                m_mpiSendBuffer[12*i+ 6 + 2] = atom.initial_position[2];
+                m_mpiSendBuffer[12*i+ 6 + 0] = atom.initialPosition[0];
+                m_mpiSendBuffer[12*i+ 6 + 1] = atom.initialPosition[1];
+                m_mpiSendBuffer[12*i+ 6 + 2] = atom.initialPosition[2];
                 m_mpiSendBuffer[12*i + 9]    = (double)atom.id();
                 m_mpiSendBuffer[12*i + 10]   = (double)atom.type()->atomicNumber();
                 m_mpiSendBuffer[12*i + 11]   = (double)atom.originalUniqueId();
@@ -209,9 +207,9 @@ void Topology::MPIMove(AtomManager &atomManager) {
                 atom.velocity[1] = m_mpiReceiveBuffer[12*i + 4];
                 atom.velocity[2] = m_mpiReceiveBuffer[12*i + 5];
 
-                atom.initial_position[0] = m_mpiReceiveBuffer[12*i + 6];
-                atom.initial_position[1] = m_mpiReceiveBuffer[12*i + 7];
-                atom.initial_position[2] = m_mpiReceiveBuffer[12*i + 8];
+                atom.initialPosition[0] = m_mpiReceiveBuffer[12*i + 6];
+                atom.initialPosition[1] = m_mpiReceiveBuffer[12*i + 7];
+                atom.initialPosition[2] = m_mpiReceiveBuffer[12*i + 8];
 
                 atom.setId(m_mpiReceiveBuffer[12*i + 9]);
                 int atomicNumber = m_mpiReceiveBuffer[12*i + 10];

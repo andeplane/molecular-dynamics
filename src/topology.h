@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <utils/vec3.h>
+
 using std::shared_ptr; using std::vector;
 
 class System; class Atom; class AtomManager;
@@ -16,7 +18,7 @@ private:
     double m_shiftVector[6][3];                     // Contains the displacement in the physical space from this processor to each of the 6 face neighbors
     vector<int> m_processorCoordinates;                      // Three dimensional processor coordinate
     vector<double> m_processorLength;                    // Physical size of this processor
-    vector<double> m_systemLength;                  // System length in md units
+    CompPhys::vec3 m_systemLength;                  // System length in md units
     vector<double> m_origo;
     vector<vector<unsigned long> > m_moveQueue;     // Queue for atom indices to be moved to other processorr
     vector<double> m_mpiSendBuffer;
@@ -28,13 +30,13 @@ private:
 public:
     Topology();
     ~Topology();
-    void initialize(int processorIndex, vector<int> numProcessorsVector, vector<double> systemLength);
+    void initialize(int processorIndex, vector<int> numProcessorsVector, CompPhys::vec3 systemLength);
     void MPIMove(AtomManager &atomManager);         // Will move atoms between processors
     void copyGhostAtomsWithMPI(AtomManager &atomManager);
     int numProcessors() const;
     int processorIndex() const;
-    vector<double> systemLength() const;
-    void setSystemLength(vector<double> systemLength);
+    CompPhys::vec3 systemLength() const;
+    void setSystemLength(CompPhys::vec3 systemLength);
     vector<double> processorLength() const;
     vector<int> processorCoordinates() const;
     double maxSystemLength() const;

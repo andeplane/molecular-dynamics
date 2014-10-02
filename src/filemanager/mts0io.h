@@ -3,6 +3,7 @@
 #include <fstream>
 using std::vector; using std::ifstream;
 
+#include <utils/vec3.h>
 #include <particles/atom.h>
 class System;
 
@@ -18,7 +19,7 @@ public:
 private:
     void readData(ifstream *file, void *value);
     void readMts(char *filename, System &system);
-    vector<double> m_systemLength;
+    CompPhys::vec3 m_systemLength;
     vector<int> m_atomicNumberFromMts0AtomTypeMap;
     vector<double> m_nodeVectorIndex;
     vector<double> m_nodeOrigin;

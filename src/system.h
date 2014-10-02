@@ -8,6 +8,7 @@ using std::vector;
 #include <topology.h>
 #include <particles/atom.h>
 #include <atommanager.h>
+#include <utils/vec3.h>
 
 class System : public Node, public std::enable_shared_from_this<System>
 {
@@ -20,21 +21,21 @@ private:
 public:
     System();
     ~System();
-    void initialize(int nodeIndex, vector<int> numNodesVector, vector<double> systemLength);
+    void initialize(int nodeIndex, vector<int> numNodesVector, CompPhys::vec3 systemLength);
 
     vector<Potential *> &potentials();
     Atom &addAtom(shared_ptr<AtomType> atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom), vector<double> position = {0,0,0});
     Atom &addGhostAtom(shared_ptr<AtomType> atomType = AtomType::atomTypeFromAtomType(AtomTypes::NoAtom));
     void removeAllAtoms();
     void removeGhostAtoms();
-    void setSystemLength(vector<double> systemLength);
+    void setSystemLength(CompPhys::vec3 systemLength);
 
     Topology &topology();
     AtomManager &atomManager();
     Potential *addPotential(PotentialType type);
     int numberOfAtoms();
     int numberOfGhostAtoms();
-    vector<double> systemLength();
+    CompPhys::vec3 systemLength() const;
     void removeTotalMomentum();
 protected:
     void checkIfInitialized();

@@ -15,14 +15,14 @@ void NeighborList::setMaxDistance(double maxDistance)
 void NeighborList::action()
 {
     m_list.clear();
-    int numberOfCellsX = m_system->systemLength().at(0) / m_maxDistance;
-    int numberOfCellsY = m_system->systemLength().at(1) / m_maxDistance;
-    int numberOfCellsZ = m_system->systemLength().at(2) / m_maxDistance;
+    int numberOfCellsX = m_system->systemLength().x() / m_maxDistance;
+    int numberOfCellsY = m_system->systemLength().y() / m_maxDistance;
+    int numberOfCellsZ = m_system->systemLength().z() / m_maxDistance;
     numberOfCellsX = std::max(numberOfCellsX, 1); numberOfCellsY = std::max(numberOfCellsY, 1); numberOfCellsZ = std::max(numberOfCellsZ, 1);
 
-    double cellLengthX = m_system->systemLength().at(0) / numberOfCellsX;
-    double cellLengthY = m_system->systemLength().at(1) / numberOfCellsY;
-    double cellLengthZ = m_system->systemLength().at(2) / numberOfCellsZ;
+    double cellLengthX = m_system->systemLength().x() / numberOfCellsX;
+    double cellLengthY = m_system->systemLength().y() / numberOfCellsY;
+    double cellLengthZ = m_system->systemLength().z() / numberOfCellsZ;
 
     numberOfCellsX += 2; numberOfCellsY += 2; numberOfCellsZ += 2; // Extra cells for the ghost atoms
 

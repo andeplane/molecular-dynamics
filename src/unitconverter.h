@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <utils/vec3.h>
+
 using std::vector;
 
 enum class Units {SIUnits = 0, AtomicUnits};
@@ -41,11 +43,6 @@ public:
 
     static double lengthToSI(double L);
     static double lengthFromSI(double L);
-    static vector<double> lengthToSI(const vector<double> position);
-    static vector<double> lengthFromSI(const vector<double> position);
-
-    static vector<double> lengthToAngstroms(const vector<double> position);
-    static vector<double> lengthFromAngstroms(const vector<double> position);
 
     static double lengthToAngstroms(double L);
     static double lengthFromAngstroms(double L);
@@ -83,4 +80,10 @@ public:
     static double electricConstantToSI(double electricConstant);
     static double electricConstantFromSI(double electricConstant);
     static void initializeAtomicUnits();
+    static CompPhys::vec3 lengthToSI(CompPhys::vec3 position);
+    static CompPhys::vec3 lengthFromSI(CompPhys::vec3 position);
+    static CompPhys::vec3 lengthToAngstroms(CompPhys::vec3 position);
+    static CompPhys::vec3 lengthFromAngstroms(CompPhys::vec3 position);
+    static CompPhys::vec3 velocityToSI(CompPhys::vec3 velocity);
+    static CompPhys::vec3 velocityFromSI(CompPhys::vec3 velocity);
 };

@@ -9,13 +9,15 @@ using std::cout; using std::endl;
 #include <atomtype.h>
 #include <system.h>
 #include <generator.h>
+#include <utils/vec3.h>
+using CompPhys::vec3;
 
 SUITE(Generator) {
     TEST(Generator) {
         System system;
         int nodeIndex = 0;
         vector<int> numNodesVector(3,1);
-        vector<double> systemLength(3,1);
+        vec3 systemLength(1,1,1);
         system.initialize(nodeIndex, numNodesVector, systemLength);
 
         vector<int> numberOfUnitCells(3,1);

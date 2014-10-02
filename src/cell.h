@@ -1,6 +1,8 @@
 #pragma once
 #include <particles/atom.h>
 #include <iostream>
+#include <utils/vec3.h>
+using CompPhys::vec3;
 using std::cout; using std::endl;
 
 class Cell;
@@ -9,8 +11,8 @@ struct CellData {
     vector<Cell> cells;
     int numberOfCellsWithoutGhostCells[3];
     int numberOfCellsWithGhostCells[3];
-    double cellLength[3];
-    double systemLength[3];
+    vec3 cellLength;
+    vec3 systemLength;
     double cutoffDistance;
 };
 
@@ -32,9 +34,9 @@ public:
     }
 
     static int cellIndexForAtom(Atom &atom, CellData &cellData) {
-        int i = atom.position[0] / cellData.cellLength[0] + 1;
-        int j = atom.position[1] / cellData.cellLength[1] + 1;
-        int k = atom.position[2] / cellData.cellLength[2] + 1;
+        int i = atom.position.x() / cellData.cellLength.x() + 1;
+        int j = atom.position.y() / cellData.cellLength.y() + 1;
+        int k = atom.position.z() / cellData.cellLength.z() + 1;
         int index = Cell::cellIndexFromIJK(i,j,k,cellData);
         return index;
     }

@@ -11,13 +11,15 @@
 #include <statistics/totalenergysampler.h>
 #include <outputs/standardconsoleoutput.h>
 #include <modifiers/berendsenthermostat.h>
+#include <utils/vec3.h>
+using CompPhys::vec3;
 
 using namespace std;
 
 void calculateDensity(System &system) {
     double totalMass = system.numberOfAtoms()*2.0/3*AtomType::atomTypeFromAtomicNumber(+AtomTypes::Oxygen)->mass() + system.numberOfAtoms()*1.0/3*AtomType::atomTypeFromAtomicNumber(+AtomTypes::Silicon)->mass();
     double massInGrams = UnitConverter::massToSI(totalMass) * 1000;
-    vector<double> systemLength = system.systemLength();
+    vec3 systemLength = system.systemLength();
 
     double totalVolume = systemLength[0]*systemLength[1]*systemLength[2];
     double volumeConversion = UnitConverter::lengthToSI(1.0)*UnitConverter::lengthToSI(1.0)*UnitConverter::lengthToSI(1.0);
@@ -65,6 +67,7 @@ int main()
 
     system->removeTotalMomentum();
     for(int timestep=0; timestep<numberOfTimesteps; timestep++) {
+        cout << "Timestep " << timestep << endl;
         fileManager.saveMovieFrame(simulator.system()->atomManager().atoms().atoms(),simulator.system()->topology());
         simulator.step(timestep);
     }

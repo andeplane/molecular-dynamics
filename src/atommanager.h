@@ -4,6 +4,8 @@ using std::map; using std::pair;
 
 #include <atomlist.h>
 #include <cell.h>
+#include <utils/vec3.h>
+using CompPhys::vec3;
 class Atom; class Topology;
 
 class AtomManager
@@ -33,12 +35,12 @@ public:
     void removeAllAtoms();
     void removeGhostAtoms();
     void updateCellList();
-    void applyPeriodicBoundaryConditions(vector<double> systemLength);
+    void applyPeriodicBoundaryConditions(vec3 systemLength);
 
     CellData &cellData();
     void setCutoffDistance(double cutoffDistance);
     double cutoffDistance();
-    void setSystemLength(vector<double> &systemLength);
+    void setSystemLength(vec3 systemLength);
     int numberOfAtoms();
     int numberOfGhostAtoms();
     void setTopology(Topology *topology);

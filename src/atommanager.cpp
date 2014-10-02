@@ -93,13 +93,13 @@ double AtomManager::cutoffDistance()
     return m_cellData.cutoffDistance;
 }
 
-void AtomManager::setSystemLength(vector<double> &systemLength) {
-    if(systemLength.at(0) != m_cellData.systemLength[0] || systemLength.at(1) != m_cellData.systemLength[1] || systemLength.at(2) != m_cellData.systemLength[2]) {
+void AtomManager::setSystemLength(vec3 systemLength) {
+    if(systemLength.x() != m_cellData.systemLength[0] || systemLength.y() != m_cellData.systemLength[1] || systemLength.z() != m_cellData.systemLength[2]) {
         m_ghostAtomsDirty = true;
         m_cellStructureDirty = true;
-        m_cellData.systemLength[0] = systemLength.at(0);
-        m_cellData.systemLength[1] = systemLength.at(1);
-        m_cellData.systemLength[2] = systemLength.at(2);
+        m_cellData.systemLength[0] = systemLength.x();
+        m_cellData.systemLength[1] = systemLength.y();
+        m_cellData.systemLength[2] = systemLength.z();
     }
 
     m_cellData.initialized = true;
@@ -222,12 +222,12 @@ void AtomManager::updateCellList() {
 
 }
 
-void AtomManager::applyPeriodicBoundaryConditions(vector<double> systemLength)
+void AtomManager::applyPeriodicBoundaryConditions(vec3 systemLength)
 {
     m_atoms.iterate([&](Atom &atom) {
-        double x = fmod(atom.position[0] + 100*systemLength.at(0),systemLength.at(0));
-        double y = fmod(atom.position[1] + 100*systemLength.at(1),systemLength.at(1));
-        double z = fmod(atom.position[2] + 100*systemLength.at(2),systemLength.at(2));
+        double x = fmod(atom.position.x() + 100*systemLength.x(),systemLength.x());
+        double y = fmod(atom.position.y() + 100*systemLength.y(),systemLength.y());
+        double z = fmod(atom.position.z() + 100*systemLength.z(),systemLength.z());
         atom.setPosition(x,y,z);
     });
 }

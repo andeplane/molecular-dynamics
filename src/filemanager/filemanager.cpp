@@ -45,9 +45,9 @@ void FileManager::saveMovieFrame(const vector<Atom> &atoms, Topology &topology) 
     m_dataArray.clear();
 
     for(const Atom &atom : atoms) {
-        double x = atom.position[0] + topology.origo()[0];
-        double y = atom.position[1] + topology.origo()[1];
-        double z = atom.position[2] + topology.origo()[2];
+        double x = atom.position.x() + topology.origo()[0];
+        double y = atom.position.y() + topology.origo()[1];
+        double z = atom.position.z() + topology.origo()[2];
         double atomicNumber = atom.type()->atomicNumber();
         double atomID = atom.id();
         m_dataArray.push_back(x);

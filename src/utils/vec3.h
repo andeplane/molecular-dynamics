@@ -29,10 +29,12 @@ public:
     void setToZero();
     void randomGaussian(double mean, double standardDeviation);
     void randomUniform(double min, double max);
-
-    inline double &x() { return m_vec[0]; }
-    inline double &y() { return m_vec[1]; }
-    inline double &z() { return m_vec[2]; }
+    void set(double x, double y, double z);
+    inline double x() const { return m_vec[0]; }
+    inline double y() const { return m_vec[1]; }
+    inline double z() const { return m_vec[2]; }
+    inline double &operator[](int index) { return m_vec[index]; };
+    inline double operator[](int index) const { return m_vec[index]; };
 
 private:
     friend std::ostream& operator<<(std::ostream&stream, vec3 &vec);
