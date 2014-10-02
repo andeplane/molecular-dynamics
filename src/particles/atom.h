@@ -4,6 +4,7 @@
 #include <atomtype.h>
 #include <functional>
 #include <memory>
+#include <utils/vec3.h>
 
 using std::shared_ptr; using std::string; using std::function;
 typedef unsigned long atomUniqueId;
@@ -13,10 +14,10 @@ class AtomType;
 class Atom
 {
 public:
-    double position[3];
-    double initial_position[3];
-    double velocity[3];
-    double force[3];
+    vec3 position;
+    vec3 initial_position;
+    vec3 velocity;
+    vec3 force;
 private:
     shared_ptr<AtomType> m_type;
     friend std::ostream& operator<<(std::ostream&stream, const Atom&atom);

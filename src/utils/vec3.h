@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 
-namespace CompPhys {
 class vec3
 {
 private:
@@ -41,4 +40,3 @@ private:
 
 
 };
-}

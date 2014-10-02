@@ -1,7 +1,6 @@
 #include <cmath>
 #include <utils/vec3.h>
 #include <random.h>
-namespace CompPhys {
 vec3::vec3()
 {
     setToZero();
@@ -131,5 +130,4 @@ void vec3::randomGaussian(double mean, double standardDeviation) {
 
 std::ostream& operator<<(std::ostream &stream, vec3 &vec) {
     return stream << "[" << vec.x() << ", " << vec.y() << ", " << vec.z() << "]";
-}
 }

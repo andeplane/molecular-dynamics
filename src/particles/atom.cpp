@@ -47,9 +47,7 @@ Atom::Atom(shared_ptr<AtomType> type) :
     m_onRemoved(0),
     m_onMoved(0)
 {
-    memset(position,0,3*sizeof(double));
-    memset(velocity,0,3*sizeof(double));
-    memset(force,0,3*sizeof(double));
+
 }
 
 unsigned long  Atom::id() const
