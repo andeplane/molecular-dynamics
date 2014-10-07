@@ -41,6 +41,14 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
     CellData &cellData = atomManager.cellData();
     vector<Cell> &cells = cellData.cells;
     double maximumNeighborDistanceSquared = m_maximumNeighborDistance*m_maximumNeighborDistance;
+    // Empty previous neighbor list
+    atomManager.atoms().iterate([](Atom &atom) {
+        atom.neighbors().clear();
+    });
+
+    atomManager.ghostAtoms().iterate([](Atom &atom) {
+        atom.neighbors().clear();
+    });
 
     // Loop over all cells
     for(int cellX=0; cellX<cellData.numberOfCellsWithGhostCells[0]; cellX++) {
@@ -96,6 +104,7 @@ void AtomIteratorDefault::iterate(AtomManager &atomManager) {
     auto threeParticleLooper = [&](Atom &atom) {
         Atom *atom1 = &atom;
         vector<Atom *> &neighbors = atom1->neighbors();
+
         if(neighbors.size() < 2) return; // No three particle contribution here
         atomUniqueId atom1UniqueId = atom1->uniqueId();
 

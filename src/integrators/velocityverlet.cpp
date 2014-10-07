@@ -43,13 +43,14 @@ void VelocityVerlet::firstKick(shared_ptr<System> system, const double &timestep
     halfKick(system,timestep);
 }
 
+static int faen = 0;
+
 void VelocityVerlet::integrate(shared_ptr<System> system, const double &timestep)
 {
     if(m_firstStep) firstKick(system, timestep);
     else halfKick(system, timestep);
     move(system, timestep);
     system->topology().MPIMove(system->atomManager());
-
     system->atomManager().atoms().iterate([](Atom &atom) {
         atom.resetForce();
     });
@@ -57,6 +58,5 @@ void VelocityVerlet::integrate(shared_ptr<System> system, const double &timestep
     for(Potential *potential: system->potentials()) {
         potential->calculateForces(system->atomManager());
     }
-
     halfKick(system, timestep);
 }

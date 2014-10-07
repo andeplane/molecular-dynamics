@@ -1,10 +1,8 @@
-#ifndef CUSTOMPROPERTY_H
-#define CUSTOMPROPERTY_H
+#pragma once
 
 class CustomProperty
 {
 public:
     CustomProperty();
-};
 
-#endif // CUSTOMPROPERTY_H
+};

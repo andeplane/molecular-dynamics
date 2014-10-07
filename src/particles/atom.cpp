@@ -45,7 +45,8 @@ Atom::Atom(shared_ptr<AtomType> type) :
     m_removed(false),
     m_ghost(false),
     m_onRemoved(0),
-    m_onMoved(0)
+    m_onMoved(0),
+    m_customProperty(0)
 {
 
 }
@@ -84,7 +85,6 @@ void Atom::kick(const double &timestep, const double oneOverMass)
     velocity[1] += force[1]*timestep*oneOverMass;
     velocity[2] += force[2]*timestep*oneOverMass;
 }
-
 
 bool Atom::removed() const
 {

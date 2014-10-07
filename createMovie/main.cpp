@@ -35,9 +35,9 @@ int main()
         sprintf(tmpString, "%ld\nstuff \n", numberOfAtoms);
         xyzFile << tmpString;
         for(unsigned long i=0; i<numberOfAtoms; i++) {
-            double x = dataArray[5*i + 0]/1.88972612;
-            double y = dataArray[5*i + 1]/1.88972612;
-            double z = dataArray[5*i + 2]/1.88972612;
+            double x = dataArray[5*i + 0];
+            double y = dataArray[5*i + 1];
+            double z = dataArray[5*i + 2];
             int atomType = int(dataArray[5*i + 3]);
             int atomID = int(dataArray[5*i + 4]);
             xyzFile << atomNames[atomType] << " " << x << " " << y << " " << z << " " << atomID << endl;

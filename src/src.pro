@@ -50,7 +50,10 @@ HEADERS += \
     modifiers/modifiers.h \
     modifiers/berendsenthermostat.h \
     particles/customproperty.h \
-    utils/vec3.h
+    utils/vec3.h \
+    potentials/uscsio2waterpotential/uscsio2waterpotential.h \
+    potentials/uscsio2waterpotential/uscpotentialparameters.h \
+    potentials/uscsio2waterpotential/usceffectiveforcefieldinterpolater.h
 
 SOURCES += \
     particles/atom.cpp \
@@ -89,7 +92,10 @@ SOURCES += \
     modifiers/modifier.cpp \
     modifiers/berendsenthermostat.cpp \
     particles/customproperty.cpp \
-    utils/vec3.cpp
+    utils/vec3.cpp \
+    potentials/uscsio2waterpotential/uscsio2waterpotential.cpp \
+    potentials/uscsio2waterpotential/uscpotentialparameters.cpp \
+    potentials/uscsio2waterpotential/usceffectiveforcefieldinterpolater.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib

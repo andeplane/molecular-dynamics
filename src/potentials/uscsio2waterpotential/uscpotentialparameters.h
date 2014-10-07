@@ -2,10 +2,6 @@
 #include <vector>
 using std::vector;
 
-#include <potentials/potential.h>
-#include <atomiterators/atomiterators.h>
-#include <particles/customproperty.h>
-
 typedef vector<double> coeff_B_ijk;
 typedef vector<double> coeff_theta_zero;
 typedef vector<double> coeff_r0;
@@ -26,19 +22,10 @@ typedef vector<double> potential_energy_at_cutoff;
 typedef vector<vector<vector<double> > > precomputed_two_particle_forces;
 typedef vector<vector<vector<double> > > precomputed_two_particle_potential;
 
-enum class AtomConfiguration {NotUsed = 0, Si_O=1, Si_Si=2, O_O=3, O_Si_O=4, Si_O_Si=5, NumberOfConfigurations=6};
-inline int operator + (AtomConfiguration val) {
-    return static_cast<int>(val);
-}
-
-
-class USCSIO2Potential : public Potential
+class USCPotentialParameters
 {
-private:
-    friend std::ostream& operator<<(std::ostream&stream, const USCSIO2Potential&atom);
-    AtomIteratorDefault m_iteratorDefault;
-    AtomIteratorAllPairs m_iteratorAllPairs;
-
+public:
+    USCPotentialParameters();
     // Two particle coefficients
     double m_maxTwoParticleCutoffDistance;
     double m_maxThreeParticleCutoffDistance;
@@ -72,30 +59,4 @@ private:
     coeff_r0 r0;
     coeff_ksi ksi;
     coeff_C_ijk C_ijk;
-
-    vector<int> m_atomicNumberMap;
-    vector<vector<vector<int> > > m_configurationMap;
-    vector<int> m_activeAtomTypes;
-    void initialize();
-    void calculatePrecomputedTwoParticleForces();
-    inline void sortAtoms(Atom *&atom1, Atom *&atom2, Atom *&atom3, int atomConfiguration) {
-        // We expect atom2 to be the "special" atom in the configuration
-        if(atomConfiguration == +AtomConfiguration::O_Si_O) {
-            if(atom2->type()->atomicNumber() == +AtomTypes::Silicon) return;
-            else if(atom1->type()->atomicNumber() == +AtomTypes::Silicon) std::swap(atom2,atom1);
-            else std::swap(atom2,atom3);
-        } else {
-            if(atom2->type()->atomicNumber() == +AtomTypes::Oxygen) return;
-            else if(atom1->type()->atomicNumber() == +AtomTypes::Oxygen) std::swap(atom2,atom1);
-            else std::swap(atom2,atom3);
-        }
-    }
-public:
-    USCSIO2Potential();
-    virtual void calculateForces(AtomManager &atomManager);
-    void twoParticleAction(Atom *atom1, Atom *atom2);
-    void threeParticleAction(Atom *atom1, Atom *atom2, Atom *atom3);
-    std::string coefficientString() const;
-    int numberOfPrecomputedTwoParticleForces() const;
-    void setNumberOfPrecomputedTwoParticleForces(int numberOfPrecomputedTwoParticleForces);
 };

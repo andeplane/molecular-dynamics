@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <utils/vec3.h>
+#include <particles/customproperty.h>
 
 using std::shared_ptr; using std::string; using std::function;
 typedef unsigned long atomUniqueId;
@@ -30,6 +31,8 @@ private:
     vector<function<void()>> m_onRemoved;
     vector<function<void()>> m_onMoved;
     vector<Atom *> m_neighbors;
+    shared_ptr<CustomProperty> m_customProperty;
+
 public:
     Atom();
     Atom(shared_ptr<AtomType> atomType);
@@ -63,7 +66,7 @@ public:
         for(function<void()> onMoved : m_onMoved) {
             onMoved();
         }
-        m_neighbors.clear(); // This is not valid anymore
+        m_neighbors.clear(); // This neighbor list is not valid anymore
     }
 
     inline void setVelocity(vector<double> vel) {
