@@ -5,9 +5,9 @@ CONFIG += icpc
 
 SUBDIRS += \
     src \
-    tests \
+    #tests \
     example \
     createMovie \
-    Benchmarks
+    #Benchmarks
 
 BUILD_DIR = $$OUT_PWD

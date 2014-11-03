@@ -109,12 +109,18 @@ Potential *System::addPotential(PotentialType type) {
         potentials().push_back(lennardJones);
         return lennardJones;
     } else if(type == PotentialType::USCSilica) {
-        USCSIO2Potential *uscsilica = new USCSIO2Potential();
-        uscsilica->setSystemLength(systemLength());
-        potentials().push_back(uscsilica);
-        return uscsilica;
+        cout << "I currently have that sir..." << endl;
+//        USCSIO2Potential *uscsilica = new USCSIO2Potential();
+//        uscsilica->setSystemLength(systemLength());
+
+//        potentials().push_back(uscsilica);
+//        return uscsilica;
     } else if(type == PotentialType::USCSilicaWater) {
-        cout << "USC Silica+Water is not implemented yet." << endl;
+        USCSIO2WaterPotential *uscSilicaWater = new USCSIO2WaterPotential();
+        uscSilicaWater->setSystemLength(systemLength());
+
+        potentials().push_back(uscSilicaWater);
+        return uscSilicaWater;
         return 0;
     }
 

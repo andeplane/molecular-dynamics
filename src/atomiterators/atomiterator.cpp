@@ -19,6 +19,7 @@ void AtomIterator::setThreeParticleAction(const function<void (Atom *atom1, Atom
 {
     m_threeParticleAction = threeParticleAction;
 }
+
 AtomIterator::AtomIterator() :
     m_twoParticleAction(0),
     m_threeParticleAction(0)

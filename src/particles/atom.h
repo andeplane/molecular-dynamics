@@ -45,6 +45,8 @@ public:
         return m_type;
     }
 
+    shared_ptr<CustomProperty> customProperty() const;
+    void setCustomProperty(const shared_ptr<CustomProperty> &customProperty);
     void setType(shared_ptr<AtomType> type);
     bool removed() const;
     void setRemoved(bool removed);

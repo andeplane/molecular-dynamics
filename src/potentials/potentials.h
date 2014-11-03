@@ -4,3 +4,4 @@ enum class PotentialType { LennardJones = 0, USCSilica, USCSilicaWater };
 #include <potentials/potential.h>
 #include <potentials/lennardjonespotential.h>
 #include <potentials/uscsio2potential.h>
+#include <potentials/uscsio2waterpotential/uscsio2waterpotential.h>

@@ -11,7 +11,7 @@
 #include <statistics/totalenergysampler.h>
 #include <outputs/standardconsoleoutput.h>
 #include <modifiers/berendsenthermostat.h>
-#include <potentials/uscsio2waterpotential/usceffectiveforcefieldinterpolater.h>
+#include <potentials/potentials.h>
 
 #include <time.h>
 using namespace std;
@@ -41,7 +41,7 @@ int main()
     simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({50, 50, 50}));
     simulator.setTimestep(UnitConverter::timeFromSI(2.0e-15));
 
-    USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system()->addPotential(PotentialType::USCSilica);
+    USCSIO2WaterPotential *potential = (USCSIO2WaterPotential*)simulator.system()->addPotential(PotentialType::USCSilicaWater);
     //    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
     //    Generator::generateFCC(simulator.system(), UnitConverter::lengthFromAngstroms(5.26), {10,10,10});
 
@@ -51,8 +51,9 @@ int main()
     int numUnitCells = 5;
     Generator::generateBetaCrystabolite(simulator.system(),{numUnitCells,numUnitCells,numUnitCells},UnitConverter::temperatureFromSI(310));
     simulator.system()->atomManager().atoms().iterate([](Atom &atom) {
-        USCEffectiveForceFieldInterpolater *effInterpolator = new USCEffectiveForceFieldInterpolater();
-        atom.customProperty = effInterpolator;
+        auto effInterpolator = std::make_shared<USCEffectiveForceFieldInterpolater>();
+
+        atom.setCustomProperty(effInterpolator);
     });
 
     auto system = simulator.system();
@@ -64,9 +65,9 @@ int main()
     auto standardOutput = StandardConsoleOutput::create(totalEnergy, temperature, system, 100);
     auto berendsenThermostat = Modifiers::BerendsenThermostat::create(UnitConverter::temperatureFromSI(310), simulator.timestep(), simulator.timestep()*0.1, temperature, system);
 
-    //simulator.addOutput(kineticEnergy);
-    //simulator.addOutput(potentialEnergy);
-    //simulator.addOutput(temperature);
+    simulator.addOutput(kineticEnergy);
+    simulator.addOutput(potentialEnergy);
+    simulator.addOutput(temperature);
     simulator.addOutput(berendsenThermostat);
     simulator.addOutput(standardOutput);
 

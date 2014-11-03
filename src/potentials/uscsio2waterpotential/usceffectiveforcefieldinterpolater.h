@@ -14,7 +14,7 @@ private:
     double m_nSi;
     double m_nH;
 
-    void theta(double r, double R, double D);
+    double theta(double r, double R, double D);
 public:
     USCEffectiveForceFieldInterpolater();
     void compute(Atom *atom);

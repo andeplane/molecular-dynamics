@@ -31,6 +31,16 @@ void Atom::setOriginalUniqueId(atomUniqueId originalUniqueId)
     m_originalUniqueId = originalUniqueId;
 }
 
+
+shared_ptr<CustomProperty> Atom::customProperty() const
+{
+    return m_customProperty;
+}
+
+void Atom::setCustomProperty(const shared_ptr<CustomProperty> &customProperty)
+{
+    m_customProperty = customProperty;
+}
 Atom::Atom() :
     Atom(AtomType::atomTypeFromAtomType(AtomTypes::NoAtom))
 {
