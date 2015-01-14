@@ -26,11 +26,10 @@ typedef vector<double> potential_energy_at_cutoff;
 typedef vector<vector<vector<double> > > precomputed_two_particle_forces;
 typedef vector<vector<vector<double> > > precomputed_two_particle_potential;
 
-
-class USCSIO2Potential : public Potential
+class USCWaterPotential : public Potential
 {
 private:
-    friend std::ostream& operator<<(std::ostream&stream, const USCSIO2Potential &potential);
+    friend std::ostream& operator<<(std::ostream&stream, const USCWaterPotential &potential);
     AtomIteratorDefault m_iteratorDefault;
     AtomIteratorAllPairs m_iteratorAllPairs;
 
@@ -86,7 +85,7 @@ private:
         }
     }
 public:
-    USCSIO2Potential();
+    USCWaterPotential();
     virtual void calculateForces(AtomManager &atomManager);
     void twoParticleAction(Atom *atom1, Atom *atom2);
     void threeParticleAction(Atom *atom1, Atom *atom2, Atom *atom3);

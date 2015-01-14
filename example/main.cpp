@@ -36,10 +36,10 @@ int main()
 {
     Random::setSeed(1);
     Simulator simulator;
-    int numberOfTimesteps = 1;
+    int numberOfTimesteps = 1000;
 
     simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({50, 50, 50}));
-    simulator.setTimestep(UnitConverter::timeFromSI(2.0e-15));
+    simulator.setTimestep(UnitConverter::timeFromSI(0.5e-15));
 
     USCSIO2Potential *potential = (USCSIO2Potential*)simulator.system()->addPotential(PotentialType::USCSilica);
     //    LennardJonesPotential *potential = (LennardJonesPotential*)simulator.system().addPotential(PotentialType::LennardJones);
@@ -48,20 +48,19 @@ int main()
     FileManager fileManager;
     // fileManager.loadMts0("/projects/andershaf_nanoporous_sio2_compressed_pore/test/heat/initial-crystal/mts0",{1,1,1},simulator.system());
     // Generator::addSiO4Molecule(simulator.system(), {25, 25, 25});
-    int numUnitCells = 5;
-    Generator::generateBetaCrystabolite(simulator.system(),{numUnitCells,numUnitCells,numUnitCells},UnitConverter::temperatureFromSI(310));
-    simulator.system()->atomManager().atoms().iterate([](Atom &atom) {
-        USCEffectiveForceFieldInterpolater *effInterpolator = new USCEffectiveForceFieldInterpolater();
-        atom.customProperty = effInterpolator;
-    });
-
     auto system = simulator.system();
+
+    Generator::addSiO4Molecule(*system.get(), {25, 25, 25}, 0, 2.0);
+
+    // int numUnitCells = 5;
+    // Generator::generateBetaCrystabolite(simulator.system(),{numUnitCells,numUnitCells,numUnitCells},UnitConverter::temperatureFromSI(310));
+
 
     auto kineticEnergy = Measurements::KineticEnergySampler::create(system);
     auto potentialEnergy = Measurements::PotentialEnergySampler::create(system);
     auto temperature = Measurements::TemperatureSampler::create(kineticEnergy, system);
     auto totalEnergy = Measurements::TotalEnergySampler::create(kineticEnergy, potentialEnergy);
-    auto standardOutput = StandardConsoleOutput::create(totalEnergy, temperature, system, 100);
+    auto standardOutput = StandardConsoleOutput::create(totalEnergy, temperature, system, 5);
     auto berendsenThermostat = Modifiers::BerendsenThermostat::create(UnitConverter::temperatureFromSI(310), simulator.timestep(), simulator.timestep()*0.1, temperature, system);
 
     //simulator.addOutput(kineticEnergy);

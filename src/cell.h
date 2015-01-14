@@ -1,6 +1,7 @@
 #pragma once
 #include <particles/atom.h>
 #include <iostream>
+#include <algorithm>
 using std::cout; using std::endl;
 
 class Cell;

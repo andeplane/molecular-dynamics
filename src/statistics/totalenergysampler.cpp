@@ -26,6 +26,7 @@ void TotalEnergySampler::action()
 {
     double kineticEnergy = m_kineticEnergySampler.lock()->value().currentValueScalar();
     double potentialEnergy = m_potentialEnergySampler.lock()->value().currentValueScalar();
+    cout << "Measured kinetic: " << kineticEnergy << " and potential: " << potentialEnergy << endl;
     double totalEnergy = kineticEnergy + potentialEnergy;
 
     m_value.addValue(totalEnergy);

@@ -8,6 +8,7 @@
 #include <cmath>
 #include <atommanager.h>
 #include <unitconverter.h>
+#include <cstring>
 #include <utils/utils.h>
 
 using CompPhys::Utils::at;

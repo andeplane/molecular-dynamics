@@ -53,7 +53,8 @@ HEADERS += \
     utils/vec3.h \
     potentials/uscsio2waterpotential/uscsio2waterpotential.h \
     potentials/uscsio2waterpotential/uscpotentialparameters.h \
-    potentials/uscsio2waterpotential/usceffectiveforcefieldinterpolater.h
+    potentials/uscsio2waterpotential/usceffectiveforcefieldinterpolater.h \
+    potentials/uscwaterpotential.h
 
 SOURCES += \
     particles/atom.cpp \
@@ -95,7 +96,8 @@ SOURCES += \
     utils/vec3.cpp \
     potentials/uscsio2waterpotential/uscsio2waterpotential.cpp \
     potentials/uscsio2waterpotential/uscpotentialparameters.cpp \
-    potentials/uscsio2waterpotential/usceffectiveforcefieldinterpolater.cpp
+    potentials/uscsio2waterpotential/usceffectiveforcefieldinterpolater.cpp \
+    potentials/uscwaterpotential.cpp
 
 icpc {
     QMAKE_LFLAGS += -staticlib

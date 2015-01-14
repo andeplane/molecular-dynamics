@@ -1,13 +1,13 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-CONFIG += icpc
+CONFIG += c++11
 
 SUBDIRS += \
     src \
-    tests \
+    #tests \
     example \
-    createMovie \
-    Benchmarks
+    createMovie
+    #Benchmarks
 
 BUILD_DIR = $$OUT_PWD
