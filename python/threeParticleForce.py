@@ -4,10 +4,10 @@ from sympy.utilities.codegen import codegen
 from sympy import *
 
 xij, yij, zij, xik, yik, zik = symbols('xij, yij, zij, xik, yik, zik')
-B, costheta0, r0, ksi = symbols('B, cosTheta0, r0, ksi')
+B, costheta0, r0a, r0b, ksia, ksib = symbols('B, cosTheta0, r0a, r0b, ksia, ksib')
 rij, rik, rijDotRik, cosTheta = symbols('rij, rik, rijDotRik, cosTheta')
 
-V = B*exp(ksi / (sqrt(xij**2 + yij**2 + zij**2) - r0) + ksi/( sqrt(xik**2 + yik**2 + zik**2) - r0))*( (xij*xik + yij*yik + zij*zik) / ( sqrt(xij**2 + yij**2 + zij**2)*sqrt(xik**2 + yik**2 + zik**2)) - costheta0)**2
+V = B*exp(ksia / (sqrt(xij**2 + yij**2 + zij**2) - r0a) + ksib/( sqrt(xik**2 + yik**2 + zik**2) - r0b))*( (xij*xik + yij*yik + zij*zik) / ( sqrt(xij**2 + yij**2 + zij**2)*sqrt(xik**2 + yik**2 + zik**2)) - costheta0)**2
 
 dVdXij = diff(V, xij)
 dVdXij = dVdXij.subs(sqrt(xij**2 + yij**2 + zij**2), rij)

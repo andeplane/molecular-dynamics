@@ -36,7 +36,7 @@ int main()
 {
     Random::setSeed(1);
     Simulator simulator;
-    int numberOfTimesteps = 1;
+    int numberOfTimesteps = 500;
 
     simulator.initialize(0, vector<int>(3,1), UnitConverter::lengthFromAngstroms({50, 50, 50}));
     simulator.setTimestep(UnitConverter::timeFromSI(2.0e-15));

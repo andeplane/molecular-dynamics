@@ -7,7 +7,7 @@
 using CompPhys::Utils::at;
 
 typedef UnitConverter UC;
-enum class AtomConfiguration {NotUsed = 0, Si_O=1, Si_Si=2, O_O=3, O_H=4, H_H=5, Si_H=6, O_Si_O=7, Si_O_Si=8, H_O_H=9, Si_O_H=10, NumberOfConfigurations=6};
+enum class AtomConfiguration {NotUsed = 0, Si_O=1, Si_Si=2, O_O=3, O_H=4, H_H=5, Si_H=6, O_Si_O=7, Si_O_Si=8, H_O_H=9, Si_O_H=10, NumberOfConfigurations=11};
 inline int operator + (AtomConfiguration val) {
     return static_cast<int>(val);
 }
@@ -109,6 +109,9 @@ void USCWaterPotentialParameters::setWaterParameters() {
     H_ij.at(+AtomConfiguration::O_O) = 1965.88*UC::energyFromEv(1.0)*pow(UC::lengthFromAngstroms(1.0),eta_ij.at(+AtomConfiguration::O_O));
     D_ij.at(+AtomConfiguration::O_O) = 2.0887*pow(UC::lengthFromAngstroms(1.0),3); // Wrong units in the paper
 }
+
+#include <iostream>
+using namespace std;
 
 void USCWaterPotentialParameters::createPrecomputedTables(int numberOfPrecomputedForces, double &deltaR2) {
     m_precomputedTwoParticleForces.resize(m_activeAtomTypes.size(),

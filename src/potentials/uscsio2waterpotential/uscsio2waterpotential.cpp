@@ -100,9 +100,17 @@ void USCSIO2WaterPotential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *
     double rij = sqrt(xij*xij + yij*yij + zij*zij);
     double rik = sqrt(xik*xik + yik*yik + zik*zik);
 
-    double r0 = at(m_silicaParameters->r0, atomConfiguration);
+    double r0a = at(m_silicaParameters->r0, atomConfiguration);
+    double r0b = at(m_silicaParameters->r0, atomConfiguration);
+    double ksia = at(m_silicaParameters->ksi, atomConfiguration);
+    double ksib = at(m_silicaParameters->ksi, atomConfiguration);
 
-    if(rij > r0 || rik > r0) return;
+    if(atomConfiguration == +AtomConfiguration::Si_O_H) {
+        r0b = at(m_waterParameters->r0, atomConfiguration);
+        ksib = at(m_waterParameters->ksi, atomConfiguration);
+    }
+
+    if(rij > r0a || rik > r0b) return;
 
     double B = at(m_silicaParameters->B_ijk,atomConfiguration);
     double cosTheta0 = at(m_silicaParameters->cosThetaZero, atomConfiguration);
@@ -111,25 +119,25 @@ void USCSIO2WaterPotential::threeParticleAction(Atom *atomi, Atom *atomj, Atom *
     double rijDotRik = xij*xik + yij*yik + zij*zik;
     double oneOverRij = 1.0/rij;
     double oneOverRik = 1.0/rik;
-    double oneOverRijMinusRzero = 1.0/(rij - r0);
-    double oneOverRikMinusRzero = 1.0/(rik - r0);
+    double oneOverRijMinusRzero = 1.0/(rij - r0a);
+    double oneOverRikMinusRzero = 1.0/(rik - r0b);
     double cosTheta = rijDotRik*oneOverRij*oneOverRik;
     double cosThetaMinusCosThetaZero = cosTheta - cosTheta0;
 
-    double Vijk = B*exp(ksi*(oneOverRijMinusRzero + oneOverRikMinusRzero))
+    double Vijk = B*exp(ksia*oneOverRijMinusRzero + ksib*oneOverRikMinusRzero)
             *pow(cosThetaMinusCosThetaZero, 2);
 
     int numberOfGhosts = atomi->ghost() + atomj->ghost() + atomk->ghost();
     m_potentialEnergy += 0.3333333333*Vijk*(3-numberOfGhosts);
 
     // These expressions are from molecular-dynamics/python/threeParticleForce.py
-    double dVdXij = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*xij*(cosTheta - cosTheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*xij - rij*xik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
-    double dVdYij = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*yij*(cosTheta - cosTheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*yij - rij*yik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
-    double dVdZij = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*zij*(cosTheta - cosTheta0) + 2*pow(r0 - rij, 2)*(cosTheta*rik*zij - rij*zik))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(pow(rij, 2)*rik*pow(r0 - rij, 2));
+    double dVdXij = -B*(cosTheta - cosTheta0)*(ksia*rij*rik*xij*(cosTheta - cosTheta0) + 2*pow(r0a - rij, 2)*(cosTheta*rik*xij - rij*xik))*exp(-(ksia*(r0b - rik) + ksib*(r0a - rij))/((r0a - rij)*(r0b - rik)))/(pow(rij, 2)*rik*pow(r0a - rij, 2));
+    double dVdYij = -B*(cosTheta - cosTheta0)*(ksia*rij*rik*yij*(cosTheta - cosTheta0) + 2*pow(r0a - rij, 2)*(cosTheta*rik*yij - rij*yik))*exp(-(ksia*(r0b - rik) + ksib*(r0a - rij))/((r0a - rij)*(r0b - rik)))/(pow(rij, 2)*rik*pow(r0a - rij, 2));
+    double dVdZij = -B*(cosTheta - cosTheta0)*(ksia*rij*rik*zij*(cosTheta - cosTheta0) + 2*pow(r0a - rij, 2)*(cosTheta*rik*zij - rij*zik))*exp(-(ksia*(r0b - rik) + ksib*(r0a - rij))/((r0a - rij)*(r0b - rik)))/(pow(rij, 2)*rik*pow(r0a - rij, 2));
 
-    double dVdXik = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*xik*(cosTheta - cosTheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*xik - rik*xij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
-    double dVdYik = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*yik*(cosTheta - cosTheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*yik - rik*yij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
-    double dVdZik = -B*(cosTheta - cosTheta0)*(ksi*rij*rik*zik*(cosTheta - cosTheta0) + 2*pow(r0 - rik, 2)*(cosTheta*rij*zik - rik*zij))*exp(ksi*(-2*r0 + rij + rik)/((r0 - rij)*(r0 - rik)))/(rij*pow(rik, 2)*pow(r0 - rik, 2));
+    double dVdXik = -B*(cosTheta - cosTheta0)*(ksib*rij*rik*xik*(cosTheta - cosTheta0) + 2*pow(r0b - rik, 2)*(cosTheta*rij*xik - rik*xij))*exp(-(ksia*(r0b - rik) + ksib*(r0a - rij))/((r0a - rij)*(r0b - rik)))/(rij*pow(rik, 2)*pow(r0b - rik, 2));
+    double dVdYik = -B*(cosTheta - cosTheta0)*(ksib*rij*rik*yik*(cosTheta - cosTheta0) + 2*pow(r0b - rik, 2)*(cosTheta*rij*yik - rik*yij))*exp(-(ksia*(r0b - rik) + ksib*(r0a - rij))/((r0a - rij)*(r0b - rik)))/(rij*pow(rik, 2)*pow(r0b - rik, 2));
+    double dVdZik = -B*(cosTheta - cosTheta0)*(ksib*rij*rik*zik*(cosTheta - cosTheta0) + 2*pow(r0b - rik, 2)*(cosTheta*rij*zik - rik*zij))*exp(-(ksia*(r0b - rik) + ksib*(r0a - rij))/((r0a - rij)*(r0b - rik)))/(rij*pow(rik, 2)*pow(r0b - rik, 2));
 
     atomi->force[0] -= dVdXij + dVdXik;
     atomi->force[1] -= dVdYij + dVdYik;
